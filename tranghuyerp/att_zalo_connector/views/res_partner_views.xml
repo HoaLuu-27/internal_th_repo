@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_partner_form_inherit_zalo" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit.zalo</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/notebook" position="inside">
+                <page string="Zalo">
+                    <group>
+                        <group string="Zalo OA">
+                            <field name="zalo_user_id"/>
+                            <field name="zalo_display_name"/>
+                            <field name="zalo_avatar_url"/>
+                            <field name="zalo_followed"/>
+                            <field name="zalo_last_interaction"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!--
+        Hiển thị icon Zalo thay cho trạng thái online/offline thông thường
+        đối với member đại diện khách Zalo.
+    -->
+    <t t-name="att_zalo_services.ImStatus"
+       t-inherit="mail.ImStatus"
+       t-inherit-mode="extension">
+
+        <xpath expr="//i[@title='Bot']" position="after">
+            <img
+                t-elif="props.member?.thread?.zaloMember &amp;&amp; props.member?.eq(props.member.thread.zaloMember)"
+                src="/att_zalo_services/static/src/image/zalo_logo.png"
+                alt="Zalo User"
+                title="Zalo User"
+                role="img"
+                aria-label="Zalo User"
+                class="o-zalo-im-status"
+            />
+        </xpath>
+
+    </t>
+
+</templates>

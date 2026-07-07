@@ -1,0 +1,33 @@
+<odoo>
+    <record id="seq_att_quotation_request_sale" model="ir.sequence">
+        <field name="name">Yêu cầu báo giá bán</field>
+        <field name="code">att.quotation.request.sale</field>
+        <field name="prefix">BGSALE/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="seq_att_quotation_request_purchase" model="ir.sequence">
+        <field name="name">Yêu cầu báo giá mua</field>
+        <field name="code">att.quotation.request.purchase</field>
+        <field name="prefix">BGPUR/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+<!--    <record id="seq_att_contract_sale" model="ir.sequence">-->
+<!--        <field name="name">Hợp đồng bán</field>-->
+<!--        <field name="code">att.contract.sale</field>-->
+<!--        <field name="prefix">HDB/%(year)s/</field>-->
+<!--        <field name="padding">5</field>-->
+<!--        <field name="company_id" eval="False"/>-->
+<!--    </record>-->
+<!--    -->
+<!--    <record id="seq_att_contract_purchase" model="ir.sequence">-->
+<!--        <field name="name">Hợp đồng mua</field>-->
+<!--        <field name="code">att.contract.purchase</field>-->
+<!--        <field name="prefix">HDM/%(year)s/</field>-->
+<!--        <field name="padding">5</field>-->
+<!--        <field name="company_id" eval="False"/>-->
+<!--    </record>-->
+</odoo>

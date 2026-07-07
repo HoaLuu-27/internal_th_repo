@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_meinvoice_config_manager,meinvoice.config manager,model_meinvoice_config,account.group_account_manager,1,1,1,1
+access_meinvoice_config_user,meinvoice.config user,model_meinvoice_config,account.group_account_invoice,1,0,0,0
+access_meinvoice_request_log_manager,meinvoice.request.log manager,att_meinvoice_connector.model_meinvoice_request_log,account.group_account_manager,1,1,1,1
+access_meinvoice_request_log_user,meinvoice.request.log user,att_meinvoice_connector.model_meinvoice_request_log,account.group_account_invoice,1,0,0,0
+access_meinvoice_invoice_manager,meinvoice.invoice manager,att_meinvoice_connector.model_meinvoice_invoice,account.group_account_manager,1,1,1,1
+access_meinvoice_invoice_user,meinvoice.invoice user,att_meinvoice_connector.model_meinvoice_invoice,account.group_account_invoice,1,0,0,0
+access_meinvoice_invoice_line_manager,meinvoice.invoice.line manager,att_meinvoice_connector.model_meinvoice_invoice_line,account.group_account_manager,1,1,1,1
+access_meinvoice_invoice_line_user,meinvoice.invoice.line user,att_meinvoice_connector.model_meinvoice_invoice_line,account.group_account_invoice,1,0,0,0

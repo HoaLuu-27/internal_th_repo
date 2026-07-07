@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_meinvoice_root"
+              name="MeInvoice"
+              sequence="99"
+              web_icon="att_meinvoice_connector,static/description/icon.png"/>
+
+    <menuitem id="menu_meinvoice_config"
+              name="Cấu hình"
+              parent="menu_meinvoice_root"
+              action="action_meinvoice_config"
+              sequence="10"/>
+    <menuitem id="menu_meinvoice_invoice"
+              name="HĐ MeInvoice"
+              parent="menu_meinvoice_root"
+              action="action_meinvoice_invoice"
+              sequence="15"/>
+    <menuitem id="menu_meinvoice_request_log"
+          name="Request Log"
+          parent="menu_meinvoice_root"
+          action="action_meinvoice_request_log"
+          sequence="20"/>
+
+</odoo>

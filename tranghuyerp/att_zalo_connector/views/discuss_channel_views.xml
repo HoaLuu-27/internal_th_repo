@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Inherit form Discuss Channel để xem thông tin Zalo -->
+    <record id="view_discuss_channel_form_inherit_zalo" model="ir.ui.view">
+        <field name="name">discuss.channel.form.inherit.zalo</field>
+        <field name="model">discuss.channel</field>
+        <field name="inherit_id" ref="mail.discuss_channel_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/notebook" position="inside">
+                <page string="Zalo" invisible="channel_type != 'zalo'">
+                    <group>
+                        <group string="Zalo Information">
+                            <field name="channel_type"/>
+                            <field name="zalo_user_id" readonly="1"/>
+                            <field name="zalo_partner_id" readonly="1"/>
+                            <field name="zalo_config_id" readonly="1"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Action kỹ thuật để xem riêng Zalo conversations -->
+    <record id="action_zalo_discuss_channel" model="ir.actions.act_window">
+        <field name="name">Zalo Conversations</field>
+        <field name="res_model">discuss.channel</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('channel_type','=','zalo')]</field>
+    </record>
+
+    <menuitem
+        id="menu_zalo_discuss_channel"
+        name="Zalo Conversations"
+        parent="menu_zalo_services_technical_root"
+        action="action_zalo_discuss_channel"
+        sequence="20"
+        groups="base.group_system"
+    />
+
+</odoo>

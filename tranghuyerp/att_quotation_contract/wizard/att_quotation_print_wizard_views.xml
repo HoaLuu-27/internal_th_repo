@@ -1,0 +1,52 @@
+<odoo>
+<record id="view_att_quotation_print_wizard" model="ir.ui.view">
+    <field name="name">att.quotation.print.wizard.form</field>
+    <field name="model">att.quotation.print.wizard</field>
+    <field name="arch" type="xml">
+        <form string="Chọn thông tin in báo giá">
+            <group string="Chọn thông tin hiển thị trên báo giá">
+                <group>
+                    <field name="quotation_id" invisible="1"/>
+                    <field name="show_name"/>
+                    <field name="show_pickup"/>
+                    <field name="show_delivery"/>
+                    <field name="show_route_detail"/>
+                    <field name="show_vehicle_type"/>
+                    <field name="show_vehicle_id"/>
+                    <field name="show_transport_mode"/>
+                    <field name="show_quantity"/>
+                    <field name="show_uom"/>
+                    <field name="show_expected_date"/>
+                    <field name="show_cargo_description"/>
+                    <field name="show_price_unit"/>
+                    <field name="show_tax"/>
+                    <field name="show_price_subtotal"/>
+                    <field name="show_price_total"/>
+                    <field name="show_note"/>
+                </group>
+            </group>
+
+            <footer>
+                <button name="action_do_print"
+                        string="In PDF"
+                        type="object"
+                        class="btn-primary"/>
+                <button name="action_do_send"
+                        string="Gửi email"
+                        type="object"
+                        class="btn-secondary"/>
+                <button string="Đóng"
+                        class="btn-secondary"
+                        special="cancel"/>
+            </footer>
+        </form>
+    </field>
+</record>
+
+<record id="action_att_quotation_print_wizard" model="ir.actions.act_window">
+    <field name="name">In / Gửi báo giá</field>
+    <field name="res_model">att.quotation.print.wizard</field>
+    <field name="view_mode">form</field>
+    <field name="target">new</field>
+</record>
+</odoo>

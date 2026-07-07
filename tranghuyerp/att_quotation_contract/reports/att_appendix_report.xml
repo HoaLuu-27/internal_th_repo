@@ -1,0 +1,422 @@
+<odoo>
+    <record id="action_report_att_appendix" model="ir.actions.report">
+        <field name="name">Phụ lục hợp đồng</field>
+        <field name="model">att.contract.appendix</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">att_quotation_contract.report_att_appendix</field>
+        <field name="report_file">att_quotation_contract.report_att_appendix</field>
+        <field name="print_report_name">'PL_%s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_att_contract_appendix"/>
+        <field name="binding_type">report</field>
+<!--        <field name="paperformat_id" ref="base.paperformat_a4"/>-->
+    </record>
+
+    <template id="report_att_appendix">
+        <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="doc">
+                <t t-set="company" t-value="doc.company_id or res_company"/>
+                <t t-set="o" t-value="doc"/>
+                <t t-set="is_sale" t-value="doc.appendix_type == 'sale'"/>
+                <t t-set="is_signed" t-value="doc.state in ('confirmed', 'done')"/>
+
+                <div class="page">
+
+                    <!-- QUỐC HIỆU -->
+                    <div style="text-align:center;margin-bottom:16px;">
+                        <div style="font-weight:bold;">CỘNG HOÀ XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+                        <div style="font-weight:bold;">Độc lập – Tự do – Hạnh phúc</div>
+                        <div>─────────────────</div>
+                    </div>
+
+                    <!-- TIÊU ĐỀ -->
+                    <div style="text-align:center;margin-bottom:6px;">
+                        <div style="font-size:15px;font-weight:bold;">PHỤ LỤC HỢP ĐỒNG <span t-field="doc.name"/></div>
+                        <div style="font-style:italic;">
+                            (Kèm theo Hợp đồng số
+                            <span t-field="doc.contract_id.name"/>
+                            <t t-if="doc.contract_id.effective_date">
+                                ký ngày
+                                <span t-esc="doc.contract_id.effective_date.strftime('%d/%m/%Y')"/>
+                            </t>)
+                        </div>
+                    </div>
+
+                    <!-- CĂN CỨ -->
+                    <div style="margin:14px 0;font-style:italic;">
+                        <div>
+                            - Căn cứ vào Hợp đồng số <span t-field="doc.contract_id.name"/>
+                            <t t-if="doc.contract_id.effective_date">
+                                ký ngày <span t-esc="doc.contract_id.effective_date.strftime('%d/%m/%Y')"/>
+                            </t>
+                            giữa <span t-field="doc.partner_id"/> và <span t-field="company.name"/>;
+                        </div>
+                        <div>- Căn cứ vào khả năng và nhu cầu của hai bên.</div>
+                        <div style="margin-top:8px;">
+                            Phụ lục hợp đồng, ngày
+                            <span t-esc="doc.effective_date.strftime('%d') if doc.effective_date else '......'"/>
+                            tháng
+                            <span t-esc="doc.effective_date.strftime('%m') if doc.effective_date else '......'"/>
+                            năm
+                            <span t-esc="doc.effective_date.strftime('%Y') if doc.effective_date else '......'"/>
+                            , chúng tôi gồm:
+                        </div>
+                    </div>
+
+                    <!-- BÊN A / BÊN B -->
+                    <t t-if="is_sale">
+                        <!-- BÁN: Bên A = Đối tác -->
+                        <div style="margin-bottom:10px;">
+                            <div style="font-weight:bold;">BÊN A - BÊN SỬ DỤNG DỊCH VỤ: <span t-field="doc.partner_id" style="text-transform:uppercase;"/></div>
+                            <table style="width:100%;margin-left:16px;border-collapse:collapse;">
+                                <tr t-if="doc.partner_representative">
+                                    <td style="width:120px;padding:2px 0;">Đại diện</td>
+                                    <td style="padding:2px 0;">: <span t-field="doc.partner_representative"/>
+                                        <t t-if="doc.partner_position"> – Chức vụ: <span t-field="doc.partner_position"/></t>
+                                    </td>
+                                </tr>
+                                <tr t-if="doc.contract_id.partner_address">
+                                    <td style="padding:2px 0;">Địa chỉ</td>
+                                    <td style="padding:2px 0;">: <span t-field="doc.contract_id.partner_address"/></td>
+                                </tr>
+                                <tr t-if="doc.contract_id.partner_phone">
+                                    <td style="padding:2px 0;">Tel</td>
+                                    <td style="padding:2px 0;">: <span t-field="doc.contract_id.partner_phone"/></td>
+                                </tr>
+                                <tr t-if="doc.contract_id.partner_tax_code">
+                                    <td style="padding:2px 0;">MST</td>
+                                    <td style="padding:2px 0;">: <span t-field="doc.contract_id.partner_tax_code"/></td>
+                                </tr>
+                            </table>
+                            <div style="font-style:italic;margin-left:16px;">(Sau đây gọi là "Bên A")</div>
+                        </div>
+
+                        <!-- BÁN: Bên B = Trang Huy -->
+                        <div style="margin-bottom:14px;">
+                            <div style="font-weight:bold;">BÊN B - BÊN CUNG CẤP DỊCH VỤ: <span t-field="company.name" style="text-transform:uppercase;"/></div>
+                            <table style="width:100%;margin-left:16px;border-collapse:collapse;">
+                                <tr>
+                                    <td style="width:120px;padding:2px 0;">Đại diện</td>
+                                    <td style="padding:2px 0;">: <span t-esc="company.report_signer_name or 'Nguyễn Thị Bích Thủy'"/>
+                                        – Chức vụ: <span t-esc="company.report_signer_title or 'Giám đốc'"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:2px 0;">Địa chỉ</td>
+                                    <td style="padding:2px 0;">: <span t-field="company.street"/><t t-if="company.city">, <span t-field="company.city"/></t></td>
+                                </tr>
+                                <tr t-if="company.phone">
+                                    <td style="padding:2px 0;">Tel</td>
+                                    <td style="padding:2px 0;">: <span t-field="company.phone"/></td>
+                                </tr>
+                                <tr t-if="company.vat">
+                                    <td style="padding:2px 0;">MST</td>
+                                    <td style="padding:2px 0;">: <span t-field="company.vat"/></td>
+                                </tr>
+                            </table>
+                            <div style="font-style:italic;margin-left:16px;">(Sau đây gọi là "Bên B")</div>
+                        </div>
+                    </t>
+
+                    <t t-else="">
+                        <!-- MUA: Bên A = Trang Huy -->
+                        <div style="margin-bottom:10px;">
+                            <div style="font-weight:bold;">BÊN A - BÊN SỬ DỤNG DỊCH VỤ: <span t-field="company.name" style="text-transform:uppercase;"/></div>
+                            <table style="width:100%;margin-left:16px;border-collapse:collapse;">
+                                <tr>
+                                    <td style="width:120px;padding:2px 0;">Đại diện</td>
+                                    <td style="padding:2px 0;">: <span t-esc="company.report_signer_name or 'Nguyễn Thị Bích Thủy'"/>
+                                        – Chức vụ: <span t-esc="company.report_signer_title or 'Giám đốc'"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:2px 0;">Địa chỉ</td>
+                                    <td style="padding:2px 0;">: <span t-field="company.street"/><t t-if="company.city">, <span t-field="company.city"/></t></td>
+                                </tr>
+                                <tr t-if="company.phone">
+                                    <td style="padding:2px 0;">Tel</td>
+                                    <td style="padding:2px 0;">: <span t-field="company.phone"/></td>
+                                </tr>
+                                <tr t-if="company.vat">
+                                    <td style="padding:2px 0;">MST</td>
+                                    <td style="padding:2px 0;">: <span t-field="company.vat"/></td>
+                                </tr>
+                            </table>
+                            <div style="font-style:italic;margin-left:16px;">(Sau đây gọi là "Bên A")</div>
+                        </div>
+
+                        <!-- MUA: Bên B = Đối tác NCC -->
+                        <div style="margin-bottom:14px;">
+                            <div style="font-weight:bold;">BÊN B - BÊN CUNG CẤP DỊCH VỤ: <span t-field="doc.partner_id" style="text-transform:uppercase;"/></div>
+                            <table style="width:100%;margin-left:16px;border-collapse:collapse;">
+                                <tr t-if="doc.partner_representative">
+                                    <td style="width:120px;padding:2px 0;">Đại diện</td>
+                                    <td style="padding:2px 0;">: <span t-field="doc.partner_representative"/>
+                                        <t t-if="doc.partner_position"> – Chức vụ: <span t-field="doc.partner_position"/></t>
+                                    </td>
+                                </tr>
+                                <tr t-if="doc.contract_id.partner_address">
+                                    <td style="padding:2px 0;">Địa chỉ</td>
+                                    <td style="padding:2px 0;">: <span t-field="doc.contract_id.partner_address"/></td>
+                                </tr>
+                                <tr t-if="doc.contract_id.partner_phone">
+                                    <td style="padding:2px 0;">Tel</td>
+                                    <td style="padding:2px 0;">: <span t-field="doc.contract_id.partner_phone"/></td>
+                                </tr>
+                                <tr t-if="doc.contract_id.partner_tax_code">
+                                    <td style="padding:2px 0;">MST</td>
+                                    <td style="padding:2px 0;">: <span t-field="doc.contract_id.partner_tax_code"/></td>
+                                </tr>
+                            </table>
+                            <div style="font-style:italic;margin-left:16px;">(Sau đây gọi là "Bên B")</div>
+                        </div>
+                    </t>
+
+                    <div style="font-style:italic;margin-bottom:14px;">
+                        Sau khi thảo luận, Hai Bên đồng ý ký kết phụ lục hợp đồng này để điều chỉnh một số nội dung tại Hợp đồng số <span t-field="doc.contract_id.name"/> với các điều khoản sau:
+                    </div>
+
+                    <!-- ĐIỀU 1: BẢNG DÒNG PHỤ LỤC -->
+                    <div style="font-weight:bold;text-decoration:underline;margin-bottom:8px;">
+                        ĐIỀU 1: BỔ SUNG KHỐI LƯỢNG, GIÁ TRỊ HỢP ĐỒNG
+                    </div>
+                    <div style="margin-bottom:8px;">
+                        Hai Bên thỏa thuận và thống nhất ký kết Phụ lục bổ sung Hợp đồng với đơn giá, khối lượng chi tiết được thể hiện theo bảng sau:
+                    </div>
+
+                    <table style="width:100%;border-collapse:collapse;font-size:11px;">
+                            <thead>
+                                <tr>
+                                    <th style="border:1px solid #000;padding:5px;text-align:center;background:#d9e1f2;width:4%;">STT</th>
+                                    <th style="border:1px solid #000;padding:5px;text-align:center;background:#d9e1f2;width:18%;">Nội dung vận chuyển</th>
+                                    <th style="border:1px solid #000;padding:5px;text-align:center;background:#d9e1f2;width:8%;">Dịch vụ</th>
+                                    <th style="border:1px solid #000;padding:5px;text-align:center;background:#d9e1f2;width:7%;">ĐVT</th>
+                                    <th style="border:1px solid #000;padding:5px;text-align:center;background:#d9e1f2;width:6%;">Tải trọng</th>
+                                    <th style="border:1px solid #000;padding:5px;text-align:center;background:#d9e1f2;width:5%;">SL</th>
+                                    <th style="border:1px solid #000;padding:5px;text-align:center;background:#d9e1f2;width:8%;">Nơi đi</th>
+                                    <th style="border:1px solid #000;padding:5px;text-align:center;background:#d9e1f2;width:8%;">Nơi đến</th>
+                                    <th style="border:1px solid #000;padding:5px;text-align:center;background:#d9e1f2;width:8%;">Hình thức VC</th>
+                                    <th style="border:1px solid #000;padding:5px;text-align:center;background:#d9e1f2;width:8%;">Phương tiện</th>
+                                    <th style="border:1px solid #000;padding:5px;text-align:center;background:#d9e1f2;width:10%;">Đơn giá (chưa VAT)</th>
+                                    <th style="border:1px solid #000;padding:5px;text-align:center;background:#d9e1f2;width:10%;">Thành tiền (chưa VAT)</th>
+                                    <th style="border:1px solid #000;padding:5px;text-align:center;background:#d9e1f2;">Ghi chú</th>
+                                </tr>
+                            </thead>
+                        <tbody>
+                            <t t-foreach="doc.appendix_line_ids" t-as="line">
+                                <!-- Section header -->
+                                <t t-if="line.display_type == 'line_section'">
+                                    <tr>
+                                        <td colspan="10" style="border:1px solid #000;padding:5px;font-weight:bold;background:#f2f2f2;">
+                                            <span t-esc="chr(73 + line_index)"/>. <span t-field="line.name"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <!-- Note line -->
+                                <t t-elif="line.display_type == 'line_note'">
+                                    <tr>
+                                        <td colspan="10" style="border:1px solid #000;padding:5px;font-style:italic;">
+                                            <span t-field="line.name"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <!-- Service line -->
+                                <t t-else="">
+                                    <tr>
+                                        <td style="border:1px solid #000;padding:5px;text-align:center;">
+                                            <span t-esc="line_index + 1"/>
+                                        </td>
+                                        <td style="border:1px solid #000;padding:5px;">
+                                            <span t-field="line.name"/>
+                                        </td>
+                                        <td style="border:1px solid #000;padding:5px;text-align:center;">
+                                            <span t-if="line.product_id" t-field="line.product_id"/>
+                                        </td>
+                                        <td style="border:1px solid #000;padding:5px;text-align:center;">
+                                            <span t-if="line.uom_id" t-field="line.uom_id"/>
+                                        </td>
+                                        <td style="border:1px solid #000;padding:5px;text-align:center;">
+                                            <span t-if="line.load_capacity" t-field="line.load_capacity"/>
+                                        </td>
+                                        <td style="border:1px solid #000;padding:5px;text-align:center;">
+                                            <span t-field="line.quantity"/>
+                                        </td>
+                                        <td style="border:1px solid #000;padding:5px;">
+                                            <span t-if="line.pickup_location" t-field="line.pickup_location"/>
+                                        </td>
+                                        <td style="border:1px solid #000;padding:5px;">
+                                            <span t-if="line.delivery_location" t-field="line.delivery_location"/>
+                                        </td>
+                                        <td style="border:1px solid #000;padding:5px;text-align:center;">
+                                            <span t-if="line.transport_mode_id" t-field="line.transport_mode_id"/>
+                                        </td>
+                                        <td style="border:1px solid #000;padding:5px;text-align:center;">
+                                            <span t-if="line.vehicle_id" t-field="line.vehicle_id"/>
+                                            <t t-elif="line.vehicle_type">
+                                                <span t-field="line.vehicle_type"/>
+                                            </t>
+                                        </td>
+                                        <td style="border:1px solid #000;padding:5px;text-align:right;">
+                                            <span t-if="line.price_unit"
+                                                  t-field="line.price_unit"
+                                                  t-options="{'widget':'monetary','display_currency':doc.currency_id}"/>
+                                        </td>
+                                        <td style="border:1px solid #000;padding:5px;text-align:right;">
+                                            <span t-if="line.price_subtotal"
+                                                  t-field="line.price_subtotal"
+                                                  t-options="{'widget':'monetary','display_currency':doc.currency_id}"/>
+                                        </td>
+                                        <td style="border:1px solid #000;padding:5px;">
+                                            <span t-if="line.extra_note" t-field="line.extra_note"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </t>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="8" style="border:1px solid #000;padding:5px;text-align:right;font-weight:bold;">Tổng cộng chưa thuế:</td>
+                                <td style="border:1px solid #000;padding:5px;text-align:right;font-weight:bold;">
+                                    <span t-field="doc.amount_untaxed"
+                                          t-options="{'widget':'monetary','display_currency':doc.currency_id}"/>
+                                </td>
+                                <td style="border:1px solid #000;"/>
+                            </tr>
+                            <tr t-if="doc.amount_tax">
+                                <td colspan="8" style="border:1px solid #000;padding:5px;text-align:right;font-weight:bold;">Thuế VAT:</td>
+                                <td style="border:1px solid #000;padding:5px;text-align:right;font-weight:bold;">
+                                    <span t-field="doc.amount_tax"
+                                          t-options="{'widget':'monetary','display_currency':doc.currency_id}"/>
+                                </td>
+                                <td style="border:1px solid #000;"/>
+                            </tr>
+                            <tr>
+                                <td colspan="8" style="border:1px solid #000;padding:5px;text-align:right;font-weight:bold;">Tổng cộng:</td>
+                                <td style="border:1px solid #000;padding:5px;text-align:right;font-weight:bold;">
+                                    <span t-field="doc.amount_total"
+                                          t-options="{'widget':'monetary','display_currency':doc.currency_id}"/>
+                                </td>
+                                <td style="border:1px solid #000;"/>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <!-- GHI CHÚ DẦU -->
+                    <t t-if="doc.fuel_ref_price or doc.fuel_note">
+                        <div style="margin-top:10px;font-size:11px;font-style:italic;">
+                            <div style="font-weight:bold;font-style:normal;">Ghi chú:</div>
+                            <div>- Đơn giá chưa bao gồm VAT, Thuế VAT theo quy định của Nhà nước từng thời điểm.</div>
+                            <div>- Đơn giá dịch vụ vận chuyển chưa bao gồm: chi phí bốc hàng hóa lên phương tiện tại điểm giao hàng và hạ hàng tại điểm nhận hàng.</div>
+                            <t t-if="doc.fuel_ref_price">
+                                <div>
+                                    - Đơn giá đã được tính toán dựa trên giá Dầu Diesel (DO 0,05S-II) tham chiếu:
+                                    <b><span t-field="doc.fuel_ref_price" t-options="{'widget':'monetary','display_currency':doc.currency_id}"/>/lít</b>
+                                    <t t-if="doc.fuel_ref_date">
+                                        ngày <span t-esc="doc.fuel_ref_date.strftime('%d/%m/%Y')"/>
+                                    </t>
+                                </div>
+                                <div>
+                                    - Giá trị điều chỉnh = GTHĐ × (1 + <span t-esc="doc.fuel_ratio"/>% × [(Giá nhiên liệu mới − Giá nhiên liệu HĐ) / Giá nhiên liệu HĐ])
+                                </div>
+                            </t>
+                            <t t-if="doc.fuel_note">
+                                <div><span t-field="doc.fuel_note"/></div>
+                            </t>
+                        </div>
+                    </t>
+
+                    <!-- ĐIỀU 2: ĐIỀU KHOẢN CHUNG -->
+                    <div style="font-weight:bold;text-decoration:underline;margin-top:14px;margin-bottom:8px;">
+                        ĐIỀU 2: ĐIỀU KHOẢN CHUNG
+                    </div>
+                    <ol style="font-size:12px;">
+                        <li>Các nội dung và điều khoản khác của Hợp đồng số <span t-field="doc.contract_id.name"/> và các phụ lục kèm theo không được điều chỉnh trong Phụ lục này vẫn giữ nguyên hiệu lực thi hành.</li>
+                        <li>Phụ lục Hợp đồng này là một phần không thể tách rời của Hợp đồng chính. Trong trường hợp phát sinh mâu thuẫn, nội dung của Phụ lục này sẽ được ưu tiên áp dụng.</li>
+                        <li>
+                            Phụ lục Hợp đồng có hiệu lực kể từ ngày
+                            <span t-esc="doc.effective_date.strftime('%d/%m/%Y') if doc.effective_date else '......'"/>
+                            <t t-if="doc.expired_date">
+                                đến ngày <span t-esc="doc.expired_date.strftime('%d/%m/%Y')"/>
+                            </t>
+                            và thanh lý khi các Bên hoàn thành nghĩa vụ của Hợp đồng. Hợp đồng được lập thành 04 (bốn) bản có giá trị pháp lý ngang nhau, Bên A giữ 02 (hai) bản, Bên B giữ 02 (hai) bản.
+                        </li>
+                    </ol>
+
+                    <!-- KÝ TÊN -->
+                    <div style="margin-top:24px;">
+                        <table style="width:100%;border-collapse:collapse;">
+                            <tr>
+                                <td style="width:50%;text-align:center;vertical-align:top;padding:0 8px;">
+                                    <div style="font-weight:bold;">ĐẠI DIỆN BÊN A</div>
+                                    <div style="font-style:italic;font-size:11px;">(Ký, ghi rõ họ tên, đóng dấu)</div>
+                                    <t t-if="is_sale">
+                                        <!-- Bên A = Đối tác -->
+                                        <div style="min-height:90px;"/>
+                                        <div t-if="doc.partner_representative" style="font-weight:bold;margin-top:4px;">
+                                            <span t-field="doc.partner_representative"/>
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <!-- Bên A = Trang Huy -->
+                                        <div style="position:relative;min-height:100px;">
+                                            <t t-if="is_signed">
+                                                <img t-if="company.report_stamp_image"
+                                                     t-att-src="image_data_uri(company.report_stamp_image)"
+                                                     style="position:absolute;width:100px;top:5px;left:60px;z-index:1;"/>
+                                                <img t-if="company.report_signature_image"
+                                                     t-att-src="image_data_uri(company.report_signature_image)"
+                                                     style="position:absolute;width:130px;top:20px;left:90px;z-index:2;"/>
+                                            </t>
+                                        </div>
+                                        <div style="font-weight:bold;margin-top:90px;">
+                                            <span t-esc="company.report_signer_title or 'GIÁM ĐỐC'"/>
+                                        </div>
+                                        <div style="font-weight:bold;font-style:italic;">
+                                            <span t-esc="company.report_signer_name or 'Nguyễn Thị Bích Thủy'"/>
+                                        </div>
+                                    </t>
+                                </td>
+
+                                <td style="width:50%;text-align:center;vertical-align:top;padding:0 8px;">
+                                    <div style="font-weight:bold;">ĐẠI DIỆN BÊN B</div>
+                                    <div style="font-style:italic;font-size:11px;">(Ký, ghi rõ họ tên, đóng dấu)</div>
+                                    <t t-if="is_sale">
+                                        <!-- Bên B = Trang Huy -->
+                                        <div style="position:relative;min-height:100px;">
+                                            <t t-if="is_signed">
+                                                <img t-if="company.report_stamp_image"
+                                                     t-att-src="image_data_uri(company.report_stamp_image)"
+                                                     style="position:absolute;width:100px;top:5px;left:60px;z-index:1;"/>
+                                                <img t-if="company.report_signature_image"
+                                                     t-att-src="image_data_uri(company.report_signature_image)"
+                                                     style="position:absolute;width:130px;top:20px;left:90px;z-index:2;"/>
+                                            </t>
+                                        </div>
+                                        <div style="font-weight:bold;margin-top:90px;">
+                                            <span t-esc="company.report_signer_title or 'GIÁM ĐỐC'"/>
+                                        </div>
+                                        <div style="font-weight:bold;font-style:italic;">
+                                            <span t-esc="company.report_signer_name or 'Nguyễn Thị Bích Thủy'"/>
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <!-- Bên B = Đối tác NCC -->
+                                        <div style="min-height:90px;"/>
+                                        <div t-if="doc.partner_representative" style="font-weight:bold;margin-top:4px;">
+                                            <span t-field="doc.partner_representative"/>
+                                        </div>
+                                    </t>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- FOOTER -->
+                    <img t-if="company.report_footer_image"
+                         t-att-src="image_data_uri(company.report_footer_image)"
+                         style="width:100%;margin-top:24px;"/>
+
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,161 @@
+<odoo>
+    <!-- PO/RFQ form: đếm RFQ trong nhóm alternatives + nút tạo HĐK NCC -->
+    <record id="view_purchase_order_form_attqc" model="ir.ui.view">
+        <field name="name">purchase.order.form.attqc</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <header position="inside">
+                <!-- Vòng đời báo giá mua: Nháp → Đã chốt NCC → Đã tạo HĐNT.
+                     "Chốt" = chọn NCC thắng thầu (server check: manager +
+                     đủ 5-10 báo giá cùng SO nguồn) — KHÔNG phải confirm
+                     thành PO như native. -->
+                <!-- Cổng gửi báo giá DUY NHẤT: popup Email / Zalo / Gọi điện NCC
+                     (nút Send RFQ native đã ẩn với RFQ mời thầu) -->
+                <button name="action_send_quotation" string="Gửi báo giá"
+                        type="object"
+                        invisible="att_is_execution or state not in ('draft', 'sent')"/>
+                <button name="action_att_mark_won" string="Chốt NCC thắng thầu"
+                        type="object" class="btn-primary"
+                        invisible="att_is_execution or state not in ('draft', 'sent') or att_quote_state != 'draft'"
+                        groups="att_quotations_contracts.group_tranghuy_managers_sale_purchase"/>
+                <button name="action_create_att_contract" string="Tạo hợp đồng NT"
+                        type="object" class="btn-primary"
+                        invisible="att_quote_state != 'won' or att_contract_id"
+                        groups="att_quotations_contracts.group_tranghuy_managers_sale_purchase"/>
+                <!-- RFQ chốt mà NCC ĐÃ có HĐ đang chạy → tạo PHỤ LỤC giá mới -->
+                <button name="action_create_att_appendix" string="Tạo phụ lục"
+                        type="object" class="btn-primary"
+                        invisible="att_is_execution or att_quote_state != 'won' or not att_contract_id"/>
+                <!-- Đường thuê chuyến lẻ gấp: manager xác nhận RFQ thẳng thành PO -->
+                <button name="button_confirm" string="Xác nhận mua lẻ (gấp)"
+                        type="object"
+                        invisible="att_is_execution or state not in ('draft', 'sent') or att_quote_state in ('contracted', 'lost')"
+                        groups="att_quotations_contracts.group_tranghuy_managers_sale_purchase"/>
+                <!-- Statusbar vòng đời báo giá TH — statusbar DUY NHẤT với RFQ
+                     mời thầu (state native ẩn bên dưới) -->
+                <field name="att_quote_state" widget="statusbar"
+                       invisible="att_is_execution"/>
+            </header>
+
+            <!-- MỖI PO CHỈ 1 STATUSBAR: RFQ mời thầu ẩn state native
+                 (RFQ/RFQ Sent/Purchase Order); PO thực thi dùng state native -->
+            <xpath expr="//header/field[@name='state']" position="attributes">
+                <attribute name="invisible">not att_is_execution</attribute>
+            </xpath>
+
+            <!-- Ẩn 2 nút Send RFQ native với RFQ mời thầu (2 nút này không có id
+                 → chọn theo thứ tự xuất hiện: [1] state draft, [2] state sent).
+                 Gửi NCC đi qua nút "Gửi báo giá" phía trên. -->
+            <xpath expr="(//header/button[@name='action_rfq_send'])[1]" position="attributes">
+                <attribute name="invisible">state != 'draft' or not att_is_execution</attribute>
+            </xpath>
+            <xpath expr="(//header/button[@name='action_rfq_send'])[2]" position="attributes">
+                <attribute name="invisible">state != 'sent' or not att_is_execution</attribute>
+            </xpath>
+
+            <!-- Ẩn 2 nút Confirm native với RFQ mời thầu — "confirm" của nghiệp vụ
+                 mua là CHỐT NCC (nút riêng phía trên), không phải biến thành PO -->
+            <xpath expr="//header/button[@name='button_confirm'][@id='bid_confirm']" position="attributes">
+                <attribute name="invisible">state != 'sent' or not att_is_execution</attribute>
+            </xpath>
+            <xpath expr="//header/button[@name='button_confirm'][@id='draft_confirm']" position="attributes">
+                <attribute name="invisible">state != 'draft' or not att_is_execution</attribute>
+            </xpath>
+            <div name="button_box" position="inside">
+                <button name="action_view_att_contract" type="object"
+                        class="oe_stat_button" icon="fa-file-text-o"
+                        invisible="not att_contract_id">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Hợp đồng NT</span>
+                    </div>
+                </button>
+            </div>
+            <field name="partner_ref" position="after">
+                <field name="att_rfq_group_count" invisible="state not in ('draft', 'sent')"/>
+                <!-- Chọn SO nguồn → onchange tự đổ dòng nhu cầu từ SO (trừ giá).
+                     Chỉ SO đã confirm mới phát sinh nhu cầu thuê ngoài (interview:
+                     "SO confirm → phòng MH nhận thông tin") -->
+                <field name="att_source_sale_order_id"
+                       domain="[('state', '=', 'sale')]"
+                       readonly="state not in ('draft', 'sent')"/>
+                <!-- RFQ: chọn được HĐ đang chạy của NCC (báo giá đổi giá cho HĐ cũ).
+                     PO thực thi: readonly — link do phụ lục/HĐ set khi sinh đơn -->
+                <field name="att_contract_id"
+                       readonly="att_is_execution or att_quote_state in ('contracted', 'lost')"
+                       domain="[('contract_type', '=', 'purchase'), ('partner_id', '=', partner_id), ('state', '=', 'running')]"/>
+                <field name="att_appendix_id" readonly="1" invisible="not att_appendix_id"/>
+                <field name="att_is_execution" invisible="1"/>
+            </field>
+            <!-- Field logistics trên dòng — trùng bộ với SO line để map qua phụ lục -->
+            <xpath expr="//field[@name='order_line']//list//field[@name='product_id']" position="attributes">
+                <attribute name="string">Dịch vụ</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_qty']" position="before">
+                <field name="pickup_location" optional="hide"/>
+                <field name="delivery_location" optional="hide"/>
+                <field name="vehicle_id" optional="hide"/>
+                <field name="transport_mode_id" optional="hide"/>
+                <field name="cargo_description" optional="hide"/>
+                <field name="att_appendix_line_id" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- MẤU CHỐT chống lẫn: màn "Requests for Quotation" native chỉ hiện RFQ
+         MỜI THẦU thật. PO thực thi (sinh từ phụ lục/HĐ, cũng nằm ở draft = RFQ)
+         bị loại bằng domain — chúng chỉ xem ở menu "PO theo hợp đồng".
+         Lưu ý: dùng cờ att_is_execution chứ KHÔNG dùng att_contract_id, vì RFQ
+         thắng thầu cũng được gắn HĐ nhưng vẫn phải hiện ở màn RFQ.
+         Domain gốc của action này là [] (đã check source Odoo 19). -->
+    <record id="purchase.purchase_rfq" model="ir.actions.act_window">
+        <!-- RFQ list = CHỈ báo giá đang sống (draft/sent); PO đã confirm nằm
+             ở màn Purchase Orders, PO thực thi có menu riêng -->
+        <field name="domain">[('att_is_execution', '=', False), ('state', 'in', ('draft', 'sent'))]</field>
+    </record>
+
+    <!-- List RFQ: thêm cột vòng đời báo giá TH, ẩn cột state native
+         (toàn RFQ/RFQ Sent, vô nghĩa với nghiệp vụ chốt NCC) -->
+    <record id="view_purchase_rfq_tree_attqc" model="ir.ui.view">
+        <field name="name">purchase.order.rfq.tree.attqc</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_kpis_tree"/>
+        <field name="arch" type="xml">
+            <field name="state" position="before">
+                <field name="att_quote_state" widget="badge"
+                       decoration-success="att_quote_state in ('won', 'contracted')"
+                       decoration-muted="att_quote_state == 'lost'"
+                       optional="show"/>
+            </field>
+            <field name="state" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </field>
+        </field>
+    </record>
+
+    <!-- Filter RFQ theo SO nguồn — phục vụ gom nhóm báo giá mua theo nhu cầu thuê ngoài -->
+    <record id="view_purchase_order_filter_attqc" model="ir.ui.view">
+        <field name="name">purchase.order.search.attqc</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+        <field name="arch" type="xml">
+            <!-- Odoo 19: filter trạng thái nháp trong search purchase tên là
+                 "draft_rfqs" (không phải "draft" như bản cũ) -->
+            <filter name="draft_rfqs" position="after">
+                <separator/>
+                <filter name="attqc_won" string="Đã chốt NCC (chưa tạo HĐ)"
+                        domain="[('att_quote_state', '=', 'won')]"/>
+                <filter name="attqc_contracted" string="Đã tạo HĐNT"
+                        domain="[('att_quote_state', '=', 'contracted')]"/>
+                <filter name="attqc_lost" string="Không chọn"
+                        domain="[('att_quote_state', '=', 'lost')]"/>
+                <filter name="attqc_has_source_so" string="Có SO nguồn (thuê ngoài)"
+                        domain="[('att_source_sale_order_id', '!=', False)]"/>
+            </filter>
+            <xpath expr="//group" position="inside">
+                <filter name="attqc_group_source_so" string="SO nguồn"
+                        context="{'group_by': 'att_source_sale_order_id'}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

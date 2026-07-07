@@ -1,0 +1,74 @@
+<odoo>
+    <!-- ===== PHÍA BÁN: menu trong app Sales ===== -->
+    <menuitem id="menu_attqc_sale_root" name="Hợp đồng NT"
+              parent="sale.sale_menu_root" sequence="15"/>
+    <menuitem id="menu_attqc_contract_sale" name="Hợp đồng bán"
+              parent="menu_attqc_sale_root"
+              action="action_att_contract_sale" sequence="10"/>
+    <menuitem id="menu_attqc_appendix_sale" name="Phụ lục bán"
+              parent="menu_attqc_sale_root"
+              action="action_att_appendix_sale" sequence="20"/>
+
+    <!-- SO thực thi (sinh từ phụ lục) tách màn hình riêng — chúng nằm ở state
+         draft (nháp chờ user check số lượng rồi confirm bằng nút native) nên
+         nếu không tách sẽ lẫn vào màn hình Báo giá. KHÔNG thêm state mới vào
+         sale.order — draft chính là bước "check lại trước khi confirm" -->
+    <record id="action_att_sale_execution" model="ir.actions.act_window">
+        <field name="name">SO thực thi (từ phụ lục)</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('att_is_execution', '=', True)]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Chưa có SO thực thi nào</p>
+            <p>SO thực thi được sinh từ nút "Tạo SO thực thi" trên Phụ lục —
+               sinh ra ở trạng thái nháp để kiểm tra số lượng thực tế
+               từng đợt rồi mới xác nhận.</p>
+        </field>
+    </record>
+    <menuitem id="menu_attqc_sale_execution" name="SO thực thi"
+              parent="menu_attqc_sale_root"
+              action="action_att_sale_execution" sequence="30"/>
+
+    <!-- Cấu hình dùng chung đặt dưới Sales > Configuration -->
+    <menuitem id="menu_attqc_clause" name="Thư viện điều khoản"
+              parent="sale.menu_sale_config"
+              action="action_att_clause" sequence="80"/>
+    <menuitem id="menu_attqc_transport_mode" name="Hình thức vận chuyển"
+              parent="sale.menu_sale_config"
+              action="action_att_transport_mode" sequence="81"/>
+    <menuitem id="menu_attqc_liquidation_reason" name="Lý do thanh lý HĐ"
+              parent="sale.menu_sale_config"
+              action="action_att_liquidation_reason" sequence="82"/>
+
+    <!-- ===== PHÍA MUA: menu trong app Purchase ===== -->
+    <menuitem id="menu_attqc_purchase_root" name="Hợp đồng NT"
+              parent="purchase.menu_purchase_root" sequence="15"/>
+    <menuitem id="menu_attqc_contract_purchase" name="Hợp đồng mua"
+              parent="menu_attqc_purchase_root"
+              action="action_att_contract_purchase" sequence="10"/>
+    <menuitem id="menu_attqc_appendix_purchase" name="Phụ lục mua"
+              parent="menu_attqc_purchase_root"
+              action="action_att_appendix_purchase" sequence="20"/>
+
+    <!-- PO gắn HĐNT (tạo từ phụ lục HOẶC trực tiếp từ HĐ) — tách khỏi màn RFQ
+         mời thầu để 2 chị nghiệp vụ không lẫn PO thực thi với RFQ đang so giá -->
+    <record id="action_att_purchase_execution" model="ir.actions.act_window">
+        <field name="name">PO theo hợp đồng</field>
+        <field name="res_model">purchase.order</field>
+        <field name="view_mode">list,form</field>
+        <!-- Dùng cờ att_is_execution, không dùng att_contract_id: RFQ thắng thầu
+             cũng gắn HĐ nhưng là báo giá (thuộc màn RFQ), không phải đơn thực thi -->
+        <field name="domain">[('att_is_execution', '=', True)]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Chưa có PO nào gắn hợp đồng</p>
+            <p>PO tạo từ nút "Tạo PO thực thi" trên Phụ lục, hoặc nút "Tạo PO"
+               ngay trên Hợp đồng mua (khi không cần phụ lục) — đều là RFQ nháp
+               chuẩn, xác nhận bằng nút native.</p>
+        </field>
+    </record>
+    <menuitem id="menu_attqc_purchase_execution" name="PO theo hợp đồng"
+              parent="menu_attqc_purchase_root"
+              action="action_att_purchase_execution" sequence="30"/>
+</odoo>

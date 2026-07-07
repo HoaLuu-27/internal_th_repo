@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!--
+            Cron tự động refresh token mỗi 7 ngày.
+            MISA khuyến nghị 7 ngày/lần, token hạn 14 ngày.
+            noupdate="1": không bị reset khi update module.
+        -->
+        <record id="cron_meinvoice_refresh_token" model="ir.cron">
+            <field name="name">MeInvoice: Tự động refresh token</field>
+            <field name="model_id" ref="model_meinvoice_config"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_refresh_token()</field>
+            <field name="interval_number">7</field>
+            <field name="interval_type">days</field>
+<!--            <field name="numbercall">-1</field>  &lt;!&ndash; -1 = chạy mãi mãi &ndash;&gt;-->
+            <field name="active">True</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+    </data>
+</odoo>

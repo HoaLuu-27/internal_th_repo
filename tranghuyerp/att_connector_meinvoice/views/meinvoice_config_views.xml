@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="meinvoice_config_view_form" model="ir.ui.view">
+        <field name="name">meinvoice.config</field>
+        <field name="model">meinvoice.config</field>
+        <field name="arch" type="xml">
+            <form string="Cấu hình MeInvoice">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Tên cấu hình ..."/>
+                        </h1>
+                    </div>
+                     <div class="o_row mb-3">
+                        <button string="Test kết nối"
+                                name="action_test_connection"
+                                type="object"
+                                class="btn btn-primary"/>
+                        <button string="Refresh Token"
+                                name="action_refresh_token"
+                                type="object"
+                                class="btn btn-secondary"/>
+                    </div>
+                    <group>
+                        <group string="Thông tin kết nối">
+                             <field name="company_id"/>
+                            <field name="environment"/>
+                            <field name="app_id" password="True"/>
+                            <field name="tax_code"/>
+                            <field name="username"/>
+                            <field name="password" password="True"/>
+                        </group>
+                        <group string="Cấu hình hóa đơn">
+                            <field name="inv_series"/>
+                            <field name="sign_type"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                     <!-- HSM config: chỉ hiện khi SignType=1 -->
+                    <group string="Cấu hình USB Token / HSM"
+                           invisible="sign_type != '1'">
+                        <field name="hsm_host"/>
+                        <field name="hsm_pin" password="True"/>
+                    </group>
+
+                    <!-- Token info -->
+                    <group string="Token Cache">
+                        <field name="access_token" readonly="1"/>
+                        <field name="token_expiry" readonly="1"/>
+                    </group>
+                </sheet>
+                <!-- Buttons -->
+<!--                <footer>-->
+<!--                    <button string="Test kết nối"-->
+<!--                            name="action_test_connection"-->
+<!--                            type="object"-->
+<!--                            class="btn-primary"/>-->
+<!--                    <button string="Refresh Token"-->
+<!--                            name="action_refresh_token"-->
+<!--                            type="object"-->
+<!--                            class="btn-secondary"/>-->
+<!--                </footer>-->
+            </form>
+        </field>
+    </record>
+     <!-- ── Tree View ── -->
+    <record id="meinvoice_config_view_tree" model="ir.ui.view">
+        <field name="name">meinvoice.config.tree</field>
+        <field name="model">meinvoice.config</field>
+        <field name="arch" type="xml">
+            <list string="Cấu hình MeInvoice">
+                <field name="name"/>
+                <field name="company_id"/>
+                <field name="environment"/>
+                <field name="tax_code"/>
+                <field name="inv_series"/>
+                <field name="sign_type"/>
+                <field name="token_expiry"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ── Search View ── -->
+    <record id="meinvoice_config_view_search" model="ir.ui.view">
+        <field name="name">meinvoice.config.search</field>
+        <field name="model">meinvoice.config</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="tax_code"/>
+                <field name="company_id"/>
+                <filter name="filter_sandbox"
+                        string="Sandbox"
+                        domain="[('environment', '=', 'sandbox')]"/>
+                <filter name="filter_production"
+                        string="Production"
+                        domain="[('environment', '=', 'production')]"/>
+                <separator/>
+                <filter name="filter_active"
+                        string="Đang dùng"
+                        domain="[('active', '=', True)]"/>
+                <filter name="filter_inactive"
+                        string="Ngừng dùng"
+                        domain="[('active', '=', False)]"/>
+                <filter name="group_environment"
+                        string="Môi trường"
+                        context="{'group_by': 'environment'}"/>
+                <filter name="group_company"
+                        string="Công ty"
+                        context="{'group_by': 'company_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ── Action ── -->
+    <record id="action_meinvoice_config" model="ir.actions.act_window">
+        <field name="name">Cấu hình MeInvoice</field>
+        <field name="res_model">meinvoice.config</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="meinvoice_config_view_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+    </record>
+
+</odoo>

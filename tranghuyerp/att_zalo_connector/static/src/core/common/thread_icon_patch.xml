@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="att_zalo_services.ThreadIcon"
+       t-inherit="mail.ThreadIcon"
+       t-inherit-mode="extension">
+
+        <xpath expr="//*[hasclass('o-mail-ThreadIcon')]" position="inside">
+            <t t-if="props.thread.channel_type === 'zalo'">
+                <img
+                    src="/att_zalo_connector/static/src/image/zalo_logo.png"
+                    alt="Zalo"
+                    title="Zalo"
+                    class="o-zalo-thread-icon"
+                />
+            </t>
+        </xpath>
+
+    </t>
+
+</templates>

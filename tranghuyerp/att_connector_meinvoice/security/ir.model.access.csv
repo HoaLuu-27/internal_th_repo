@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_meinvoice_config_manager,meinvoice.config manager,model_meinvoice_config,account.group_account_manager,1,1,1,1
+access_meinvoice_config_user,meinvoice.config user,model_meinvoice_config,account.group_account_invoice,1,0,0,0
+access_meinvoice_log_manager,meinvoice.log manager,model_meinvoice_log,account.group_account_manager,1,1,1,1
+access_meinvoice_log_user,meinvoice.log user,model_meinvoice_log,account.group_account_invoice,1,0,0,0

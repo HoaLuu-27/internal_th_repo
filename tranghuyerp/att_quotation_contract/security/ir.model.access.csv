@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_att_quotation_request_user,att.quotation.request.user,model_att_quotation_request,base.group_user,1,1,1,1
+access_att_contract_user,att.contract.user,model_att_contract,base.group_user,1,1,1,1
+access_att_contract_term_line_user,att.contract.term.line.user,model_att_contract_term_line,base.group_user,1,1,1,1
+access_att_contract_appendix_user,att.contract.appendix.user,model_att_contract_appendix,base.group_user,1,1,1,1
+access_att_contract_appendix_line_user,att.contract.appendix.line.user,model_att_contract_appendix_line,base.group_user,1,1,1,1
+access_att_contract_appendix_extra_line_user,att.contract.appendix.extra.line.user,model_att_contract_appendix_extra_line,base.group_user,1,1,1,1
+access_att_quotation_request_line_user,att.quotation.request.line.user,model_att_quotation_request_line,base.group_user,1,1,1,1
+access_att_transport_mode_user,access.att.transport.mode.user,model_att_transport_mode,base.group_user,1,1,1,1
+access_att_contract_clause_user,access.att.contract.clause.user,model_att_contract_clause,base.group_user,1,1,1,1
+access_att_liquidation_reason,att.liquidation.reason,model_att_contract_liquidation_reason,base.group_user,1,1,1,1
+access_att_quotation_print_wizard,att.quotation.print.wizard,model_att_quotation_print_wizard,base.group_user,1,1,1,1

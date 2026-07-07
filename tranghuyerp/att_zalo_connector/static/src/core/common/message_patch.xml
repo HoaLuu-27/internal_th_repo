@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="att_zalo_services.Message"
+       t-inherit="mail.Message"
+       t-inherit-mode="extension">
+
+        <xpath expr="//div[hasclass('o-mail-Message-header')]" position="inside">
+            <t t-if="message.thread and message.thread.channel_type === 'zalo'">
+                <img
+                    src="/att_zalo_connector/static/src/image/zalo_logo.png"
+                    alt="Zalo"
+                    title="Zalo Message"
+                    class="o-zalo-message-icon ms-1"
+                />
+            </t>
+        </xpath>
+
+    </t>
+
+</templates>

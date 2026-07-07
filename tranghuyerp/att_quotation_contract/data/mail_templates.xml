@@ -1,0 +1,87 @@
+<odoo>
+    <record id="email_template_contract_draft" model="mail.template">
+        <field name="name">Hợp đồng: Gửi bản nháp cho đối tác</field>
+        <field name="model_id" ref="model_att_contract"/>
+        <field name="subject">Bản nháp hợp đồng {{ object.name }}</field>
+        <field name="partner_to">{{ object.partner_id.id }}</field>
+        <field name="body_html" type="html">
+            <p>Kính gửi <t t-out="object.partner_id.name"/>,</p>
+            <p>Công ty Trang Huy xin gửi bản nháp hợp đồng <strong><t t-out="object.name"/></strong> để Quý công ty xem xét.</p>
+            <p>Vui lòng liên hệ lại nếu có điều chỉnh.</p>
+            <p>Trân trọng,<br/><t t-out="object.user_id.name"/></p>
+        </field>
+        <field name="report_template_ids" eval="[(4, ref('att_quotation_contract.action_report_att_contract'))]"/>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <record id="email_template_contract_validated" model="mail.template">
+        <field name="name">Hợp đồng: Đã xác nhận hiệu lực</field>
+        <field name="model_id" ref="model_att_contract"/>
+        <field name="subject">Hợp đồng {{ object.name }} đã có hiệu lực</field>
+        <field name="partner_to">{{ object.partner_id.id }}</field>
+        <field name="body_html" type="html">
+            <p>Kính gửi <t t-out="object.partner_id.name"/>,</p>
+            <p>Hợp đồng <strong><t t-out="object.name"/></strong> giữa hai bên đã được ký kết và có hiệu lực từ ngày <t t-out="object.effective_date"/>.</p>
+            <p>Vui lòng xem file hợp đồng đính kèm.</p>
+            <p>Trân trọng,<br/><t t-out="object.user_id.name"/></p>
+        </field>
+        <field name="report_template_ids" eval="[(4, ref('att_quotation_contract.action_report_att_contract'))]"/>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <record id="email_template_contract_expiring" model="mail.template">
+        <field name="name">Hợp đồng: Sắp hết hạn</field>
+        <field name="model_id" ref="model_att_contract"/>
+        <field name="subject">Thông báo: Hợp đồng {{ object.name }} sắp hết hạn</field>
+        <field name="partner_to">{{ object.partner_id.id }}</field>
+        <field name="email_cc">{{ object.user_id.email }}</field>
+        <field name="body_html" type="html">
+            <p>Kính gửi <t t-out="object.partner_id.name"/>,</p>
+            <p>Hợp đồng <strong><t t-out="object.name"/></strong> sẽ hết hạn vào ngày <strong><t t-out="object.expired_date"/></strong>.</p>
+            <p>Vui lòng liên hệ để gia hạn hoặc ký hợp đồng mới nếu cần.</p>
+            <p>Trân trọng,<br/><t t-out="object.user_id.name"/></p>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <record id="email_template_quotation_sent" model="mail.template">
+        <field name="name">Báo giá: Gửi cho khách hàng</field>
+        <field name="model_id" ref="model_att_quotation_request"/>
+        <field name="subject">Báo giá {{ object.name }} từ Trang Huy Logistics</field>
+        <field name="partner_to">{{ object.partner_id.id }}</field>
+        <field name="body_html" type="html">
+            <p>Kính gửi <t t-out="object.partner_id.name"/>,</p>
+            <p>Công ty Trang Huy xin gửi báo giá <strong><t t-out="object.name"/></strong> đến Quý công ty.</p>
+            <p>Vui lòng xem file báo giá đính kèm và phản hồi khi có ý kiến.</p>
+            <p>Trân trọng,<br/><t t-out="object.user_id.name"/></p>
+        </field>
+        <field name="report_template_ids" eval="[(4, ref('att_quotation_contract.action_report_att_quotation_request'))]"/>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <record id="email_template_appendix_draft" model="mail.template">
+        <field name="name">Phụ lục: Gửi bản nháp cho đối tác</field>
+        <field name="model_id" ref="model_att_contract_appendix"/>
+        <field name="subject">Bản nháp phụ lục {{ object.name }} – {{ object.contract_id.name }}</field>
+        <field name="partner_to">{{ object.partner_id.id }}</field>
+        <field name="body_html">&lt;p&gt;Kính gửi {{ object.partner_id.name }},&lt;/p&gt;
+    &lt;p&gt;Công ty Trang Huy xin gửi bản nháp phụ lục &lt;strong&gt;{{ object.name }}&lt;/strong&gt; kèm theo Hợp đồng &lt;strong&gt;{{ object.contract_id.name }}&lt;/strong&gt; để Quý công ty xem xét.&lt;/p&gt;
+    &lt;p&gt;Vui lòng liên hệ lại nếu có điều chỉnh.&lt;/p&gt;
+    &lt;p&gt;Trân trọng,&lt;br/&gt;{{ object.user_id.name }}&lt;/p&gt;</field>
+        <field name="report_template_ids" eval="[(4, ref('att_quotation_contract.action_report_att_appendix'))]"/>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <record id="email_template_appendix_signed" model="mail.template">
+        <field name="name">Phụ lục: Gửi bản đã ký</field>
+        <field name="model_id" ref="model_att_contract_appendix"/>
+        <field name="subject">Phụ lục đã ký {{ object.name }} – {{ object.contract_id.name }}</field>
+        <field name="partner_to">{{ object.partner_id.id }}</field>
+        <field name="body_html">&lt;p&gt;Kính gửi {{ object.partner_id.name }},&lt;/p&gt;
+    &lt;p&gt;Công ty Trang Huy xin gửi phụ lục &lt;strong&gt;{{ object.name }}&lt;/strong&gt; đã được ký kết và có hiệu lực từ ngày {{ object.effective_date or '' }}.&lt;/p&gt;
+    &lt;p&gt;Vui lòng xem file đính kèm.&lt;/p&gt;
+    &lt;p&gt;Trân trọng,&lt;br/&gt;{{ object.user_id.name }}&lt;/p&gt;</field>
+        <field name="report_template_ids" eval="[(4, ref('att_quotation_contract.action_report_att_appendix'))]"/>
+        <field name="auto_delete" eval="True"/>
+    </record>
+</odoo>

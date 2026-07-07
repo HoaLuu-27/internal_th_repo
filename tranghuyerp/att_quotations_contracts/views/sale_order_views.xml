@@ -1,0 +1,211 @@
+<odoo>
+    <!-- SO form: tầng duyệt giá nội bộ + nút tạo HĐK + tab cấu hình PDF báo giá -->
+    <record id="view_sale_order_form_attqc" model="ir.ui.view">
+        <field name="name">sale.order.form.attqc</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <header position="inside">
+                <!-- Vòng đời báo giá TH: Nháp → Chờ duyệt giá → Đã duyệt →
+                     KH đã chốt → Đã tạo HĐNT. Các nút native Send/Confirm
+                     đã bị khóa theo state này ở server (sale_order.py). -->
+                <!-- Cổng gửi báo giá DUY NHẤT: popup chọn Email / Zalo
+                     (nút Send native đã ẩn với báo giá — tránh 2 nút cùng việc).
+                     Gate duyệt giá check trong wizard cho mọi kênh. -->
+                <button name="action_send_quotation" string="Gửi báo giá"
+                        type="object"
+                        invisible="att_is_execution or state not in ('draft', 'sent')"/>
+                <button name="action_att_request_approval" string="Yêu cầu duyệt giá"
+                        type="object" class="btn-primary"
+                        invisible="att_is_execution or att_quote_state != 'draft'"/>
+                <button name="action_att_approve" string="Duyệt giá"
+                        type="object" class="btn-primary"
+                        invisible="att_is_execution or att_quote_state != 'pending'"
+                        groups="att_quotations_contracts.group_tranghuy_managers_sale_purchase"/>
+                <button name="action_att_refuse" string="Trả về nháp"
+                        type="object"
+                        invisible="att_is_execution or att_quote_state != 'pending'"
+                        groups="att_quotations_contracts.group_tranghuy_managers_sale_purchase"/>
+                <button name="action_att_mark_won" string="KH chốt giá"
+                        type="object" class="btn-primary"
+                        invisible="att_is_execution or att_quote_state != 'approved'"/>
+                <button name="action_create_att_contract" string="Tạo hợp đồng NT"
+                        type="object" class="btn-primary"
+                        invisible="att_is_execution or att_quote_state != 'won' or att_contract_id"/>
+                <!-- Báo giá chốt mà ĐÃ thuộc HĐ đang chạy → tạo PHỤ LỤC giá mới,
+                     không tạo HĐ mới -->
+                <button name="action_create_att_appendix" string="Tạo phụ lục"
+                        type="object" class="btn-primary"
+                        invisible="att_is_execution or att_quote_state != 'won' or not att_contract_id"/>
+                <!-- Đường B2C: manager xác nhận đơn lẻ không qua HĐ (server vẫn check group) -->
+                <button name="action_confirm" string="Xác nhận đơn lẻ (B2C)"
+                        type="object"
+                        invisible="att_is_execution or state not in ('draft', 'sent') or att_quote_state == 'contracted'"
+                        groups="att_quotations_contracts.group_tranghuy_managers_sale_purchase"/>
+                <!-- Statusbar vòng đời báo giá TH — statusbar DUY NHẤT với SO báo giá
+                     (state native bị ẩn bên dưới); SO thực thi thì ngược lại -->
+                <field name="att_quote_state" widget="statusbar"
+                       invisible="att_is_execution"/>
+            </header>
+
+            <!-- MỖI SO CHỈ 1 STATUSBAR: SO báo giá ẩn state native (Quotation/
+                 Sent/Sales Order) vì vòng đời của nó là att_quote_state;
+                 SO thực thi (từ phụ lục) dùng state native như thường -->
+            <xpath expr="//header/field[@name='state']" position="attributes">
+                <attribute name="invisible">not att_is_execution</attribute>
+            </xpath>
+
+            <!-- Ẩn 2 nút Confirm native với SO báo giá — báo giá không xác nhận
+                 trực tiếp (đã chặn ở server, ẩn luôn cho đỡ rối; manager dùng
+                 nút "Xác nhận đơn lẻ (B2C)" phía trên) -->
+            <xpath expr="//header/button[@name='action_confirm'][@id='action_confirm']" position="attributes">
+                <attribute name="invisible">state != 'sent' or not att_is_execution</attribute>
+            </xpath>
+            <xpath expr="//header/button[@name='action_confirm'][not(@id)]" position="attributes">
+                <attribute name="invisible">state != 'draft' or not att_is_execution</attribute>
+            </xpath>
+
+            <!-- Ẩn hẳn nút Send native với báo giá — gửi đi qua nút "Gửi báo giá"
+                 (popup chọn Email/Zalo). SO thực thi vẫn dùng Send native. -->
+            <xpath expr="//header/button[@id='quotation_send_primary']" position="attributes">
+                <attribute name="invisible">state != 'draft' or not att_is_execution</attribute>
+            </xpath>
+            <xpath expr="//header/button[@id='quotation_send']" position="attributes">
+                <attribute name="invisible">state not in ('sent', 'sale') or not att_is_execution</attribute>
+            </xpath>
+            <div name="button_box" position="inside">
+                <button name="action_view_att_contract" type="object"
+                        class="oe_stat_button" icon="fa-file-text-o"
+                        invisible="not att_contract_id">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Hợp đồng NT</span>
+                    </div>
+                </button>
+                <!-- Cảnh báo thiếu xe: SO confirm mà còn dòng chưa gán xe TH
+                     → bấm tạo RFQ thuê ngoài (chỉ đổ các dòng thiếu xe, giá trống) -->
+                <button name="action_create_ncc_rfq" type="object"
+                        class="oe_stat_button text-danger" icon="fa-truck"
+                        invisible="state != 'sale' or att_outsource_line_count == 0">
+                    <field name="att_outsource_line_count" widget="statinfo"
+                           string="Dòng thiếu xe → RFQ NCC"/>
+                </button>
+                <!-- LUÔN hiện với SO đã confirm (kể cả 0) — vào list tạo RFQ NCC
+                     mới với SO nguồn prefill sẵn; rule cần >= 5 báo giá -->
+                <button name="action_view_ncc_rfqs" type="object"
+                        class="oe_stat_button" icon="fa-handshake-o"
+                        invisible="state != 'sale'">
+                    <field name="att_ncc_rfq_count" widget="statinfo"
+                           string="Báo giá NCC"/>
+                </button>
+            </div>
+            <field name="payment_term_id" position="after">
+                <!-- Báo giá: chọn được HĐ đang chạy của chính KH đó (đổi giá/thêm tuyến).
+                     SO thực thi: ẩn — nó không link HĐ, truy vết qua phụ lục -->
+                <field name="att_contract_id"
+                       invisible="att_is_execution"
+                       readonly="att_quote_state == 'contracted'"
+                       domain="[('contract_type', '=', 'sale'), ('partner_id', '=', partner_id), ('state', '=', 'running')]"/>
+                <field name="att_appendix_id" readonly="1" invisible="not att_appendix_id"/>
+                <field name="att_is_execution" invisible="1"/>
+            </field>
+            <!-- Field logistics trên dòng — optional để user tự bật cột cần dùng -->
+            <xpath expr="//field[@name='order_line']//list//field[@name='product_template_id']" position="attributes">
+                <attribute name="string">Dịch vụ</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="before">
+                <field name="pickup_location" optional="hide"/>
+                <field name="delivery_location" optional="hide"/>
+                <field name="vehicle_id" optional="hide"/>
+                <field name="transport_mode_id" optional="hide"/>
+                <field name="cargo_description" optional="hide"/>
+                <field name="expected_date" optional="hide"/>
+                <field name="att_line_note" optional="hide"/>
+                <field name="att_appendix_line_id" optional="hide"/>
+            </xpath>
+            <notebook position="inside">
+                <page string="Cấu hình PDF báo giá" name="attqc_report_config">
+                    <group string="Chọn cột hiển thị trên bản in báo giá">
+                        <group>
+                            <field name="rpt_show_content"/>
+                            <field name="rpt_show_pickup"/>
+                            <field name="rpt_show_delivery"/>
+                            <field name="rpt_show_vehicle_id"/>
+                            <field name="rpt_show_transport_mode"/>
+                            <field name="rpt_show_quantity"/>
+                        </group>
+                        <group>
+                            <field name="rpt_show_uom"/>
+                            <field name="rpt_show_expected_date"/>
+                            <field name="rpt_show_cargo_description"/>
+                            <field name="rpt_show_price_unit"/>
+                            <field name="rpt_show_tax"/>
+                            <field name="rpt_show_price_subtotal"/>
+                            <field name="rpt_show_price_total"/>
+                            <field name="rpt_show_note"/>
+                        </group>
+                    </group>
+                </page>
+            </notebook>
+        </field>
+    </record>
+
+    <!-- MẤU CHỐT chống lẫn: màn Quotations native chỉ hiện SO BÁO GIÁ thật.
+         SO thực thi (sinh từ phụ lục, cũng nằm ở draft = quotation) bị loại
+         khỏi đây bằng domain — chúng chỉ xem ở menu "SO thực thi".
+         Domain gốc của action này rỗng (đã check source Odoo 19) nên override
+         không làm mất filter native nào. -->
+    <!-- Quotations list = CHỈ báo giá đang sống (draft/sent). Báo giá đã
+         confirm (B2C) chuyển sang màn Orders; SO thực thi có menu riêng -->
+    <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
+        <field name="domain">[('att_is_execution', '=', False), ('state', 'in', ('draft', 'sent'))]</field>
+    </record>
+
+    <!-- Cột vòng đời báo giá TH trên list Quotations — nhìn list là biết ngay
+         báo giá nào đang chờ duyệt / đã duyệt / KH đã chốt / đã có HĐ -->
+    <record id="view_quotation_tree_attqc" model="ir.ui.view">
+        <field name="name">sale.order.quotation.tree.attqc</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree"/>
+        <field name="arch" type="xml">
+            <field name="state" position="before">
+                <field name="att_quote_state" widget="badge"
+                       decoration-info="att_quote_state == 'pending'"
+                       decoration-warning="att_quote_state == 'approved'"
+                       decoration-success="att_quote_state in ('won', 'contracted')"
+                       optional="show"/>
+            </field>
+            <!-- List BÁO GIÁ: ẩn cột state native (toàn Quotation, vô nghĩa) —
+                 vòng đời thật là cột "Trạng thái báo giá TH". User cần thì
+                 tự bật lại qua tùy chọn cột (optional) -->
+            <field name="state" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </field>
+        </field>
+    </record>
+
+    <!-- Filter tách SO báo giá vs SO thực thi trên list -->
+    <record id="view_sale_order_filter_attqc" model="ir.ui.view">
+        <field name="name">sale.order.search.attqc</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <filter name="my_sale_orders_filter" position="after">
+                <separator/>
+                <!-- Trả lời "báo giá nào đã chốt": filter theo vòng đời báo giá TH -->
+                <filter name="attqc_pending" string="Chờ duyệt giá"
+                        domain="[('att_quote_state', '=', 'pending')]"/>
+                <filter name="attqc_approved" string="Đã duyệt giá"
+                        domain="[('att_quote_state', '=', 'approved')]"/>
+                <filter name="attqc_won" string="KH đã chốt (chưa tạo HĐ)"
+                        domain="[('att_quote_state', '=', 'won')]"/>
+                <filter name="attqc_contracted" string="Đã tạo HĐNT"
+                        domain="[('att_quote_state', '=', 'contracted')]"/>
+                <separator/>
+                <filter name="attqc_quotation" string="Báo giá (chưa gắn PL)"
+                        domain="[('att_is_execution', '=', False)]"/>
+                <filter name="attqc_execution" string="Đơn thực thi (từ PL)"
+                        domain="[('att_is_execution', '=', True)]"/>
+            </filter>
+        </field>
+    </record>
+</odoo>

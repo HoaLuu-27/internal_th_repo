@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="meinvoice_invoice_view_form" model="ir.ui.view">
+        <field name="name">meinvoice.invoice.form</field>
+        <field name="model">meinvoice.invoice</field>
+        <field name="arch" type="xml">
+            <form string="MeInvoice Invoice">
+                <header>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,published,cancelled"/>
+                    <!-- Chiều B: tạo account.move từ MeInvoice record -->
+                    <button string="Tạo hóa đơn Odoo"
+                            name="create_move"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'draft' or account_move_id != False"/>
+                </header>
+
+                <sheet>
+                    <!-- Smart buttons -->
+                    <div class="oe_button_box" name="button_box">
+                        <!-- Link sang account.move -->
+                        <button class="oe_stat_button"
+                                type="object"
+                                name="action_view_account_move"
+                                icon="fa-file-text-o"
+                                invisible="not account_move_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Hóa đơn Odoo</span>
+                                <span class="o_stat_value">
+                                    <field name="account_move_id"/>
+                                </span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="ref_id" readonly="1"
+                                   placeholder="RefID tự sinh..."/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Thông tin hóa đơn">
+                            <field name="inv_no"/>
+                            <field name="transactionID"/>
+                            <field name="inv_series"/>
+                            <field name="inv_date"/>
+                            <field name="invoice_template_id"/>
+                            <field name="e_invoice_status"/>
+                            <field name="config_id"/>
+                        </group>
+                        <group string="Thanh toán">
+                            <field name="payment_method"/>
+                            <field name="currency_code"/>
+                            <field name="exchange_rate"/>
+                            <field name="discount_rate"/>
+                        </group>
+                    </group>
+
+                    <group string="Bên mua">
+                        <group>
+                            <field name="account_object_code"/>
+                            <field name="account_object_name"/>
+                            <field name="account_object_tax_code"/>
+                            <field name="account_object_address"/>
+                        </group>
+                        <group>
+                            <field name="contact_name"/>
+                            <field name="receiver_name"/>
+                            <field name="receiver_email"/>
+                            <field name="receiver_mobile"/>
+                        </group>
+                    </group>
+
+                    <field name="line_ids">
+                        <list editable="bottom">
+                            <field name="sort_order"/>
+                            <field name="inventory_item_code"/>
+                            <field name="description"/>
+                            <field name="unit_name"/>
+                            <field name="quantity"/>
+                            <field name="unit_price"/>
+                            <field name="discount_rate"/>
+                            <field name="discount_amount_oc"/>
+                            <field name="amount_oc"/>
+                            <field name="vat_rate"/>
+                            <field name="vat_amount_oc"/>
+                            <field name="odoo_line_id" optional="show"/>
+                        </list>
+                    </field>
+
+                    <group class="oe_subtotal_footer">
+                        <field name="total_sale_amount_oc"
+                               string="Tổng tiền hàng"/>
+                        <field name="total_discount_amount_oc"
+                               string="Tổng chiết khấu"
+                               invisible="total_discount_amount_oc == 0"/>
+                        <field name="total_vat_amount_oc"
+                               string="Tổng VAT"/>
+                        <field name="total_amount_oc"
+                               string="Tổng cộng"
+                               class="oe_subtotal_footer_separator"/>
+                    </group>
+                    <notebook>
+                        <page string="Raw Request">
+                            <div style="word-break: break-all; white-space: pre-wrap;
+                                        width: 600%; min-height: 150px;
+                                        max-height: 600px; overflow-y: auto;">
+                                <field name="raw_request" nolabel="1" readonly="1"/>
+                            </div>
+                        </page>
+                        <page string="Raw Response">
+                            <div style="word-break: break-all; white-space: pre-wrap;
+                                        width: 600%; min-height: 150px;
+                                        max-height: 600px; overflow-y: auto;">
+                                <field name="raw_response" nolabel="1" readonly="1"/>
+                            </div>
+                        </page>
+                    </notebook>
+
+                </sheet>
+
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="meinvoice_invoice_view_tree" model="ir.ui.view">
+        <field name="name">meinvoice.invoice.tree</field>
+        <field name="model">meinvoice.invoice</field>
+        <field name="arch" type="xml">
+            <list string="MeInvoice Invoices"
+                  decoration-success="state == 'published'"
+                  decoration-warning="state == 'draft'"
+                  decoration-danger="state == 'error'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="create_date"/>
+                <field name="ref_id"/>
+                <field name="inv_no"/>
+                <field name="transactionID"/>
+                <field name="inv_series"/>
+                <field name="inv_date"/>
+                <field name="account_object_name"/>
+                <field name="account_object_tax_code"/>
+                <field name="total_amount_oc"/>
+                <field name="currency_code"/>
+                <field name="state"/>
+                <field name="account_move_id" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="meinvoice_invoice_view_search" model="ir.ui.view">
+        <field name="name">meinvoice.invoice.search</field>
+        <field name="model">meinvoice.invoice</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="ref_id"/>
+                <field name="inv_no"/>
+                <field name="transactionID"/>
+                <field name="account_object_name"/>
+                <field name="account_object_tax_code"/>
+                <filter name="filter_draft"
+                        string="Nháp"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter name="filter_published"
+                        string="Đã phát hành"
+                        domain="[('state', '=', 'published')]"/>
+                <filter name="filter_no_move"
+                        string="Chưa có HĐ Odoo"
+                        domain="[('account_move_id', '=', False)]"/>
+                <filter name="filter_today"
+                        string="Hôm nay"
+                        domain="[('create_date', '&gt;=', (context_today()).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter name="group_state"
+                        string="Trạng thái"
+                        context="{'group_by': 'state'}"/>
+                <filter name="group_date"
+                        string="Ngày"
+                        context="{'group_by': 'inv_date'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_meinvoice_invoice" model="ir.actions.act_window">
+        <field name="name">MeInvoice Invoices</field>
+        <field name="res_model">meinvoice.invoice</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="meinvoice_invoice_view_search"/>
+        <field name="context">{'search_default_filter_draft': 1}</field>
+    </record>
+
+</odoo>

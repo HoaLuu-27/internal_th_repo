@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_zalo_service_config_system,att.zalo.service.config system,model_att_zalo_service_config,base.group_system,1,1,1,1
+access_zalo_request_log_system,att.zalo.request.log system,model_att_zalo_request_log,base.group_system,1,1,1,1

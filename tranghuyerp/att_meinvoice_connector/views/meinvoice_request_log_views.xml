@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ── Form View ── -->
+    <record id="meinvoice_request_log_view_form" model="ir.ui.view">
+        <field name="name">meinvoice.request.log.form</field>
+        <field name="model">meinvoice.request.log</field>
+        <field name="arch" type="xml">
+            <form string="MeInvoice Request Log" create="false" edit="false">
+                <sheet>
+                    <!-- Summary -->
+                    <group>
+                        <group string="Request">
+                            <field name="create_date"/>
+                            <field name="http_method"/>
+                            <field name="endpoint"/>
+                            <field name="duration_ms"/>
+                        </group>
+                        <group string="Response">
+                            <field name="response_status"/>
+                            <field name="success"/>
+                            <field name="error_msg"
+                                   invisible="not error_msg"/>
+                        </group>
+                    </group>
+
+                    <group string="Request Headers">
+                        <div style="word-break: break-all; white-space: pre-wrap; width: 800%; min-height: 100px; max-height: auto; overflow-y: auto;">
+                            <field name="request_headers"
+                                   nolabel="1"
+                                   readonly="1"/>
+                        </div>
+                    </group>
+
+                    <group string="Request Headers">
+                        <div style="word-break: break-all; white-space: pre-wrap; width: 800%; min-height: 100px; max-height: auto; overflow-y: auto;">
+                            <field name="request_body"
+                                   nolabel="1"
+                                   readonly="1"/>
+                        </div>
+                    </group>
+
+                    <!-- Response Body -->
+                    <group string="Response Body">
+                        <div style="word-break: break-all; white-space: pre-wrap; width: 800%; min-height: 100px; max-height: auto; overflow-y: auto;">
+                            <field name="response_body"
+                                   nolabel="1"
+                                   readonly="1"/>
+                        </div>
+                    </group>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ── Tree View ── -->
+    <record id="meinvoice_request_log_view_tree" model="ir.ui.view">
+        <field name="name">meinvoice.request.log.tree</field>
+        <field name="model">meinvoice.request.log</field>
+        <field name="arch" type="xml">
+            <list string="MeInvoice Request Log"
+                  create="false"
+                  decoration-danger="not success"
+                  decoration-success="success">
+                <field name="create_date"/>
+                <field name="http_method"/>
+                <field name="endpoint"/>
+                <field name="response_status"/>
+                <field name="success"/>
+                <field name="duration_ms"/>
+                <field name="error_msg" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ── Search View ── -->
+    <record id="meinvoice_request_log_view_search" model="ir.ui.view">
+        <field name="name">meinvoice.request.log.search</field>
+        <field name="model">meinvoice.request.log</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="endpoint"/>
+                <field name="error_msg"/>
+                <filter name="filter_success"
+                        string="Thành công"
+                        domain="[('success', '=', True)]"/>
+                <filter name="filter_failed"
+                        string="Thất bại"
+                        domain="[('success', '=', False)]"/>
+                <filter name="filter_today"
+                        string="Hôm nay"
+                        domain="[('create_date', '&gt;=', (context_today()).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter name="group_method"
+                        string="Method"
+                        context="{'group_by': 'http_method'}"/>
+                <filter name="group_status"
+                        string="HTTP Status"
+                        context="{'group_by': 'response_status'}"/>
+                <filter name="group_date"
+                        string="Ngày"
+                        context="{'group_by': 'create_date:day'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ── Action ── -->
+    <record id="action_meinvoice_request_log" model="ir.actions.act_window">
+        <field name="name">Request Log</field>
+        <field name="res_model">meinvoice.request.log</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="meinvoice_request_log_view_search"/>
+        <field name="context">{'search_default_filter_today': 1}</field>
+    </record>
+</odoo>

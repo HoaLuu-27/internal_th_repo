@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="group_view_full_phone" model="res.groups">
+        <field name="name">Xem đầy đủ số điện thoại</field>
+    </record>
+</odoo>

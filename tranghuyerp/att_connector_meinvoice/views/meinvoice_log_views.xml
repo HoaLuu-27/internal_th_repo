@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="meinvoice_log_view_form" model="ir.ui.view">
+        <field name="name">meinvoice.log.form</field>
+        <field name="model">meinvoice.log</field>
+        <field name="arch" type="xml">
+            <form string="MeInvoice API Log" create="false" edit="false">
+                <sheet>
+                    <group>
+                        <group string="Thông tin">
+                            <field name="action"/>
+                            <field name="move_id"/>
+                            <field name="user_id"/>
+                            <field name="create_date"/>
+                            <field name="duration_ms"/>
+                            <field name="http_status_code"/>
+                            <field name="success"/>
+                        </group>
+                        <group string="Invoice IDs">
+                            <field name="ref_id"/>
+                            <field name="transaction_id"/>
+                            <field name="error_code"/>
+                        </group>
+                    </group>
+
+                    <group string="Lỗi" invisible="not error_message">
+                        <field name="error_message" nolabel="1"/>
+                    </group>
+
+                    <notebook>
+                        <page string="Request Body">
+                            <field name="request_body"
+                                   widget="ace"
+                                   options="{'mode': 'json'}"
+                                   nolabel="1"
+                                   readonly="1"/>
+                        </page>
+                        <page string="Response Body">
+                            <field name="response_body"
+                                   widget="ace"
+                                   options="{'mode': 'json'}"
+                                   nolabel="1"
+                                   readonly="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ── Tree View ── -->
+    <record id="meinvoice_log_view_tree" model="ir.ui.view">
+        <field name="name">meinvoice.log.tree</field>
+        <field name="model">meinvoice.log</field>
+        <field name="arch" type="xml">
+            <list string="MeInvoice API Log"
+                  create="false"
+                  decoration-danger="not success"
+                  decoration-success="success">
+                <field name="create_date"/>
+                <field name="action"/>
+                <field name="move_id"/>
+                <field name="ref_id"/>
+                <field name="transaction_id"/>
+                <field name="http_status_code"/>
+                <field name="success"/>
+                <field name="error_code"/>
+                <field name="duration_ms"/>
+                <field name="user_id"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ── Search View ── -->
+    <record id="meinvoice_log_view_search" model="ir.ui.view">
+        <field name="name">meinvoice.log.search</field>
+        <field name="model">meinvoice.log</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="ref_id"/>
+                <field name="transaction_id"/>
+                <field name="move_id"/>
+                <field name="error_code"/>
+                <field name="user_id"/>
+                <filter name="filter_success"
+                        string="Thành công"
+                        domain="[('success', '=', True)]"/>
+                <filter name="filter_failed"
+                        string="Thất bại"
+                        domain="[('success', '=', False)]"/>
+                <separator/>
+                <filter name="filter_issue"
+                        string="Phát hành HĐ"
+                        domain="[('action', '=', 'issue')]"/>
+                <filter name="filter_get_token"
+                        string="Lấy Token"
+                        domain="[('action', '=', 'get_token')]"/>
+                <filter name="filter_preview"
+                        string="Xem trước"
+                        domain="[('action', '=', 'preview')]"/>
+                <filter name="filter_today"
+                        string="Hôm nay"
+                        domain="[('create_date', '&gt;=', (context_today()).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter name="group_action"
+                        string="Thao tác"
+                        context="{'group_by': 'action'}"/>
+                <filter name="group_success"
+                        string="Kết quả"
+                        context="{'group_by': 'success'}"/>
+                <filter name="group_user"
+                        string="Người thực hiện"
+                        context="{'group_by': 'user_id'}"/>
+                <filter name="group_date"
+                        string="Ngày"
+                        context="{'group_by': 'create_date:day'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ── Action ── -->
+    <record id="action_meinvoice_log" model="ir.actions.act_window">
+        <field name="name">MeInvoice API Log</field>
+        <field name="res_model">meinvoice.log</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="meinvoice_log_view_search"/>
+        <field name="context">{'search_default_filter_failed': 1}</field>
+    </record>
+
+</odoo>

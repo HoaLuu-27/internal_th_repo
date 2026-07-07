@@ -1,0 +1,213 @@
+<odoo>
+    <record id="action_report_attqc_sale_quotation" model="ir.actions.report">
+        <field name="name">Báo giá vận chuyển (TH)</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">att_quotations_contracts.report_attqc_sale_quotation</field>
+        <field name="report_file">att_quotations_contracts.report_attqc_sale_quotation</field>
+        <field name="print_report_name">'Bao_gia_%s' % (object.name)</field>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Template port từ report báo giá module cũ, đổi nguồn dữ liệu sang sale.order:
+         - doc.quotation_line_ids  → doc.order_line (bỏ dòng section/note)
+         - line.quantity           → line.product_uom_qty
+         - line.uom_id             → line.product_uom_id
+         - line.note               → line.att_line_note (field custom trên SOL)
+         Cột hiển thị điều khiển bằng data (abstract model inject), fallback đọc
+         rpt_show_* trên chính SO để in nhiều đơn cùng lúc vẫn đúng cột từng đơn -->
+    <template id="report_attqc_sale_quotation">
+        <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="doc">
+                <t t-set="company" t-value="doc.company_id or res_company"/>
+                <t t-set="quote_lines" t-value="doc.order_line.filtered(lambda l: not l.display_type)"/>
+                <t t-set="show_content" t-value="data.get('show_content', doc.rpt_show_content) if data else doc.rpt_show_content"/>
+                <t t-set="show_pickup" t-value="data.get('show_pickup', doc.rpt_show_pickup) if data else doc.rpt_show_pickup"/>
+                <t t-set="show_delivery" t-value="data.get('show_delivery', doc.rpt_show_delivery) if data else doc.rpt_show_delivery"/>
+                <t t-set="show_vehicle_id" t-value="data.get('show_vehicle_id', doc.rpt_show_vehicle_id) if data else doc.rpt_show_vehicle_id"/>
+                <t t-set="show_transport_mode" t-value="data.get('show_transport_mode', doc.rpt_show_transport_mode) if data else doc.rpt_show_transport_mode"/>
+                <t t-set="show_quantity" t-value="data.get('show_quantity', doc.rpt_show_quantity) if data else doc.rpt_show_quantity"/>
+                <t t-set="show_uom" t-value="data.get('show_uom', doc.rpt_show_uom) if data else doc.rpt_show_uom"/>
+                <t t-set="show_expected_date" t-value="data.get('show_expected_date', doc.rpt_show_expected_date) if data else doc.rpt_show_expected_date"/>
+                <t t-set="show_cargo_description" t-value="data.get('show_cargo_description', doc.rpt_show_cargo_description) if data else doc.rpt_show_cargo_description"/>
+                <t t-set="show_price_unit" t-value="data.get('show_price_unit', doc.rpt_show_price_unit) if data else doc.rpt_show_price_unit"/>
+                <t t-set="show_tax" t-value="data.get('show_tax', doc.rpt_show_tax) if data else doc.rpt_show_tax"/>
+                <t t-set="show_price_subtotal" t-value="data.get('show_price_subtotal', doc.rpt_show_price_subtotal) if data else doc.rpt_show_price_subtotal"/>
+                <t t-set="show_price_total" t-value="data.get('show_price_total', doc.rpt_show_price_total) if data else doc.rpt_show_price_total"/>
+                <t t-set="show_note" t-value="data.get('show_note', doc.rpt_show_note) if data else doc.rpt_show_note"/>
+
+                <div class="page">
+                    <table style="width:100%;border-collapse:collapse;margin-bottom:22px;">
+                        <tr>
+                            <td style="width:28%;vertical-align:middle;">
+                                <img t-if="company.report_header_logo"
+                                     t-att-src="image_data_uri(company.report_header_logo)"
+                                     style="max-height:48px;max-width:170px;"/>
+                            </td>
+                            <td style="width:54%;vertical-align:middle;background:#557eb6;color:#fff;text-align:center;padding:6px;">
+                                <div style="font-size:13px;font-weight:bold;">CÔNG TY TNHH THƯƠNG MẠI VÀ GNVT QUỐC TẾ TRANG HUY</div>
+                                <div style="font-size:9px;font-weight:bold;">TRANG HUY INTERNATIONAL TRADING AND TRANSPORTATION CO., LTD</div>
+                            </td>
+                            <td style="width:18%;vertical-align:middle;text-align:right;">
+                                <img t-if="company.report_esg_logo"
+                                     t-att-src="image_data_uri(company.report_esg_logo)"
+                                     style="max-height:48px;max-width:90px;"/>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+                        <tr>
+                            <td style="width:50%;vertical-align:top;">
+                                <div>Số: <span t-field="doc.name"/></div>
+                                <div>V/v: Báo giá giao nhận vận chuyển hàng hóa</div>
+                                <div t-if="doc.validity_date">Hiệu lực đến: <span t-field="doc.validity_date"/></div>
+                            </td>
+                            <td style="width:50%;vertical-align:top;text-align:center;font-style:italic;">
+                                Hà Nội, ngày
+                                <span t-esc="doc.date_order.strftime('%d') if doc.date_order else ''"/>
+                                tháng
+                                <span t-esc="doc.date_order.strftime('%m') if doc.date_order else ''"/>
+                                năm
+                                <span t-esc="doc.date_order.strftime('%Y') if doc.date_order else ''"/>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <h3 style="text-align:center;"><i>Kính gửi: <span t-field="doc.partner_id"/></i></h3>
+
+                    <p>Công ty TNHH Thương mại và Giao nhận Vận tải Quốc tế Trang Huy xin gửi tới Quý công ty lời chào trân trọng và hợp tác. Chúng tôi xin gửi bản báo giá giao nhận vận chuyển với chi tiết như sau:</p>
+
+                    <table style="width:100%;border-collapse:collapse;margin-top:12px;">
+                        <thead>
+                            <tr>
+                                <th style="border:1px solid #000;background:#ffc000;padding:8px 5px;text-align:center;width:5%;">TT</th>
+                                <th t-if="show_content" style="border:1px solid #000;background:#ffc000;padding:8px 5px;text-align:center;">Nội dung vận chuyển</th>
+                                <th t-if="show_pickup" style="border:1px solid #000;background:#ffc000;padding:8px 5px;text-align:center;">Điểm đi</th>
+                                <th t-if="show_delivery" style="border:1px solid #000;background:#ffc000;padding:8px 5px;text-align:center;">Điểm đến</th>
+                                <th t-if="show_vehicle_id" style="border:1px solid #000;background:#ffc000;padding:8px 5px;text-align:center;">Phương tiện</th>
+                                <th t-if="show_transport_mode" style="border:1px solid #000;background:#ffc000;padding:8px 5px;text-align:center;">Hình thức VC</th>
+                                <th t-if="show_quantity" style="border:1px solid #000;background:#ffc000;padding:8px 5px;text-align:center;">Số lượng</th>
+                                <th t-if="show_uom" style="border:1px solid #000;background:#ffc000;padding:8px 5px;text-align:center;">Đơn vị tính</th>
+                                <th t-if="show_expected_date" style="border:1px solid #000;background:#ffc000;padding:8px 5px;text-align:center;">TG dự kiến</th>
+                                <th t-if="show_cargo_description" style="border:1px solid #000;background:#ffc000;padding:8px 5px;text-align:center;">Mô tả hàng</th>
+                                <th t-if="show_price_unit" style="border:1px solid #000;background:#ffc000;padding:8px 5px;text-align:center;">Đơn Giá (VNĐ)</th>
+                                <th t-if="show_tax" style="border:1px solid #000;background:#ffc000;padding:8px 5px;text-align:center;">Thuế</th>
+                                <th t-if="show_price_subtotal" style="border:1px solid #000;background:#ffc000;padding:8px 5px;text-align:center;">Thành tiền</th>
+                                <th t-if="show_price_total" style="border:1px solid #000;background:#ffc000;padding:8px 5px;text-align:center;">Tổng tiền</th>
+                                <th t-if="show_note" style="border:1px solid #000;background:#ffc000;padding:8px 5px;text-align:center;">Ghi chú</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="quote_lines" t-as="line">
+                                <td style="border:1px solid #000;padding:7px 5px;text-align:center;">
+                                    <span t-esc="line_index + 1"/>
+                                </td>
+                                <td t-if="show_content" style="border:1px solid #000;padding:7px 5px;">
+                                    <span t-field="line.name"/>
+                                </td>
+                                <td t-if="show_pickup" style="border:1px solid #000;padding:7px 5px;">
+                                    <span t-if="line.pickup_location" t-field="line.pickup_location"/>
+                                </td>
+                                <td t-if="show_delivery" style="border:1px solid #000;padding:7px 5px;">
+                                    <span t-if="line.delivery_location" t-field="line.delivery_location"/>
+                                </td>
+                                <td t-if="show_vehicle_id" style="border:1px solid #000;padding:7px 5px;text-align:center;">
+                                    <span t-if="line.vehicle_id" t-field="line.vehicle_id"/>
+                                </td>
+                                <td t-if="show_transport_mode" style="border:1px solid #000;padding:7px 5px;text-align:center;">
+                                    <span t-if="line.transport_mode_id" t-field="line.transport_mode_id"/>
+                                </td>
+                                <td t-if="show_quantity" style="border:1px solid #000;padding:7px 5px;text-align:center;">
+                                    <span t-field="line.product_uom_qty"/>
+                                </td>
+                                <td t-if="show_uom" style="border:1px solid #000;padding:7px 5px;text-align:center;">
+                                    <span t-if="line.product_uom_id" t-field="line.product_uom_id"/>
+                                </td>
+                                <td t-if="show_expected_date" style="border:1px solid #000;padding:7px 5px;text-align:center;">
+                                    <span t-if="line.expected_date" t-field="line.expected_date"/>
+                                </td>
+                                <td t-if="show_cargo_description" style="border:1px solid #000;padding:7px 5px;">
+                                    <span t-if="line.cargo_description" t-field="line.cargo_description"/>
+                                </td>
+                                <td t-if="show_price_unit" style="border:1px solid #000;padding:7px 5px;text-align:right;">
+                                    <span t-if="line.price_unit"
+                                          t-field="line.price_unit"
+                                          t-options="{'widget':'monetary','display_currency':doc.currency_id}"/>
+                                </td>
+                                <td t-if="show_tax" style="border:1px solid #000;padding:7px 5px;text-align:center;">
+                                    <span t-if="line.tax_ids" t-field="line.tax_ids"/>
+                                </td>
+                                <td t-if="show_price_subtotal" style="border:1px solid #000;padding:7px 5px;text-align:right;">
+                                    <span t-field="line.price_subtotal"
+                                          t-options="{'widget':'monetary','display_currency':doc.currency_id}"/>
+                                </td>
+                                <td t-if="show_price_total" style="border:1px solid #000;padding:7px 5px;text-align:right;">
+                                    <span t-field="line.price_total"
+                                          t-options="{'widget':'monetary','display_currency':doc.currency_id}"/>
+                                </td>
+                                <td t-if="show_note" style="border:1px solid #000;padding:7px 5px;">
+                                    <span t-if="line.att_line_note" t-field="line.att_line_note"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div style="margin-top:12px;">
+                        <div style="font-weight:bold;text-decoration:underline;">Giá trên bao gồm:</div>
+                        <ul><li>Cước vận chuyển door to door.</li></ul>
+                        <div style="font-weight:bold;text-decoration:underline;">Giá trên không bao gồm:</div>
+                        <ul>
+                            <li>Thuế VAT.</li>
+                            <li>Phí vào đường cấm nếu có.</li>
+                            <li>Phí bốc xếp, phí nâng hạ hàng tại hai đầu bốc và trả hàng.</li>
+                            <li>Các phí chi hộ khác nếu có.</li>
+                        </ul>
+                        <div style="font-weight:bold;text-decoration:underline;">Hình thức thanh toán:</div>
+                        <p>Sau khi hàng hóa vận chuyển đến điểm giao hàng, bên vận chuyển tiến hành đối chiếu khối lượng và giá trị với bên thuê vận chuyển để làm căn cứ xuất hóa đơn và thanh toán.</p>
+                        <div style="font-weight:bold;text-decoration:underline;">Ghi chú:</div>
+                        <p>Đơn giá được áp dụng tại thời điểm báo giá. Trường hợp giá nhiên liệu, cung đường, chính sách cấm đường hoặc điều kiện vận chuyển thực tế thay đổi, đơn giá có thể được điều chỉnh sau khi hai bên thống nhất bằng văn bản.</p>
+                    </div>
+
+                    <p>Hy vọng mức giá trên cùng chất lượng dịch vụ của chúng tôi đáp ứng được yêu cầu vận tải của Quý Công ty. Rất mong nhận được sự ủng hộ và hợp tác của Quý Công ty.</p>
+
+                    <p style="text-align:center;">
+                        Mọi thắc mắc hay yêu cầu, xin vui lòng liên hệ:<br/>
+                        <b><i>Ms. Thủy – Giám đốc công ty:</i></b> 0903 269 299 / 0963 567 700<br/>
+                        <b><i>Email:</i></b> bichthuy@tranghuylogistics.com / cskh@tranghuylogistics.com
+                    </p>
+
+                    <p>Trân trọng kính chào!</p>
+
+                    <table style="width:100%;margin-top:18px;">
+                        <tr>
+                            <td style="width:45%;text-align:center;font-weight:bold;vertical-align:top;">
+                                XÁC NHẬN GIÁ CỦA KHÁCH HÀNG
+                            </td>
+                            <td style="width:10%;"/>
+                            <td style="width:45%;text-align:center;vertical-align:top;">
+                                <img t-if="company.report_stamp_image"
+                                     t-att-src="image_data_uri(company.report_stamp_image)"
+                                     style="max-width:100px;max-height:80px;"/>
+                                <img t-if="company.report_signature_image"
+                                     t-att-src="image_data_uri(company.report_signature_image)"
+                                     style="max-width:120px;max-height:60px;"/>
+                                <div style="font-weight:bold;text-transform:uppercase;margin-top:8px;">
+                                    <span t-esc="company.report_signer_title or 'GIÁM ĐỐC'"/>
+                                </div>
+                                <div style="font-weight:bold;font-style:italic;">
+                                    <span t-esc="company.report_signer_name or 'Nguyễn Thị Bích Thủy'"/>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <img t-if="company.report_footer_image"
+                         t-att-src="image_data_uri(company.report_footer_image)"
+                         style="width:100%;margin-top:20px;"/>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,19 @@
+<odoo>
+    <record id="view_att_liquidation_reason_list" model="ir.ui.view">
+        <field name="name">att.contract.liquidation.reason.list</field>
+        <field name="model">att.contract.liquidation.reason</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_att_liquidation_reason" model="ir.actions.act_window">
+        <field name="name">Lý do thanh lý</field>
+        <field name="res_model">att.contract.liquidation.reason</field>
+        <field name="view_mode">list</field>
+    </record>
+</odoo>

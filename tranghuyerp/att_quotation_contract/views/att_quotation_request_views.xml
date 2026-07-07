@@ -1,0 +1,183 @@
+<odoo>
+
+    <record id="view_att_quotation_request_list" model="ir.ui.view">
+        <field name="name">att.quotation.request.list</field>
+        <field name="model">att.quotation.request</field>
+        <field name="arch" type="xml">
+            <list string="Yêu cầu báo giá">
+                <field name="name"/>
+                <field name="quotation_type"/>
+                <field name="partner_id"/>
+                <field name="sale_order_id"/>
+                <field name="valid_until"/>
+                <field name="amount_untaxed"/>
+                <field name="amount_tax"/>
+                <field name="amount_total"/>
+                <field name="user_id"/>
+                <field name="company_id"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_att_quotation_request_form" model="ir.ui.view">
+        <field name="name">att.quotation.request.form</field>
+        <field name="model">att.quotation.request</field>
+        <field name="arch" type="xml">
+            <form string="Yêu cầu báo giá">
+
+                <header>
+                    <!-- User thường -->
+                    <button name="action_mark_sent"
+                            string="Gửi / Gọi"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="state != 'draft'"/>
+
+                    <button name="action_mark_received"
+                            string="Đã nhận phản hồi"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="state not in ('draft', 'sent')"/>
+
+                    <button name="action_request_approval"
+                            string="Yêu cầu chốt báo giá"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state not in ('draft', 'sent', 'received')"/>
+
+                    <!-- Manager group -->
+                    <button name="action_confirm"
+                            string="Duyệt &amp; Chốt"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'pending_approval'"
+                            groups="att_quotation_contract.group_tranghuy_managers_sale_purchase"/>
+
+                    <!-- Sau khi chốt: tạo HĐ -->
+                    <button name="action_create_contract"
+                            string="Tạo hợp đồng nguyên tắc"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'confirmed' or contract_id"/>
+
+                    <button name="action_cancel"
+                            string="Hủy"
+                            type="object"
+                            invisible="state in ('confirmed', 'cancelled', 'lost')"/>
+
+                    <button name="action_reset_to_draft"
+                            string="Đưa về nháp"
+                            type="object"
+                            invisible="state not in ('cancelled', 'lost')"/>
+
+                    <field name="state"
+                           widget="statusbar"
+                           statusbar_visible="draft,sent,received,pending_approval,confirmed"/>
+                </header>
+
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_contract"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-file-text-o"
+                                invisible="not contract_id">
+                            <field name="contract_id" widget="statinfo" string="Hợp đồng NT"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Thông tin chung">
+                            <field name="quotation_type"/>
+                            <field name="partner_id"/>
+                            <field name="sale_order_id"
+                                   invisible="quotation_type != 'purchase'"/>
+<!--                            <field name="contract_id" readonly="1"/>-->
+                            <field name="user_id"/>
+                        </group>
+
+                        <group string="Hiệu lực &amp; Thanh toán">
+                            <field name="valid_until"/>
+                            <field name="payment_term_id"/>
+                            <field name="currency_id"/>
+                            <field name="company_id"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+
+                        <page string="Dòng báo giá">
+                            <field name="quotation_line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="pickup_location"/>
+                                    <field name="delivery_location"/>
+<!--                                    <field name="route_detail"/>-->
+                                    <field name="transport_mode_id"/>
+                                    <field name="expected_date"/>
+                                    <field name="quantity"/>
+                                    <field name="uom_id"/>
+                                    <field name="price_unit"/>
+                                    <field name="tax_ids" widget="many2many_tags"/>
+                                    <field name="price_subtotal" readonly="1"/>
+                                    <field name="price_tax" readonly="1"/>
+                                    <field name="price_total" readonly="1"/>
+                                    <field name="note"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer oe_right">
+                                <field name="amount_untaxed" readonly="1"/>
+                                <field name="amount_tax" readonly="1"/>
+                                <field name="amount_total" readonly="1"/>
+                            </group>
+                        </page>
+                        <page string="Ghi chú">
+                            <field name="note"
+                                   placeholder="Nhập ghi chú trao đổi, điều kiện báo giá, thông tin thương thảo..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_att_quotation_request_search" model="ir.ui.view">
+        <field name="name">att.quotation.request.search</field>
+        <field name="model">att.quotation.request</field>
+        <field name="arch" type="xml">
+            <search string="Tìm kiếm yêu cầu báo giá">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="sale_order_id"/>
+                <field name="user_id"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_att_sale_quotation_request" model="ir.actions.act_window">
+        <field name="name">Báo giá</field>
+        <field name="res_model">att.quotation.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('quotation_type','=','sale')]</field>
+        <field name="context">{'default_quotation_type': 'sale'}</field>
+        <field name="search_view_id" ref="view_att_quotation_request_search"/>
+    </record>
+
+    <record id="action_att_purchase_quotation_request" model="ir.actions.act_window">
+        <field name="name">Báo giá NCC</field>
+        <field name="res_model">att.quotation.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('quotation_type','=','purchase')]</field>
+        <field name="context">{'default_quotation_type': 'purchase'}</field>
+        <field name="search_view_id" ref="view_att_quotation_request_search"/>
+    </record>
+
+</odoo>

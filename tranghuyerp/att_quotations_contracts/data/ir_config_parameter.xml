@@ -1,0 +1,9 @@
+<odoo noupdate="1">
+    <!-- Ngưỡng tối thiểu số RFQ (nhóm alternatives) trước khi được tạo HĐK NCC.
+         Interview ghi 10 NCC/tuyến, rule vận hành hiện tại 5 → để config,
+         đổi trong Settings > Technical > System Parameters, không sửa code -->
+    <record id="param_min_purchase_rfq" model="ir.config_parameter">
+        <field name="key">attqc.min_purchase_rfq</field>
+        <field name="value">5</field>
+    </record>
+</odoo>

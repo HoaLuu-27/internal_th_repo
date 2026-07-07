@@ -1,0 +1,14 @@
+<odoo>
+    <!-- Nhóm quyền — check quyền thật nằm ở server (models), view chỉ ẩn/hiện nút -->
+    <record id="group_att_contract_ceo" model="res.groups">
+        <field name="name">ATT Contracts: CEO / Giám đốc</field>
+    </record>
+
+    <record id="group_att_contract_user" model="res.groups">
+        <field name="name">ATT Contracts: User</field>
+    </record>
+
+    <record id="group_tranghuy_managers_sale_purchase" model="res.groups">
+        <field name="name">ATT Contracts: Managers Sale/Purchase</field>
+    </record>
+</odoo>

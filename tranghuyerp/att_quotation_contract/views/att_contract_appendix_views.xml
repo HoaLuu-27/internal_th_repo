@@ -1,0 +1,281 @@
+<odoo>
+    <record id="view_att_contract_appendix_list" model="ir.ui.view">
+        <field name="name">att.contract.appendix.list</field>
+        <field name="model">att.contract.appendix</field>
+        <field name="arch" type="xml">
+            <list string="Phụ lục hợp đồng">
+                <field name="name"/>
+                <field name="appendix_type"/>
+                <field name="contract_id"/>
+                <field name="partner_id"/>
+                <field name="effective_date"/>
+                <field name="expired_date"/>
+                <field name="amount_untaxed"/>
+                <field name="amount_tax"/>
+                <field name="amount_total"/>
+                <field name="sale_order_id"/>
+                <field name="purchase_order_id"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_att_contract_appendix_form" model="ir.ui.view">
+        <field name="name">att.contract.appendix.form</field>
+        <field name="model">att.contract.appendix</field>
+        <field name="arch" type="xml">
+            <form string="Phụ lục hợp đồng">
+
+                <header>
+                    <button name="action_send_draft"
+                            string="Gửi bản nháp"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="state != 'draft'"/>
+
+                    <button name="action_request_approval"
+                            string="Yêu cầu duyệt giá"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state not in ('draft', 'sent_draft')"/>
+
+                    <button name="action_confirm"
+                            string="Duyệt &amp; Xác nhận"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'pending_approval'"
+                            groups="att_quotation_contract.group_tranghuy_managers_sale_purchase"/>
+
+                    <button name="action_send_signed"
+                            string="Gửi bản đã ký"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="state != 'done'"/>
+
+                    <button name="action_cancel"
+                            string="Hủy"
+                            type="object"
+                            invisible="state in ('done', 'cancelled')"/>
+
+                    <button name="action_reset_to_draft"
+                            string="Đưa về nháp"
+                            type="object"
+                            invisible="state != 'cancelled'"/>
+
+                    <field name="state"
+                           widget="statusbar"
+                           statusbar_visible="draft,sent_draft,pending_approval,confirmed,done"/>
+                </header>
+
+                <sheet>
+
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button"
+                                type="object"
+                                name="action_view_sale_order"
+                                icon="fa-shopping-cart"
+                                invisible="not sale_order_id">
+                            <field name="sale_order_id" widget="statinfo" string="Sale Order"/>
+                        </button>
+
+                        <button class="oe_stat_button"
+                                type="object"
+                                name="action_view_purchase_order"
+                                icon="fa-truck"
+                                invisible="not purchase_order_id">
+                            <field name="purchase_order_id" widget="statinfo" string="Purchase Order"/>
+                        </button>
+                    </div>
+
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Thông tin chung">
+                            <field name="contract_id"/>
+                            <field name="appendix_type"/>
+                            <field name="partner_id"/>
+                            <field name="company_id"/>
+                            <field name="currency_id"/>
+                        </group>
+
+                        <group string="Hiệu lực">
+                            <field name="effective_date"/>
+                            <field name="expired_date"/>
+                            <field name="sale_order_id"
+                                   invisible="appendix_type != 'sale'"
+                                   readonly="1"/>
+                            <field name="purchase_order_id"
+                                   invisible="appendix_type != 'purchase'"
+                                   readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Thông tin đối tác ký">
+                        <field name="partner_representative"/>
+                        <field name="partner_position"/>
+                    </group>
+
+                    <notebook>
+
+                        <page string="Dòng phụ lục">
+                            <field name="appendix_line_ids"
+                                   context="{'default_appendix_id': id}">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="display_type" column_invisible="1"/>
+                                    <field name="is_mapping"/>
+                                    <field name="name"/>
+                                    <field name="route_detail"/>
+                                    <field name="load_capacity"/>
+                                    <field name="service_type_id" optional="hide"/>
+                                    <field name="product_id" optional="hide"/>
+                                    <field name="uom_id"/>
+                                    <field name="quantity"/>
+                                    <field name="pickup_location"/>
+                                    <field name="delivery_location"/>
+<!--                                    <field name="vehicle_type" optional="show"/>-->
+                                    <field name="vehicle_id" optional="hide"/>
+                                    <field name="transport_mode_id" optional="hide"/>
+                                    <field name="cargo_description" optional="hide"/>
+                                    <field name="price_unit"/>
+                                    <field name="tax_ids" widget="many2many_tags"/>
+                                    <field name="price_subtotal" readonly="1"/>
+                                    <field name="price_tax" readonly="1"/>
+                                    <field name="price_total" readonly="1"/>
+                                    <field name="extra_note" optional="hide"/>
+
+                                    <control>
+                                        <create string="Thêm dòng dịch vụ"/>
+                                        <create string="Thêm tiêu đề nhóm"
+                                                context="{'default_display_type': 'line_section'}"/>
+                                        <create string="Thêm ghi chú"
+                                                context="{'default_display_type': 'line_note'}"/>
+                                    </control>
+                                </list>
+
+                            </field>
+
+                            <group class="oe_subtotal_footer oe_right">
+                                <field name="amount_untaxed" readonly="1"/>
+                                <field name="amount_tax" readonly="1"/>
+                                <field name="amount_total" readonly="1"/>
+                            </group>
+                        </page>
+
+                        <page string="Thông tin dầu &amp; điều chỉnh giá"
+                              invisible="appendix_type != 'sale'">
+                            <group>
+                                <group>
+                                    <field name="fuel_ref_price"/>
+                                    <field name="fuel_ref_date"/>
+                                    <field name="fuel_ratio"/>
+                                </group>
+                            </group>
+                            <field name="fuel_note"
+                                   placeholder="Ghi chú về điều chỉnh giá dầu..."/>
+                        </page>
+
+                        <page string="Thông tin bổ sung">
+                            <field name="extra_line_ids"
+                                   context="{'default_appendix_id': id}">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="line_id"/>
+                                    <field name="key"/>
+                                    <field name="value"/>
+                                    <field name="note"/>
+                                </list>
+                            </field>
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+
+                <chatter/>
+
+            </form>
+        </field>
+    </record>
+
+    <record id="view_att_contract_appendix_search" model="ir.ui.view">
+        <field name="name">att.contract.appendix.search</field>
+        <field name="model">att.contract.appendix</field>
+        <field name="arch" type="xml">
+            <search string="Tìm kiếm phụ lục">
+                <field name="name"/>
+                <field name="contract_id"/>
+                <field name="partner_id"/>
+                <field name="appendix_type"/>
+
+<!--                <filter name="filter_sale"-->
+<!--                        string="Phụ lục bán"-->
+<!--                        domain="[('appendix_type','=','sale')]"/>-->
+
+<!--                <filter name="filter_purchase"-->
+<!--                        string="Phụ lục mua"-->
+<!--                        domain="[('appendix_type','=','purchase')]"/>-->
+
+<!--                <separator/>-->
+
+<!--                <filter name="filter_draft"-->
+<!--                        string="Nháp"-->
+<!--                        domain="[('state','=','draft')]"/>-->
+
+<!--                <filter name="filter_pending"-->
+<!--                        string="Chờ duyệt"-->
+<!--                        domain="[('state','=','pending_approval')]"/>-->
+
+<!--                <filter name="filter_confirmed"-->
+<!--                        string="Đã xác nhận"-->
+<!--                        domain="[('state','=','confirmed')]"/>-->
+
+<!--                <filter name="filter_done"-->
+<!--                        string="Đã tạo đơn hàng"-->
+<!--                        domain="[('state','=','done')]"/>-->
+
+<!--                <group expand="0" string="Nhóm theo">-->
+<!--                    <filter name="group_appendix_type"-->
+<!--                            string="Loại phụ lục"-->
+<!--                            context="{'group_by':'appendix_type'}"/>-->
+
+<!--                    <filter name="group_contract"-->
+<!--                            string="Hợp đồng"-->
+<!--                            context="{'group_by':'contract_id'}"/>-->
+
+<!--                    <filter name="group_partner"-->
+<!--                            string="Đối tác"-->
+<!--                            context="{'group_by':'partner_id'}"/>-->
+
+<!--                    <filter name="group_state"-->
+<!--                            string="Trạng thái"-->
+<!--                            context="{'group_by':'state'}"/>-->
+<!--                </group>-->
+            </search>
+        </field>
+    </record>
+
+    <record id="action_att_sale_contract_appendix" model="ir.actions.act_window">
+        <field name="name">Phụ lục</field>
+        <field name="res_model">att.contract.appendix</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('appendix_type','=','sale')]</field>
+        <field name="context">{'default_appendix_type': 'sale'}</field>
+        <field name="search_view_id" ref="view_att_contract_appendix_search"/>
+    </record>
+
+    <record id="action_att_purchase_contract_appendix" model="ir.actions.act_window">
+        <field name="name">Phụ lục NCC</field>
+        <field name="res_model">att.contract.appendix</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('appendix_type','=','purchase')]</field>
+        <field name="context">{'default_appendix_type': 'purchase'}</field>
+        <field name="search_view_id" ref="view_att_contract_appendix_search"/>
+    </record>
+
+</odoo>

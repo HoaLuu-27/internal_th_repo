@@ -1,0 +1,15 @@
+/* Badge unread trên Discuss icon/topbar */
+.o-mail-MessagingMenu-counter,
+.o-mail-DiscussSystray-classCounter,
+.o-mail-DiscussSystray-counter {
+    background: #e53935 !important;
+    color: #fff !important;
+    font-weight: 700 !important;
+    min-width: 18px !important;
+    height: 18px !important;
+    line-height: 18px !important;
+    border-radius: 999px !important;
+    font-size: 11px !important;
+    text-align: center !important;
+    box-shadow: 0 0 0 2px #fff !important;
+}

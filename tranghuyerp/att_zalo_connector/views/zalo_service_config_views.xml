@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_zalo_service_config" model="ir.actions.act_window">
+        <field name="name">Zalo Configurations</field>
+        <field name="res_model">att.zalo.service.config</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'default_service_type': 'oa'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Zalo service configuration
+            </p>
+            <p>
+                Cấu hình App ID, App Secret, OA ID, Webhook và OAuth token tại đây.
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+        id="menu_zalo_service_config"
+        name="Configurations"
+        parent="menu_zalo_services_oa_root"
+        action="action_zalo_service_config"
+        sequence="10"
+        groups="base.group_system"
+    />
+    <record id="view_zalo_service_config_list" model="ir.ui.view">
+        <field name="name">zalo.service.config.list</field>
+        <field name="model">att.zalo.service.config</field>
+        <field name="arch" type="xml">
+            <list string="Zalo Configurations">
+                <field name="active" widget="boolean_toggle"/>
+                <field name="name"/>
+                <field name="service_type"/>
+                <field name="oa_id"/>
+                <field name="state" widget="badge"/>
+                <field name="is_connected" widget="boolean_toggle"/>
+                <field name="token_expire_at"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_zalo_service_config_form" model="ir.ui.view">
+        <field name="name">zalo.service.config.form</field>
+        <field name="model">att.zalo.service.config</field>
+        <field name="arch" type="xml">
+            <form string="Zalo Configuration">
+
+                <header>
+                    <button
+                        name="action_enable_register_mode"
+                        string="Verify URL"
+                        type="object"
+                        class="btn-secondary"
+                    />
+                    <button
+                        name="action_authorize_oa"
+                        string="Connect Official Account"
+                        type="object"
+                        class="btn-primary"
+                        invisible="service_type != 'oa'"
+                    />
+                    <button
+                        name="action_refresh_token"
+                        string="Refresh Token"
+                        type="object"
+                        class="btn-secondary"
+                        invisible="not refresh_token"
+                    />
+                    <button
+                        name="action_test_connection"
+                        string="Test Connection"
+                        type="object"
+                        class="btn-secondary"
+                    />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,verified,connected,error"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Trang Huy Logistics OA"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Thông tin chung">
+                            <field name="service_type"/>
+                            <field name="active"/>
+                            <field name="is_connected" readonly="1"/>
+                        </group>
+
+                        <group string="Thông tin ứng dụng">
+                            <field name="app_id"/>
+                            <field name="app_secret" password="True" groups="base.group_no_one"/>
+                            <field name="oa_id"/>
+                            <field name="oa_secret_key" password="True" groups="base.group_no_one"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Setup">
+                            <group>
+                                <group string="Webhook">
+                                    <field name="webhook_url" widget="copy_clipboard"/>
+                                    <field name="register_mode" widget="boolean_toggle"/>
+                                    <field name="meta_tag" readonly="1" placeholder="Chưa có meta tag"/>
+                                </group>
+
+                                <group string="OAuth">
+                                    <field name="oauth_state" readonly="1"/>
+                                    <field name="authorization_code" readonly="1" groups="base.group_no_one"/>
+                                    <field name="access_token" password="True" groups="base.group_no_one"/>
+                                    <field name="refresh_token" password="True" groups="base.group_no_one"/>
+                                    <field name="token_expire_at"/>
+                                </group>
+                            </group>
+
+                            <separator string="Hướng dẫn nhanh" groups="base.group_no_one"/>
+
+                            <div class="alert alert-info" role="alert" groups="base.group_no_one">
+                                <p>
+                                    <strong>Bước 1:</strong>
+                                    Nhập App ID, App Secret, OA ID, OA Secret Key.
+                                </p>
+                                <p>
+                                    <strong>Bước 2:</strong>
+                                    Bấm Verify URL, sau đó đăng ký URL Prefix trên Zalo Developer Console.
+                                </p>
+                                <p>
+                                    <strong>Bước 3:</strong>
+                                    Đăng ký Webhook URL trên Zalo Developer Console.
+                                </p>
+                                <p>
+                                    <strong>Bước 4:</strong>
+                                    Bấm Connect Official Account để OAuth tự động lấy token.
+                                </p>
+                            </div>
+                        </page>
+                        <page string="Debug">
+                            <group>
+                                <group string="Logging">
+                                    <!-- Bật/tắt lưu raw request/response -->
+                                    <field name="debug_log" widget="boolean_toggle"/>
+                                </group>
+
+                                <group string="Lỗi gần nhất">
+                                    <field name="last_error" readonly="1" nolabel="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Future Services" groups="base.group_no_one">
+                            <div class="alert alert-secondary" role="alert">
+                                <p>
+                                    Module này được thiết kế là <strong>ZaLo Services</strong>,
+                                    không chỉ riêng Zalo OA.
+                                </p>
+                                <ul>
+                                    <li>Official Account: message, webhook, discuss.</li>
+                                    <li>ZNS: thông báo giao dịch / thông báo hệ thống.</li>
+                                    <li>Mini App: xử lý các luồng mini app sau này.</li>
+                                </ul>
+                            </div>
+                        </page>
+
+                    </notebook>
+                </sheet>
+
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+</odoo>

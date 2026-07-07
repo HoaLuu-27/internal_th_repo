@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem
+        id="menu_zalo_services_root"
+        name="ZaLo Services"
+        sequence="80"
+        groups="base.group_system"
+        web_icon="att_zalo_services,static/description/icon.png"
+    />
+
+    <menuitem
+        id="menu_zalo_services_oa_root"
+        name="Official Account"
+        parent="menu_zalo_services_root"
+        sequence="10"
+        groups="base.group_system"
+    />
+
+    <menuitem
+        id="menu_zalo_services_technical_root"
+        name="Technical"
+        parent="menu_zalo_services_root"
+        sequence="90"
+        groups="base.group_system"
+    />
+
+</odoo>

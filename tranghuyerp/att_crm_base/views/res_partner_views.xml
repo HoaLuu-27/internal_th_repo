@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- FORM VIEW -->
+    <record id="view_partner_form_phone_group_mask" model="ir.ui.view">
+        <field name="name">res.partner.form.phone.group.mask</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='phone']" position="replace">
+                <field name="phone"
+                       groups="att_crm_base.group_view_full_phone"/>
+
+                <field name="phone_masked"
+                       string="Phone"
+                       readonly="1"
+                       groups="!att_crm_base.group_view_full_phone"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- TREE / LIST VIEW -->
+    <record id="view_partner_tree_phone_group_mask" model="ir.ui.view">
+        <field name="name">res.partner.tree.phone.group.mask</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='phone']" position="replace">
+                <field name="phone"
+                       groups="att_crm_base.group_view_full_phone"/>
+
+                <field name="phone_masked"
+                       string="Phone"
+                       readonly="1"
+                       groups="!att_crm_base.group_view_full_phone"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

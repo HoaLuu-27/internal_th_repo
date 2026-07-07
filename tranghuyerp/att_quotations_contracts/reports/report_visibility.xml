@@ -1,0 +1,26 @@
+<odoo>
+    <!-- Ẩn/hiện report trong menu Print theo giai đoạn chứng từ (field domain
+         trên ir.actions.report — report chỉ hiện khi record khớp domain):
+
+         BÁO GIÁ (draft/sent, không phải đơn thực thi) → chỉ report báo giá TH.
+         ĐƠN ĐÃ CONFIRM hoặc đơn THỰC THI              → chỉ report native.  -->
+
+    <!-- Report báo giá TH: chỉ hiện ở giai đoạn báo giá -->
+    <record id="action_report_attqc_sale_quotation" model="ir.actions.report">
+        <field name="domain">[('att_is_execution', '=', False), ('state', 'in', ['draft', 'sent'])]</field>
+    </record>
+    <record id="action_report_attqc_purchase_quotation" model="ir.actions.report">
+        <field name="domain">[('att_is_execution', '=', False), ('state', 'in', ['draft', 'sent'])]</field>
+    </record>
+
+    <!-- Report native: ẩn ở giai đoạn báo giá TH (ngược lại với trên) -->
+    <record id="sale.action_report_saleorder" model="ir.actions.report">
+        <field name="domain">['|', ('att_is_execution', '=', True), ('state', 'not in', ['draft', 'sent'])]</field>
+    </record>
+    <record id="purchase.action_report_purchase_order" model="ir.actions.report">
+        <field name="domain">['|', ('att_is_execution', '=', True), ('state', 'not in', ['draft', 'sent'])]</field>
+    </record>
+    <record id="purchase.report_purchase_quotation" model="ir.actions.report">
+        <field name="domain">['|', ('att_is_execution', '=', True), ('state', 'not in', ['draft', 'sent'])]</field>
+    </record>
+</odoo>
