@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="website_service_list" name="Trang Huy - Dịch vụ">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <section class="container py-5">
+                    <h1 class="mb-3">Dịch vụ vận chuyển</h1>
+                    <p class="text-muted mb-4">
+                        Chọn hình thức vận chuyển phù hợp và gửi yêu cầu báo giá.
+                    </p>
+
+                    <t t-if="not modes">
+                        <div class="alert alert-info">
+                            Hiện chưa có dịch vụ nào được công bố trên website.
+                        </div>
+                    </t>
+
+                    <div class="row g-4">
+                        <t t-foreach="modes" t-as="mode">
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <div class="card h-100 shadow-sm">
+                                    <t t-if="mode.image">
+                                        <img t-att-src="'/web/image/att.transport.mode/%s/image' % mode.id"
+                                             class="card-img-top"
+                                             style="height:220px;object-fit:cover;"/>
+                                    </t>
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title">
+                                            <t t-esc="mode.name"/>
+                                        </h5>
+                                        <div class="card-text text-muted mb-3">
+                                            <t t-esc="mode.website_short_description or ''"/>
+                                        </div>
+                                        <a t-att-href="'/dich-vu/%s/bao-gia' % mode.id"
+                                           class="btn btn-primary mt-auto">
+                                            Yêu cầu báo giá
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="website_quote_form" name="Trang Huy - Form yêu cầu báo giá">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <section class="container py-5">
+                    <h1>Yêu cầu báo giá</h1>
+                    <h4 class="text-muted mb-4">
+                        <t t-esc="mode.name"/>
+                    </h4>
+
+                    <div class="alert alert-warning">
+                        Đơn giá phụ thuộc tuyến cụ thể — vui lòng ghi rõ địa chỉ điểm đi/điểm đến.
+                    </div>
+
+                    <t t-if="errors">
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                <t t-foreach="errors" t-as="err">
+                                    <li>
+                                        <t t-esc="err"/>
+                                    </li>
+                                </t>
+                            </ul>
+                        </div>
+                    </t>
+
+                    <form t-att-action="'/dich-vu/%s/bao-gia/submit' % mode.id"
+                          method="post"
+                          class="row g-3">
+
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                        <div style="display:none;">
+                            <label>Website</label>
+                            <input type="text" name="website_url"/>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Họ và tên *</label>
+                            <input name="name"
+                                   type="text"
+                                   class="form-control"
+                                   required="required"
+                                   placeholder="VD: Nguyễn Văn A"
+                                   t-att-value="values.get('name', '')"/>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Số điện thoại *</label>
+                            <input name="phone"
+                                   type="text"
+                                   class="form-control"
+                                   required="required"
+                                   placeholder="VD: 0901234567"
+                                   t-att-value="values.get('phone', '')"/>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Email *</label>
+                            <input name="email"
+                                   type="email"
+                                   class="form-control"
+                                   required="required"
+                                   placeholder="VD: khachhang@email.com"
+                                   t-att-value="values.get('email', '')"/>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Điểm đi *</label>
+                            <input name="pickup_location"
+                                   class="form-control"
+                                   required="required"
+                                   placeholder="VD: 123 Nguyễn Văn Linh, Quận 7, TP.HCM"
+                                   t-att-value="values.get('pickup_location', '')"/>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Điểm đến *</label>
+                            <input name="delivery_location"
+                                   class="form-control"
+                                   required="required"
+                                   placeholder="VD: KCN VSIP, Bình Dương"
+                                   t-att-value="values.get('delivery_location', '')"/>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Mô tả hàng hóa *</label>
+                            <textarea name="cargo_description"
+                                      class="form-control"
+                                      rows="4"
+                                      required="required"
+                                      placeholder="Loại hàng, kích thước, số kiện, yêu cầu đặc biệt..."><t t-esc="values.get('cargo_description', '')"/></textarea>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Khối lượng</label>
+                            <input name="cargo_weight"
+                                   class="form-control"
+                                   placeholder="VD: 2 tấn / 10 CBM"
+                                   t-att-value="values.get('cargo_weight', '')"/>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Ngày dự kiến</label>
+                            <input name="expected_date"
+                                   type="date"
+                                   class="form-control"
+                                   t-att-value="values.get('expected_date', '')"/>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Ghi chú</label>
+                            <textarea name="note"
+                                      class="form-control"
+                                      rows="3"
+                                      placeholder="Thông tin thêm nếu có..."><t t-esc="values.get('note', '')"/></textarea>
+                        </div>
+
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">
+                                Gửi yêu cầu báo giá
+                            </button>
+                            <a href="/dich-vu" class="btn btn-link">
+                                Quay lại dịch vụ
+                            </a>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="website_quote_thank_you" name="Trang Huy - Cảm ơn báo giá">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <section class="container py-5 text-center">
+                    <h1>Cảm ơn quý khách</h1>
+                    <p class="lead">
+                        Yêu cầu báo giá đã được ghi nhận.
+                    </p>
+
+                    <t t-if="order">
+                        <div class="alert alert-info d-inline-block">
+                            Mã tham chiếu:
+                            <strong>
+                                <t t-esc="order.name"/>
+                            </strong>
+                        </div>
+                    </t>
+
+                    <p class="mt-3">
+                        Phòng kinh doanh sẽ kiểm tra tuyến vận chuyển và phản hồi báo giá trong thời gian sớm nhất.
+                    </p>
+
+                    <a href="/dich-vu" class="btn btn-primary mt-3">
+                        Xem dịch vụ khác
+                    </a>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <record id="menu_website_services" model="website.menu">
+        <field name="name">Dịch vụ</field>
+        <field name="url">/dich-vu</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence">30</field>
+    </record>
+
+</odoo>

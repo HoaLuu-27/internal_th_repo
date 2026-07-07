@@ -1,20 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
     <record id="view_att_transport_mode_list" model="ir.ui.view">
         <field name="name">att.transport.mode.list</field>
         <field name="model">att.transport.mode</field>
         <field name="arch" type="xml">
-            <list editable="bottom">
+            <list string="Hình thức vận chuyển">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="code"/>
+                <field name="website_published"/>
                 <field name="active"/>
             </list>
         </field>
     </record>
 
+    <record id="view_att_transport_mode_form" model="ir.ui.view">
+        <field name="name">att.transport.mode.form</field>
+        <field name="model">att.transport.mode</field>
+        <field name="arch" type="xml">
+            <form string="Hình thức vận chuyển">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                            <field name="website_published"/>
+                            <field name="default_product_id"/>
+                        </group>
+                        <group>
+                            <field name="image" widget="image"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Nội dung website">
+                           <field name="website_short_description"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
     <record id="action_att_transport_mode" model="ir.actions.act_window">
         <field name="name">Hình thức vận chuyển</field>
         <field name="res_model">att.transport.mode</field>
-        <field name="view_mode">list</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_att_transport_mode_list"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Chưa có hình thức vận chuyển nào
+            </p>
+            <p>
+                Tạo các dịch vụ như đường bộ, đường biển, đường hàng không để hiển thị trên website.
+            </p>
+        </field>
     </record>
+
 </odoo>

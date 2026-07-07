@@ -395,6 +395,7 @@ class SaleOrderLine(models.Model):
     cargo_description = fields.Text(string='Mô tả hàng hóa')
     expected_date = fields.Datetime(string='Thời gian dự kiến')
     att_line_note = fields.Text(string='Ghi chú báo giá')
+    cargo_weight = fields.Char(string='Khối lượng')
 
     @api.onchange('price_unit')
     def _onchange_price_vs_appendix(self):

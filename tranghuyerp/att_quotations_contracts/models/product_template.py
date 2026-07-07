@@ -2,7 +2,6 @@ from odoo import fields, models
 
 
 class AttTransportMode(models.Model):
-    """Hình thức vận chuyển — dùng chung cho SO, PO, phụ lục và website."""
     _name = "att.transport.mode"
     _description = "Hình thức vận chuyển"
     _order = "sequence, name"
@@ -12,14 +11,13 @@ class AttTransportMode(models.Model):
     sequence = fields.Integer(default=10)
     active = fields.Boolean(default=True)
 
+    # Website
     website_published = fields.Boolean(string="Hiển thị website", default=False)
     image = fields.Image(string="Ảnh dịch vụ")
-    website_short_description = fields.Text(
-        string="Mô tả website",
-    )
+    website_description = fields.Html(string="Mô tả website")
     default_product_id = fields.Many2one(
         "product.product",
         string="Sản phẩm dịch vụ mặc định",
         domain=[("sale_ok", "=", True)],
-        help="Sản phẩm dịch vụ dùng để tạo dòng SO draft khi khách gửi yêu cầu báo giá.",
+        help="Dùng để tạo dòng SO draft từ form yêu cầu báo giá.",
     )
