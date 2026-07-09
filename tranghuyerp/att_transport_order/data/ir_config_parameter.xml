@@ -1,0 +1,9 @@
+<odoo>
+    <data noupdate="1">
+        <!-- BR-DV-015: địa chỉ TH nhận PNV bản cứng — Email/ZNS tự lấy. -->
+        <record id="param_pnv_return_address" model="ir.config_parameter">
+            <field name="key">att.pnv.return_address</field>
+            <field name="value">Số 129 Phạm Văn Đồng, Phường Xuân Đỉnh, Quận Bắc Từ Liêm, TP. Hà Nội</field>
+        </record>
+    </data>
+</odoo>

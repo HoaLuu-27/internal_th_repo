@@ -1,0 +1,22 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_att_transport_order_driver,att.transport.order driver,model_att_transport_order,group_th_driver,1,1,0,0
+access_att_transport_order_dispatcher,att.transport.order dispatcher,model_att_transport_order,group_th_dispatcher,1,1,1,1
+access_att_transport_order_internal_read,att.transport.order internal read,model_att_transport_order,base.group_user,1,0,0,0
+
+access_att_transport_cost_line_driver,att.transport.cost.line driver,model_att_transport_cost_line,group_th_driver,1,1,1,0
+access_att_transport_cost_line_dispatcher,att.transport.cost.line dispatcher,model_att_transport_cost_line,group_th_dispatcher,1,1,1,1
+access_att_transport_cost_line_internal_read,att.transport.cost.line internal read,model_att_transport_cost_line,base.group_user,1,0,0,0
+
+access_att_transport_cost_type_read,att.transport.cost.type read,model_att_transport_cost_type,base.group_user,1,0,0,0
+access_att_transport_cost_type_admin,att.transport.cost.type admin,model_att_transport_cost_type,base.group_system,1,1,1,1
+
+access_att_transport_route_read,att.transport.route read,model_att_transport_route,base.group_user,1,0,0,0
+access_att_transport_route_dispatcher,att.transport.route dispatcher,model_att_transport_route,group_th_dispatcher,1,1,1,0
+access_att_transport_route_admin,att.transport.route admin,model_att_transport_route,base.group_system,1,1,1,1
+
+access_att_transport_vendor_route_rule_read,att.transport.vendor.route.rule read,model_att_transport_vendor_route_rule,base.group_user,1,0,0,0
+access_att_transport_vendor_route_rule_dispatcher,att.transport.vendor.route.rule dispatcher,model_att_transport_vendor_route_rule,group_th_dispatcher,1,1,1,0
+access_att_transport_vendor_route_rule_admin,att.transport.vendor.route.rule admin,model_att_transport_vendor_route_rule,base.group_system,1,1,1,1
+
+access_att_transport_mode_user,att.transport.mode user,model_att_transport_mode,base.group_user,1,0,0,0
+access_att_transport_mode_manager,att.transport.mode manager,model_att_transport_mode,sales_team.group_sale_manager,1,1,1,1
