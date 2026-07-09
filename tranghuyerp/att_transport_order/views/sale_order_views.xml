@@ -1,0 +1,32 @@
+<odoo>
+    <record id="view_sale_order_form_th_transport" model="ir.ui.view">
+        <field name="name">sale.order.form.att.transport</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button name="action_view_transport_orders" type="object"
+                        class="oe_stat_button" icon="fa-truck"
+                        invisible="transport_order_count == 0">
+                    <field name="transport_order_count" widget="statinfo" string="Lệnh VC"/>
+                </button>
+            </div>
+            <header position="inside">
+                <button name="action_create_transport_order" string="Tạo lệnh VC" type="object"
+                        invisible="state != 'sale'"
+                        groups="att_transport_order.group_th_dispatcher"/>
+            </header>
+            <!-- Field vận chuyển trên dòng SO -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="before">
+                <field name="pickup_location" optional="hide"/>
+                <field name="delivery_location" optional="hide"/>
+                <field name="transport_mode_id" optional="show"/>
+                <field name="vehicle_type_id" optional="show"
+                       domain="[('transport_mode_ids', 'in', transport_mode_id)] if transport_mode_id else []"/>
+                <field name="vehicle_id" optional="hide"/>
+                <field name="cargo_description" optional="hide"/>
+                <field name="expected_date" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

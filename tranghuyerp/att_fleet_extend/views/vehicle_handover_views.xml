@@ -1,0 +1,73 @@
+<odoo>
+    <record id="view_th_vehicle_handover_list" model="ir.ui.view">
+        <field name="name">att.vehicle.handover.list</field>
+        <field name="model">att.vehicle.handover</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="date"/>
+                <field name="vehicle_id"/>
+                <field name="handover_type"/>
+                <field name="from_employee_id"/>
+                <field name="to_employee_id"/>
+                <field name="state" widget="badge" decoration-success="state == 'done'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_th_vehicle_handover_form" model="ir.ui.view">
+        <field name="name">att.vehicle.handover.form</field>
+        <field name="model">att.vehicle.handover</field>
+        <field name="arch" type="xml">
+            <form string="Biên bản bàn giao">
+                <header>
+                    <button name="action_confirm" string="Xác nhận bàn giao"
+                            type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_reset_draft" string="Về nháp" type="object"
+                            invisible="state != 'done'" groups="fleet.fleet_group_manager"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="vehicle_id" readonly="state == 'done'"/>
+                            <field name="handover_type" readonly="state == 'done'"/>
+                            <field name="date" readonly="state == 'done'"/>
+                        </group>
+                        <group>
+                            <field name="from_employee_id" readonly="state == 'done'"/>
+                            <field name="to_employee_id" readonly="state == 'done'"/>
+                            <field name="odometer" readonly="state == 'done'"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Checklist vật tư">
+                            <field name="line_ids" readonly="state == 'done'">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="quantity"/>
+                                    <field name="condition"/>
+                                    <field name="note"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                    <field name="note" placeholder="Ghi chú bàn giao..."/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_th_vehicle_handover" model="ir.actions.act_window">
+        <field name="name">Bàn giao xe/vật tư</field>
+        <field name="res_model">att.vehicle.handover</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_th_vehicle_handover" name="Bàn giao xe/vật tư"
+              parent="fleet.fleet_vehicles" action="action_th_vehicle_handover"
+              sequence="26"/>
+</odoo>
