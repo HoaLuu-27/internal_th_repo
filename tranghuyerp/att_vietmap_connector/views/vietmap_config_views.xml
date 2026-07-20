@@ -1,0 +1,49 @@
+<odoo>
+    <record id="view_vietmap_config_list" model="ir.ui.view">
+        <field name="name">att.vietmap.config.list</field>
+        <field name="model">att.vietmap.config</field>
+        <field name="arch" type="xml">
+            <list string="VietMap Configurations">
+                <field name="active" widget="boolean_toggle"/>
+                <field name="name"/>
+                <field name="base_url"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_vietmap_config_form" model="ir.ui.view">
+        <field name="name">att.vietmap.config.form</field>
+        <field name="model">att.vietmap.config</field>
+        <field name="arch" type="xml">
+            <form string="VietMap Configuration">
+                <header>
+                    <button name="action_test_connection" string="Test Connection"
+                            type="object" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="active"/>
+                            <field name="api_key" password="True" groups="base.group_no_one"/>
+                            <field name="tile_map_api_key"  password="True" groups="base.group_no_one"/>
+                            <field name="base_url"/>
+                        </group>
+                        <group string="Debug">
+                            <field name="debug_log" widget="boolean_toggle"/>
+                            <field name="last_error" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_vietmap_config" model="ir.actions.act_window">
+        <field name="name">VietMap Configurations</field>
+        <field name="res_model">att.vietmap.config</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

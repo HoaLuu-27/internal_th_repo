@@ -1,0 +1,12 @@
+<odoo>
+    <record id="action_vietmap_route_finder" model="ir.actions.client">
+        <field name="name">Bản đồ</field>
+        <field name="tag">att_vietmap_connector.route_finder</field>
+    </record>
+
+    <!-- sequence="1" — item ĐẦU TIÊN trong app VietMap, đứng trước
+         Configurations(10)/Request Log(20)/Test(30). -->
+    <menuitem id="menu_vietmap_route_finder" name="Bản đồ"
+              parent="menu_vietmap_root"
+              action="action_vietmap_route_finder" sequence="1"/>
+</odoo>

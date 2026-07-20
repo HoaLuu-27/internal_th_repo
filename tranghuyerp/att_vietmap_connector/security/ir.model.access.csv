@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_vietmap_config_system,att.vietmap.config system,model_att_vietmap_config,base.group_system,1,1,1,1
+access_vietmap_config_user_read,att.vietmap.config user read,model_att_vietmap_config,base.group_user,1,0,0,0
+access_vietmap_request_log_system,att.vietmap.request.log system,model_att_vietmap_request_log,base.group_system,1,1,1,1
+access_vietmap_test_wizard_system,att.vietmap.test.wizard system,model_att_vietmap_test_wizard,base.group_system,1,1,1,1
+access_att_address_suggestion_user,att.address.suggestion user,model_att_address_suggestion,base.group_user,1,1,1,1

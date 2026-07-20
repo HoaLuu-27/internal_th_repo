@@ -1,0 +1,16 @@
+<odoo>
+    <!-- Root KHÔNG còn khoá base.group_no_one — Sales/Purchase cần thấy
+         menu "Bản đồ" (route_finder_views.xml, sequence 1, item đầu tiên).
+         3 menu kỹ thuật bên dưới (Configurations/Request Log/Test) giữ
+         nguyên chỉ hiện ở chế độ Dev — gắn groups riêng cho từng cái thay
+         vì khoá ở root như trước. -->
+    <menuitem id="menu_vietmap_root" name="VietMap" sequence="95"
+               web_icon="att_vietmap_connector,static/description/icon.png"
+    />
+    <menuitem id="menu_vietmap_config" name="Configurations" groups="base.group_no_one"
+              parent="menu_vietmap_root" action="action_vietmap_config" sequence="10"/>
+    <menuitem id="menu_vietmap_request_log" name="Request Log" groups="base.group_no_one"
+              parent="menu_vietmap_root" action="action_vietmap_request_log" sequence="20"/>
+    <menuitem id="menu_vietmap_test" name="Test nhanh" groups="base.group_no_one"
+          parent="menu_vietmap_root" action="action_vietmap_test_wizard" sequence="30"/>
+</odoo>

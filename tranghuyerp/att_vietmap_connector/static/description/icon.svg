@@ -1,0 +1,33 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <!-- Bản đồ gấp -->
+  <polygon points="30,90 90,70 90,190 30,210" fill="#8fd18f"/>
+  <polygon points="90,70 160,90 160,210 90,190" fill="#6fc26f"/>
+  <polygon points="160,90 226,70 226,190 160,210" fill="#8fd18f"/>
+
+  <path d="M 30 90 L 90 70 L 160 90 L 226 70 L 226 190 L 160 210 L 90 190 L 30 210 Z"
+        fill="none" stroke="#ffffff" stroke-width="4" stroke-linejoin="round"/>
+  <line x1="90" y1="70" x2="90" y2="190" stroke="#ffffff" stroke-width="4"/>
+  <line x1="160" y1="90" x2="160" y2="210" stroke="#ffffff" stroke-width="4"/>
+
+  <!-- Sông -->
+  <path d="M 40 110 Q 70 130 55 150 Q 40 170 65 185"
+        fill="none" stroke="#6fb8e8" stroke-width="14" stroke-linecap="round"/>
+
+  <!-- Đường -->
+  <line x1="35" y1="150" x2="150" y2="140" stroke="#ffffff" stroke-width="8" opacity="0.85"/>
+  <line x1="170" y1="100" x2="170" y2="200" stroke="#ffffff" stroke-width="8" opacity="0.85"/>
+
+  <!-- Khối nhà -->
+  <rect x="100" y="100" width="20" height="20" fill="#3fa8f0" opacity="0.7"/>
+  <rect x="185" y="150" width="28" height="24" fill="#3fa8f0" opacity="0.7"/>
+  <rect x="185" y="105" width="16" height="16" fill="#b7b7b7"/>
+  <rect x="205" y="105" width="16" height="16" fill="#b7b7b7"/>
+
+  <!-- Ghim định vị -->
+  <path d="M 128 40 C 100 40 80 62 80 90 C 80 128 128 175 128 175 C 128 175 176 128 176 90 C 176 62 156 40 128 40 Z"
+        fill="#e6392f"/>
+  <path d="M 128 40 C 100 40 80 62 80 90 C 80 128 128 175 128 175 C 128 175 176 128 176 90 C 176 62 156 40 128 40 Z"
+        fill="none" stroke="#b52a22" stroke-width="3"/>
+  <circle cx="128" cy="90" r="30" fill="#ffffff"/>
+  <circle cx="128" cy="90" r="30" fill="none" stroke="#d8d8d8" stroke-width="3"/>
+</svg>

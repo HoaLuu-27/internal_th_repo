@@ -1,0 +1,61 @@
+<odoo>
+    <record id="view_vietmap_request_log_list" model="ir.ui.view">
+        <field name="name">att.vietmap.request.log.list</field>
+        <field name="model">att.vietmap.request.log</field>
+        <field name="arch" type="xml">
+            <list string="VietMap Request Log" decoration-danger="state == 'error'">
+                <field name="create_date"/>
+                <field name="name"/>
+                <field name="query_text" optional="show"/>
+                <field name="ref_id" optional="hide"/>
+                <field name="response_code" optional="show"/>
+                <field name="duration_ms" optional="show"/>
+                <field name="state" widget="badge"/>
+                <field name="user_id" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_vietmap_request_log_form" model="ir.ui.view">
+        <field name="name">att.vietmap.request.log.form</field>
+        <field name="model">att.vietmap.request.log</field>
+        <field name="arch" type="xml">
+            <form string="VietMap Request Log">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="endpoint"/>
+                            <field name="state" widget="badge"/>
+                            <field name="response_code"/>
+                            <field name="duration_ms"/>
+                        </group>
+                        <group>
+                            <field name="query_text"/>
+                            <field name="ref_id"/>
+                            <field name="user_id"/>
+                            <field name="create_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Request">
+                            <field name="request_body" widget="text" readonly="1"/>
+                        </page>
+                        <page string="Response">
+                            <field name="response_body" widget="text" readonly="1"/>
+                        </page>
+                        <page string="Error" invisible="not error_message">
+                            <field name="error_message" readonly="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_vietmap_request_log" model="ir.actions.act_window">
+        <field name="name">VietMap Request Log</field>
+        <field name="res_model">att.vietmap.request.log</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

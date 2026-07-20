@@ -1,0 +1,170 @@
+<templates xml:space="preserve">
+    <t t-name="att_vietmap_connector.RouteFinderDashboard" owl="1">
+        <div class="att_route_finder_pane">
+            <VietmapMap markers="mapMarkers" center="[106, 16]" zoom="5"
+                        onMapReady.bind="onMapReady"/>
+
+            <div class="att_route_panel">
+                <div class="att_route_panel_header">
+                    <b>Tìm đường</b>
+                </div>
+
+                <div class="att_route_vehicle_row">
+                    <t t-foreach="vehicleClasses" t-as="vc" t-key="vc.key">
+                        <button type="button"
+                                t-att-class="{active: state.search.vehicleClass === vc.key}"
+                                t-on-click="() => this.pickVehicleClass(vc.key)">
+                            <t t-esc="vc.label"/>
+                        </button>
+                    </t>
+                </div>
+                <div t-if="state.search.vehicleClass === 'truck'" class="att_route_field">
+                    <label>Tải trọng (kg)</label>
+                    <input type="number" class="form-control form-control-sm"
+                           t-model="state.search.capacityKg" placeholder="VD: 2000"/>
+                </div>
+
+                <div class="att_route_mode_row">
+                    <button type="button"
+                            t-att-class="{active: state.search.inputMode === 'address'}"
+                            t-on-click="() => this.setInputMode('address')">Địa chỉ</button>
+                    <button type="button"
+                            t-att-class="{active: state.search.inputMode === 'coords'}"
+                            t-on-click="() => this.setInputMode('coords')">Toạ độ</button>
+                </div>
+
+                <t t-if="state.search.inputMode === 'address'">
+                    <div class="att_route_field">
+                        <label>Điểm đi</label>
+                        <input type="text" class="form-control form-control-sm"
+                               t-att-value="state.search.originText"
+                               t-on-input="(ev) => this.onAddressInput('origin', ev)"
+                               placeholder="Nhập địa chỉ điểm đi..."/>
+                        <div t-if="state.search.originSuggestions.length" class="att_route_suggest">
+                            <t t-foreach="state.search.originSuggestions" t-as="sug" t-key="sug_index">
+                                <div t-on-click="() => this.selectSuggestion('origin', sug)"
+                                     t-esc="suggestionLabel(sug)"/>
+                            </t>
+                        </div>
+                    </div>
+                    <div class="att_route_field">
+                        <label>Điểm đến</label>
+                        <input type="text" class="form-control form-control-sm"
+                               t-att-value="state.search.destText"
+                               t-on-input="(ev) => this.onAddressInput('dest', ev)"
+                               placeholder="Nhập địa chỉ điểm đến..."/>
+                        <div t-if="state.search.destSuggestions.length" class="att_route_suggest">
+                            <t t-foreach="state.search.destSuggestions" t-as="sug" t-key="sug_index">
+                                <div t-on-click="() => this.selectSuggestion('dest', sug)"
+                                     t-esc="suggestionLabel(sug)"/>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="att_route_field">
+                        <label>Điểm đi (toạ độ)</label>
+                        <input type="text" class="form-control form-control-sm"
+                               t-model="state.search.originCoords"
+                               placeholder="VD: 21.028511, 105.804817"/>
+                    </div>
+                    <div class="att_route_field">
+                        <label>Điểm đến (toạ độ)</label>
+                        <input type="text" class="form-control form-control-sm"
+                               t-model="state.search.destCoords"
+                               placeholder="VD: 20.865139, 106.688084"/>
+                    </div>
+                </t>
+
+                <button type="button" class="btn btn-primary w-100 mt-2"
+                        t-att-disabled="state.search.searching"
+                        t-on-click="findRoute">
+                    <t t-esc="state.search.searching ? 'Đang tìm...' : 'Tìm đường'"/>
+                </button>
+                <button t-if="state.search.result and state.canSaleQuote" type="button"
+                        class="btn btn-outline-primary w-100 mt-1"
+                        t-on-click="() => this.createQuotationFromSearch('sale')">
+                    Tạo báo giá bán với tuyến này
+                </button>
+                <button t-if="state.search.result and state.canPurchaseQuote" type="button"
+                        class="btn btn-outline-secondary w-100 mt-1"
+                        t-on-click="() => this.createQuotationFromSearch('purchase')">
+                    Tạo báo giá mua với tuyến này
+                </button>
+                <p t-if="state.search.error" class="text-danger mt-2 mb-0"
+                   t-esc="state.search.error"/>
+
+                <t t-if="state.search.result">
+                    <div class="att_route_summary">
+                        <div>Khoảng cách: <b t-esc="state.search.result.distance_km"/> km</div>
+                        <div>Thời gian: <b t-esc="state.search.result.eta_minutes"/> phút</div>
+                        <div>Phí BOT: <b t-esc="(state.search.result.toll_cost || 0).toLocaleString('vi-VN')"/> đ</div>
+                    </div>
+                    <div class="att_route_sections">
+                        <button type="button"
+                                t-att-class="{active: state.search.section === 'directions'}"
+                                t-on-click="() => this.state.search.section = 'directions'">
+                            Chỉ dẫn</button>
+                        <button type="button"
+                                t-att-class="{active: state.search.section === 'tolls'}"
+                                t-on-click="() => this.state.search.section = 'tolls'">
+                            Phí BOT</button>
+                        <button type="button"
+                                t-att-class="{active: state.search.section === 'congestion'}"
+                                t-on-click="() => this.state.search.section = 'congestion'">
+                            Tắc nghẽn</button>
+                    </div>
+                    <div t-if="state.search.section === 'directions'" class="att_route_steps">
+                        <t t-if="(state.search.result.instructions || []).length">
+                            <t t-foreach="state.search.result.instructions" t-as="step" t-key="step_index">
+                                <div class="att_route_step">
+                                    <div t-esc="step.text"/>
+                                    <small t-if="step.distance_km">
+                                        <t t-esc="step.distance_km"/> km ·
+                                        <t t-esc="step.time_minutes"/> phút
+                                    </small>
+                                </div>
+                            </t>
+                        </t>
+                        <p t-else="" class="text-muted mb-0">
+                            VietMap không trả chỉ dẫn chi tiết cho tuyến này.</p>
+                    </div>
+                    <div t-elif="state.search.section === 'tolls'" class="att_route_steps">
+                        <t t-if="(state.search.result.tolls || []).length">
+                            <t t-foreach="state.search.result.tolls" t-as="toll" t-key="toll_index">
+                                <div t-if="(toll.price || 0) > 0" class="att_route_step">
+                                    <div t-esc="toll.name || 'Trạm thu phí'"/>
+                                    <small>
+                                        <t t-esc="(toll.price || 0).toLocaleString('vi-VN')"/> đ
+                                        <t t-if="toll.address"> · <t t-esc="toll.address"/></t>
+                                    </small>
+                                </div>
+                            </t>
+                        </t>
+                        <p t-else="" class="text-muted mb-0">Tuyến không qua trạm thu phí nào.</p>
+                    </div>
+                    <div t-else="" class="att_route_steps">
+                        <t t-if="congestionRows.length">
+                            <t t-foreach="congestionRows" t-as="seg" t-key="seg_index">
+                                <div class="att_route_step att_congestion_row">
+                                    <span class="att_vehicle_dot"
+                                          t-attf-style="background-color: {{seg.color}};"/>
+                                    <span t-esc="seg.label"/>
+                                    <small class="ms-auto">
+                                        <t t-esc="seg.distance_km"/> km
+                                    </small>
+                                </div>
+                            </t>
+                            <p class="text-muted mt-2 mb-0" style="font-size: 12px;">
+                                Các đoạn được tô màu tương ứng trên bản đồ
+                                (xanh thông thoáng → đỏ tắc nghẽn).
+                            </p>
+                        </t>
+                        <p t-else="" class="text-muted mb-0">
+                            VietMap không trả dữ liệu tắc nghẽn cho tuyến này.</p>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>

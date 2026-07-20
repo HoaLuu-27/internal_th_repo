@@ -1,0 +1,200 @@
+.att_route_finder_pane {
+    position: relative;
+    height: calc(100vh - 100px);
+    min-height: 500px;
+    padding: 8px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.att_route_panel {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 15;
+    width: 320px;
+    max-height: calc(100% - 40px);
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+    padding: 12px;
+}
+
+.att_route_panel_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.att_route_vehicle_row {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 8px;
+
+    button {
+        flex: 1;
+        padding: 5px 2px;
+        font-size: 12px;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        background: #fff;
+        cursor: pointer;
+
+        &.active {
+            background: #2d6cdf;
+            border-color: #2d6cdf;
+            color: #fff;
+            font-weight: 600;
+        }
+    }
+}
+
+.att_route_mode_row {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 8px;
+
+    button {
+        flex: 1;
+        padding: 5px 2px;
+        font-size: 12px;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        background: #fff;
+        cursor: pointer;
+
+        &.active {
+            background: #1a56c4;
+            border-color: #1a56c4;
+            color: #fff;
+            font-weight: 600;
+        }
+    }
+}
+
+.att_route_field {
+    position: relative;
+    margin-bottom: 8px;
+
+    label {
+        font-size: 12px;
+        color: #6c757d;
+        margin-bottom: 2px;
+    }
+}
+
+.att_route_suggest {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 0 0 6px 6px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    max-height: 220px;
+    overflow-y: auto;
+
+    div {
+        padding: 7px 10px;
+        font-size: 13px;
+        cursor: pointer;
+        border-bottom: 1px solid #f0f0f0;
+
+        &:hover {
+            background: #f0f4f9;
+        }
+    }
+}
+
+.att_route_summary {
+    margin-top: 10px;
+    padding: 8px 10px;
+    background: #f6f8fb;
+    border: 1px solid #e3e9f2;
+    border-radius: 6px;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.att_route_sections {
+    display: flex;
+    gap: 4px;
+    margin-top: 8px;
+
+    button {
+        flex: 1;
+        padding: 5px;
+        font-size: 12px;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        background: #fff;
+        cursor: pointer;
+
+        &.active {
+            background: #1a56c4;
+            border-color: #1a56c4;
+            color: #fff;
+            font-weight: 600;
+        }
+    }
+}
+
+.att_route_steps {
+    margin-top: 8px;
+    max-height: 260px;
+    overflow-y: auto;
+}
+
+.att_route_step {
+    padding: 6px 8px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+
+    small {
+        color: #6c757d;
+    }
+}
+
+.att_congestion_row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.att_vehicle_dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* ---- Responsive — dùng được trên điện thoại/màn nhỏ ---- */
+@media (max-width: 900px) {
+    .att_route_finder_pane {
+        height: calc(100vh - 60px);
+        min-height: 400px;
+        padding: 4px;
+    }
+
+    .att_route_panel {
+        top: 8px;
+        left: 8px;
+        width: calc(100% - 16px);
+        max-height: calc(100% - 16px);
+    }
+
+    .att_route_vehicle_row, .att_route_mode_row, .att_route_sections {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 480px) {
+    .att_route_panel {
+        padding: 8px;
+    }
+}

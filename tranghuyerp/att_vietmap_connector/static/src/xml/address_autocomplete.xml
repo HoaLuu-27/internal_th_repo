@@ -1,0 +1,10 @@
+<templates xml:space="preserve">
+    <t t-name="att_vietmap_connector.AddressAutocomplete" owl="1">
+        <AutoComplete
+            value="value"
+            sources="sources"
+            onBlur.bind="onBlur"
+            placeholder="'Tìm địa chỉ...'"
+        />
+    </t>
+</templates>
