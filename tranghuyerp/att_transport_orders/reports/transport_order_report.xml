@@ -4,13 +4,26 @@
         <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)"/>
         <div class="page th-dispatch-order">
             <style>
-                .th-dispatch-order { color: #1f2933; font-family: Arial, sans-serif; font-size: 10px; line-height: 1.35; }
+                .th-dispatch-order,
+                .th-dispatch-order *,
+                .th-dispatch-order *::before,
+                .th-dispatch-order *::after {
+                    color: #1f2933;
+                    font-family: Arial, "Liberation Sans", sans-serif !important;
+                }
+                .th-dispatch-order { font-size: 10px; line-height: 1.35; }
                 .th-dispatch-order h1 { color: #ffffff; font-size: 19px; letter-spacing: .4px; margin: 0; text-align: center; }
                 .th-dispatch-order table { border-collapse: collapse; width: 100%; }
                 .th-dispatch-order td, .th-dispatch-order th { border: 1px solid #718096; padding: 5px 7px; vertical-align: top; }
                 .th-dispatch-order th { background: #1A3E6F; color: #ffffff; text-align: center; }
-                .th-dispatch-order .header-dark { background: #1A3E6F; color: #ffffff; }
-                .th-dispatch-order .header-blue { background: #2E6DA4; color: #ffffff; }
+                .th-dispatch-order .header-dark,
+                .th-dispatch-order .header-dark *,
+                .th-dispatch-order .header-blue,
+                .th-dispatch-order .header-blue *,
+                .th-dispatch-order th,
+                .th-dispatch-order th * { color: #ffffff !important; }
+                .th-dispatch-order .header-dark { background: #1A3E6F; }
+                .th-dispatch-order .header-blue { background: #2E6DA4; }
                 .th-dispatch-order .header-light, .th-dispatch-order .label, .th-dispatch-order .total td { background: #E8EFF8; }
                 .th-dispatch-order .label { font-weight: 700; width: 24%; }
                 .th-dispatch-order .section { background: #2E6DA4; color: #ffffff; font-size: 10.5px; font-weight: 700; letter-spacing: .15px; margin-top: 12px; padding: 5px 7px; page-break-after: avoid; }
