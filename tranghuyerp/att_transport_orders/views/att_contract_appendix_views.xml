@@ -1,0 +1,24 @@
+<odoo>
+    <!-- Thêm field logistics vào dòng phụ lục — field do module này khai
+         báo trên att.contract.appendix.line (att_contract_appendix.py) -->
+    <record id="view_att_appendix_form_att_transport" model="ir.ui.view">
+        <field name="name">att.contract.appendix.form.att.transport</field>
+        <field name="model">att.contract.appendix</field>
+        <field name="inherit_id" ref="att_contract_management.view_att_appendix_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='appendix_line_ids']/list/field[@name='product_id']"
+                   position="before">
+                <field name="pickup_location" optional="hide"/>
+                <field name="delivery_location" optional="hide"/>
+                <field name="pickup_lat" column_invisible="1"/>
+                <field name="pickup_lng" column_invisible="1"/>
+                <field name="delivery_lat" column_invisible="1"/>
+                <field name="delivery_lng" column_invisible="1"/>
+                <field name="vehicle_type_id" optional="show"
+                       domain="[('transport_mode_ids', 'in', product_id)] if product_id else []"/>
+                <field name="vehicle_id" optional="hide"/>
+                <field name="cargo_description" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

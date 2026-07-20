@@ -1,0 +1,31 @@
+<odoo>
+    <record id="module_category_att_qc" model="ir.module.category">
+        <field name="name">TH: Báo giá &amp; Hợp đồng</field>
+        <field name="sequence">26</field>
+    </record>
+
+    <!-- Chuỗi implied: CEO ⊃ Manager ⊃ User — gán 1 group cao nhất là đủ.
+         Code chỉ cần has_group() 1 group, không phải OR nhiều group. -->
+    <record id="group_att_qc_user" model="res.groups">
+        <field name="name">TH Báo giá: Nhân viên</field>
+<!--        <field name="category_id" ref="module_category_att_qc"/>-->
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="group_att_qc_manager" model="res.groups">
+        <field name="name">TH Báo giá: Quản lý</field>
+<!--        <field name="category_id" ref="module_category_att_qc"/>-->
+        <field name="implied_ids" eval="[(4, ref('group_att_qc_user'))]"/>
+    </record>
+
+    <record id="group_att_qc_ceo" model="res.groups">
+        <field name="name">TH Báo giá: Giám đốc</field>
+<!--        <field name="category_id" ref="module_category_att_qc"/>-->
+        <field name="implied_ids" eval="[(4, ref('group_att_qc_manager'))]"/>
+    </record>
+
+    <!-- Admin hệ thống luôn đủ quyền — bài học vụ admin bị chặn nút New -->
+    <record id="base.group_system" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('group_att_qc_ceo'))]"/>
+    </record>
+</odoo>

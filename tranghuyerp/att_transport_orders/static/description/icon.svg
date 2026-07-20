@@ -1,0 +1,30 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <rect width="256" height="256" fill="#0f1b2d"/>
+
+  <!-- Tai nghe -->
+  <path d="M 68 118 A 60 60 0 0 1 188 118" fill="none" stroke="#1f3a5f" stroke-width="10" stroke-linecap="round"/>
+  <rect x="58" y="108" width="18" height="34" rx="6" fill="#1f3a5f"/>
+  <rect x="180" y="108" width="18" height="34" rx="6" fill="#1f3a5f"/>
+
+  <!-- Đầu -->
+  <circle cx="128" cy="120" r="58" fill="#1fa189"/>
+
+  <!-- Micro -->
+  <path d="M 128 150 Q 150 168 168 158" fill="none" stroke="#1f3a5f" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="170" cy="157" r="6" fill="#1f3a5f"/>
+
+  <!-- Vai / áo vest -->
+  <path d="M 40 232 Q 40 158 128 158 Q 216 158 216 232 Z" fill="#2d6cdf"/>
+  <path d="M 100 160 L 128 232 L 156 160 Z" fill="#f4f7fb"/>
+  <path d="M 118 162 L 128 178 L 138 162 L 128 158 Z" fill="#1f3a5f"/>
+  <path d="M 122 178 L 128 232 L 134 178 Z" fill="#1f3a5f"/>
+
+  <!-- Huy hiệu xe tải -->
+  <circle cx="188" cy="188" r="52" fill="#1f3a5f"/>
+  <rect x="152" y="178" width="42" height="26" rx="3" fill="#f4f7fb"/>
+  <path d="M 194 186 L 214 186 L 224 198 L 224 204 L 194 204 Z" fill="#f4f7fb"/>
+  <circle cx="169" cy="206" r="7" fill="#1f3a5f" stroke="#f4f7fb" stroke-width="3"/>
+  <circle cx="211" cy="206" r="7" fill="#1f3a5f" stroke="#f4f7fb" stroke-width="3"/>
+  <path d="M 188 150 L 195 163 L 181 163 Z" fill="#f4f7fb"/>
+  <circle cx="188" cy="146" r="4" fill="#f4f7fb"/>
+</svg>

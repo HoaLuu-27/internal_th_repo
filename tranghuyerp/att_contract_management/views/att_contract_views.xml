@@ -1,0 +1,286 @@
+<odoo>
+    <record id="view_att_contract_form" model="ir.ui.view">
+        <field name="name">att.contract.form</field>
+        <field name="model">att.contract</field>
+        <field name="arch" type="xml">
+            <form string="Hợp đồng nguyên tắc">
+                <header>
+                    <button name="action_confirm" string="Đưa vào hiệu lực"
+                            type="object" class="btn-primary"
+                            invisible="state != 'draft'"
+                            groups="att_contract_management.group_att_qc_ceo"/>
+                    <button name="action_request_liquidation" string="Yêu cầu thanh lý"
+                            type="object"
+                            invisible="state not in ('running', 'expired')"
+                            groups="att_contract_management.group_att_qc_manager"/>
+                    <button name="action_approve_liquidation" string="Duyệt thanh lý"
+                            type="object" class="btn-primary"
+                            confirm="Xác nhận thanh lý hợp đồng này?"
+                            invisible="state != 'liquidation_requested'"
+                            groups="att_contract_management.group_att_qc_ceo"/>
+                    <button name="action_cancel" string="Huỷ" type="object"
+                            invisible="state != 'draft'"/>
+                    <button name="action_reset_draft" string="Về nháp"
+                            type="object" invisible="state != 'cancelled'"/>
+                    <button name="%(action_att_send_document_wizard)d"
+                            string="Gửi cho đối tác" type="action"
+                            context="{'default_res_model': 'att.contract', 'default_res_id': id}"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,running,expired,liquidation_requested,liquidated"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_appendices" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="appendix_count" widget="statinfo"
+                                   string="Phụ lục"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="att_can_edit" invisible="1"/>
+                            <field name="contract_type" readonly="state != 'draft'"/>
+                            <field name="partner_id" readonly="state != 'draft'"/>
+                            <field name="user_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="sign_date" readonly="state != 'draft'"/>
+                            <field name="effective_date" readonly="state != 'draft'"/>
+                            <field name="expired_date" readonly="state != 'draft'"/>
+                            <field name="currency_id" readonly="state != 'draft'"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Nguồn báo giá">
+                            <!-- Đây là báo giá ĐANG căn cứ giá — đổi được khi
+                                 KH tái đàm phán (qua action_create_att_contract
+                                 phát hiện HĐ đã có, tự re-base), không sửa tay
+                                 trực tiếp trên form. -->
+                            <field name="source_sale_order_id" readonly="1"
+                                   invisible="not source_sale_order_id"/>
+                            <field name="source_purchase_order_id" readonly="1"
+                                   invisible="not source_purchase_order_id"/>
+                            <field name="att_quotation_ids" widget="many2many_tags"
+                                   readonly="1"
+                                   invisible="not att_quotation_ids"/>
+                        </group>
+                    </group>
+                    <group string="Thanh lý"
+                           invisible="state in ('draft', 'cancelled')">
+                        <group>
+                            <field name="liquidation_reason_id"
+                                   readonly="state not in ('running', 'expired')"/>
+                            <field name="liquidation_note"
+                                   readonly="state not in ('running', 'expired')"/>
+                        </group>
+                        <group>
+                            <field name="liquidation_requested_by"
+                                   invisible="not liquidation_requested_by"/>
+                            <field name="liquidation_requested_date"
+                                   invisible="not liquidation_requested_date"/>
+                        </group>
+                    </group>
+                    <group string="Người ký &amp; phụ trách">
+                        <group>
+                            <field name="partner_signer_ids" widget="many2many_tags"
+                                   readonly="state != 'draft'"/>
+                            <field name="company_signer_ids" widget="many2many_tags"
+                                   readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <!-- Không khoá theo state — HĐ đang chạy vẫn bàn giao
+                                 người phụ trách được (nhân sự nghỉ/chuyển) -->
+                            <field name="responsible_user_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Thông tin đối tác" name="partner_info">
+                            <group>
+                                <group>
+                                    <field name="partner_address"/>
+                                    <field name="partner_phone"/>
+                                    <field name="partner_email"/>
+                                    <field name="partner_tax_code"/>
+                                </group>
+                                <group>
+                                    <field name="partner_bank_account"/>
+                                    <field name="partner_representative" readonly="1"/>
+                                    <field name="partner_position" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Thanh toán" name="payment">
+                            <group>
+                                <group>
+                                    <field name="payment_term_id"/>
+                                    <field name="payment_method"/>
+                                    <field name="payment_deadline_days"/>
+                                </group>
+                                <group>
+                                    <field name="payment_document_note"/>
+                                    <field name="payment_note"/>
+                                    <field name="late_payment_penalty_note"/>
+                                    <field name="waiting_fee_note"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Điều khoản" name="terms">
+                            <field name="term_line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="display_title" readonly="1"/>
+                                    <field name="clause_id"
+                                           domain="[('clause_type', 'in', [parent.contract_type, 'both'])]"
+                                           options="{'no_create': True}"/>
+                                    <field name="is_fixed" readonly="1"/>
+                                    <field name="title" readonly="is_fixed"/>
+                                    <field name="content" widget="html" readonly="is_fixed" optional="show"/>
+                                    <field name="note" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Ghi chú" name="note">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_att_contract_list" model="ir.ui.view">
+        <field name="name">att.contract.list</field>
+        <field name="model">att.contract</field>
+        <field name="arch" type="xml">
+            <list string="Hợp đồng nguyên tắc"
+                  decoration-success="state == 'running'"
+                  decoration-muted="state in ('cancelled', 'liquidated')">
+                <field name="name"/>
+                <field name="contract_type" optional="show"/>
+                <field name="partner_id"/>
+                <field name="effective_date"/>
+                <field name="expired_date"/>
+                <field name="user_id" optional="show"/>
+                <field name="appendix_count" string="Số PL" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'running'"
+                       decoration-warning="state == 'expired'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_att_contract_search" model="ir.ui.view">
+        <field name="name">att.contract.search</field>
+        <field name="model">att.contract</field>
+        <field name="arch" type="xml">
+            <search string="Hợp đồng">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="user_id"/>
+                <filter name="running" string="Đang hiệu lực"
+                        domain="[('state', '=', 'running')]"/>
+                <filter name="expiring" string="Hết hạn trong 30 ngày"
+                        domain="[('state', '=', 'running'),
+                                 ('expired_date', '&lt;=', (context_today() + relativedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+<!--                <filter name="type_sale" string="HĐ bán"-->
+<!--                        domain="[('contract_type', '=', 'sale')]"/>-->
+<!--                <filter name="type_purchase" string="HĐ mua"-->
+<!--                        domain="[('contract_type', '=', 'purchase')]"/>-->
+<!--                <group expand="0" string="Nhóm theo">-->
+<!--                    <filter name="group_partner" string="Đối tác"-->
+<!--                            context="{'group_by': 'partner_id'}"/>-->
+<!--                    <filter name="group_state" string="Trạng thái"-->
+<!--                            context="{'group_by': 'state'}"/>-->
+<!--                    <filter name="group_type" string="Loại HĐ"-->
+<!--                            context="{'group_by': 'contract_type'}"/>-->
+<!--                </group>-->
+            </search>
+        </field>
+    </record>
+
+    <record id="action_att_sale_contract" model="ir.actions.act_window">
+        <field name="name">Hợp đồng nguyên tắc</field>
+        <field name="res_model">att.contract</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_att_contract_search"/>
+        <field name="domain">[('contract_type', '=', 'sale')]</field>
+        <field name="context">
+            {
+                'default_contract_type': 'sale'
+            }
+        </field>
+    </record>
+    <record id="action_att_sale_contract_appendix" model="ir.actions.act_window">
+        <field name="name">Phụ lục hợp đồng</field>
+        <field name="res_model">att.contract.appendix</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">
+            [('contract_id.contract_type', '=', 'sale')]
+        </field>
+        <field name="context">
+            {
+                'default_contract_type': 'sale'
+            }
+        </field>
+        <field name="group_ids" eval="[(4, ref('att_contract_management.group_att_qc_user'))]"/>
+    </record>
+
+    <!-- Menu cấp 1 bên trong ứng dụng Sales -->
+    <menuitem id="menu_att_sale_contract_root"
+              name="Hợp đồng"
+              parent="sale.sale_menu_root"
+              sequence="35"
+              groups="att_contract_management.group_att_qc_user"/>
+
+    <!-- Hợp đồng nguyên tắc bán -->
+    <menuitem id="menu_att_sale_contract"
+              name="Hợp đồng nguyên tắc"
+              parent="menu_att_sale_contract_root"
+              action="action_att_sale_contract"
+              sequence="10"
+              groups="att_contract_management.group_att_qc_user"/>
+
+    <!-- Phụ lục hợp đồng bán -->
+    <menuitem id="menu_att_sale_contract_appendix"
+              name="Phụ lục hợp đồng"
+              parent="menu_att_sale_contract_root"
+              action="action_att_sale_contract_appendix"
+              sequence="20"
+              groups="att_contract_management.group_att_qc_user"/>
+
+    <!-- ================= Hợp đồng mua — menu bên trong ứng dụng Purchase ================= -->
+    <record id="action_att_purchase_contract" model="ir.actions.act_window">
+        <field name="name">Hợp đồng nguyên tắc NCC</field>
+        <field name="res_model">att.contract</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_att_contract_search"/>
+        <field name="domain">[('contract_type', '=', 'purchase')]</field>
+        <field name="context">
+            {
+                'default_contract_type': 'purchase'
+            }
+        </field>
+        <field name="group_ids" eval="[(4, ref('att_contract_management.group_att_qc_user'))]"/>
+    </record>
+
+    <!-- Menu cấp 1 bên trong ứng dụng Purchase -->
+    <menuitem id="menu_att_purchase_contract_root"
+              name="Hợp đồng"
+              parent="purchase.menu_purchase_root"
+              sequence="35"
+              groups="att_contract_management.group_att_qc_user"/>
+
+    <!-- Hợp đồng nguyên tắc mua -->
+    <menuitem id="menu_att_purchase_contract"
+              name="Hợp đồng nguyên tắc"
+              parent="menu_att_purchase_contract_root"
+              action="action_att_purchase_contract"
+              sequence="10"
+              groups="att_contract_management.group_att_qc_user"/>
+</odoo>

@@ -1,0 +1,27 @@
+<odoo>
+    <record id="view_att_send_document_wizard_form" model="ir.ui.view">
+        <field name="name">att.send.document.wizard.form</field>
+        <field name="model">att.send.document.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Gửi cho đối tác">
+                <group>
+                    <field name="res_model" invisible="1"/>
+                    <field name="res_id" invisible="1"/>
+                    <field name="channel" widget="radio"/>
+                </group>
+                <footer>
+                    <button name="action_send" string="Gửi" type="object"
+                            class="btn-primary"/>
+                    <button string="Huỷ" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_att_send_document_wizard" model="ir.actions.act_window">
+        <field name="name">Gửi cho đối tác</field>
+        <field name="res_model">att.send.document.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

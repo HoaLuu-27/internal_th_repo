@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Root menu -->
+    <menuitem id="menu_att_transport_root"
+              name="Điều vận"
+              sequence="36"
+              web_icon="att_transport_orders,static/description/icon.png"/>
+
+    <!-- Lệnh vận chuyển -->
+    <menuitem id="menu_att_to_main"
+              name="Lệnh vận chuyển"
+              parent="menu_att_transport_root"
+              sequence="10"/>
+
+    <menuitem id="menu_att_to_all"
+              name="Tất cả lệnh"
+              parent="menu_att_to_main"
+              action="action_att_transport_order"
+              sequence="10"/>
+
+    <record id="action_att_to_in_transit" model="ir.actions.act_window">
+        <field name="name">Đang vận chuyển</field>
+        <field name="res_model">att.transport.order</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="domain">[('state', '=', 'in_transit')]</field>
+    </record>
+
+    <menuitem id="menu_att_to_in_transit"
+              name="Đang vận chuyển"
+              parent="menu_att_to_main"
+              action="action_att_to_in_transit"
+              sequence="20"/>
+
+    <record id="action_att_to_no_vehicle" model="ir.actions.act_window">
+        <field name="name">Chưa phân xe</field>
+        <field name="res_model">att.transport.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">
+            [('vehicle_id', '=', False),
+             ('state', 'in', ('draft', 'confirmed'))]
+        </field>
+    </record>
+
+    <menuitem id="menu_att_to_no_vehicle"
+              name="Chưa phân xe"
+              parent="menu_att_to_main"
+              action="action_att_to_no_vehicle"
+              sequence="30"/>
+
+    <record id="action_att_to_backhaul" model="ir.actions.act_window">
+        <field name="name">Chuyến về</field>
+        <field name="res_model">att.transport.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('is_backhaul', '=', True)]</field>
+    </record>
+
+    <menuitem id="menu_att_to_backhaul"
+              name="Chuyến về"
+              parent="menu_att_to_main"
+              action="action_att_to_backhaul"
+              sequence="40"/>
+
+    <!-- Cấu hình -->
+    <menuitem id="menu_att_transport_config"
+              name="Cấu hình"
+              parent="menu_att_transport_root"
+              sequence="90"
+              groups="base.group_system"/>
+
+    <!-- Chi phí phát sinh -->
+    <menuitem id="menu_att_cost_main"
+              name="Chi phí phát sinh"
+              parent="menu_att_transport_config"
+              sequence="10"/>
+
+    <menuitem id="menu_att_cost_pending"
+              name="Chờ phê duyệt"
+              parent="menu_att_cost_main"
+              action="action_att_cost_line_pending"
+              sequence="10"/>
+
+    <menuitem id="menu_att_cost_all"
+              name="Tất cả chi phí"
+              parent="menu_att_cost_main"
+              action="action_att_cost_line_all"
+              sequence="20"/>
+
+    <!-- Tuyến đường -->
+    <menuitem id="menu_att_route_main"
+              name="Tuyến đường"
+              parent="menu_att_transport_config"
+              sequence="20"/>
+
+    <menuitem id="menu_att_route_list"
+              name="Danh sách tuyến"
+              parent="menu_att_route_main"
+              action="action_att_transport_route"
+              sequence="10"/>
+
+    <menuitem id="menu_att_vendor_route"
+              name="NCC chuyên tuyến"
+              parent="menu_att_route_main"
+              action="action_att_vendor_route_rule"
+              sequence="20"/>
+
+    <!-- Danh mục cấu hình -->
+    <menuitem id="menu_att_cost_type"
+              name="Loại chi phí"
+              parent="menu_att_transport_config"
+              action="action_att_cost_type"
+              sequence="30"/>
+
+    <menuitem id="menu_att_commodity"
+              name="Loại hàng hóa"
+              parent="menu_att_transport_config"
+              action="action_att_commodity"
+              sequence="40"/>
+
+</odoo>

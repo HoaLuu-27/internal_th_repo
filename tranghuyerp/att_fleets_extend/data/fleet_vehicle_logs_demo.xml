@@ -1,0 +1,339 @@
+<odoo noupdate="1">
+    <!-- ============ Đối tác (NCC bán xe / bảo hiểm) ============ -->
+    <record id="partner_vendor_truong_hai" model="res.partner">
+        <field name="name">Công ty TNHH Ô tô Trường Hải</field>
+        <field name="is_company">True</field>
+        <field name="supplier_rank">1</field>
+        <field name="city">Hồ Chí Minh</field>
+    </record>
+    <record id="partner_vendor_bao_viet" model="res.partner">
+        <field name="name">Bảo hiểm Bảo Việt</field>
+        <field name="is_company">True</field>
+        <field name="supplier_rank">1</field>
+        <field name="city">Hà Nội</field>
+    </record>
+
+    <!-- ============ Nhân sự (lái xe / HCNS bàn giao) ============ -->
+    <record id="employee_driver_1" model="hr.employee">
+        <field name="name">Nguyễn Văn Tài</field>
+    </record>
+    <record id="employee_driver_2" model="hr.employee">
+        <field name="name">Trần Văn Sơn</field>
+    </record>
+    <record id="employee_hcns" model="hr.employee">
+        <field name="name">Lê Thị Hương</field>
+    </record>
+
+    <!-- ============ Loại chi phí (hợp đồng / bảo dưỡng) ============ -->
+    <record id="type_contract_purchase" model="fleet.service.type">
+        <field name="name">Hợp đồng mua xe</field>
+        <field name="category">contract</field>
+    </record>
+    <record id="type_contract_insurance" model="fleet.service.type">
+        <field name="name">Bảo hiểm xe</field>
+        <field name="category">contract</field>
+    </record>
+    <record id="type_service_maintenance" model="fleet.service.type">
+        <field name="name">Bảo dưỡng định kỳ</field>
+        <field name="category">service</field>
+    </record>
+    <record id="type_service_oil" model="fleet.service.type">
+        <field name="name">Thay dầu nhớt</field>
+        <field name="category">service</field>
+    </record>
+    <record id="type_service_tire" model="fleet.service.type">
+        <field name="name">Thay lốp</field>
+        <field name="category">service</field>
+    </record>
+    <record id="type_service_repair" model="fleet.service.type">
+        <field name="name">Sửa chữa</field>
+        <field name="category">service</field>
+    </record>
+
+    <!-- ============ Xe máy 1 (29-H1 123.45) ============ -->
+    <record id="contract_purchase_motorbike_1" model="fleet.vehicle.log.contract">
+        <field name="vehicle_id" ref="vehicle_demo_motorbike_1"/>
+        <field name="cost_subtype_id" ref="type_contract_purchase"/>
+        <field name="insurer_id" ref="partner_vendor_truong_hai"/>
+        <field name="amount">22000000</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(months=18)).strftime('%Y-%m-%d')"/>
+        <field name="start_date" eval="(DateTime.now() - relativedelta(months=18)).strftime('%Y-%m-%d')"/>
+        <field name="cost_frequency">no</field>
+        <field name="state">open</field>
+    </record>
+    <record id="contract_insurance_motorbike_1" model="fleet.vehicle.log.contract">
+        <field name="vehicle_id" ref="vehicle_demo_motorbike_1"/>
+        <field name="cost_subtype_id" ref="type_contract_insurance"/>
+        <field name="insurer_id" ref="partner_vendor_bao_viet"/>
+        <field name="amount">350000</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(months=2)).strftime('%Y-%m-%d')"/>
+        <field name="start_date" eval="(DateTime.now() - relativedelta(months=2)).strftime('%Y-%m-%d')"/>
+        <field name="expiration_date" eval="(DateTime.now() + relativedelta(months=10)).strftime('%Y-%m-%d')"/>
+        <field name="cost_frequency">yearly</field>
+        <field name="state">open</field>
+    </record>
+    <record id="service_motorbike_1_oil" model="fleet.vehicle.log.services">
+        <field name="vehicle_id" ref="vehicle_demo_motorbike_1"/>
+        <field name="service_type_id" ref="type_service_oil"/>
+        <field name="amount">150000</field>
+        <field name="odometer">3200</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(months=1)).strftime('%Y-%m-%d')"/>
+    </record>
+    <record id="doc_motorbike_1_dangkiem" model="att.vehicle.document">
+        <field name="vehicle_id" ref="vehicle_demo_motorbike_1"/>
+        <field name="doc_type">dang_kiem</field>
+        <field name="name">DK-29H1-12345</field>
+        <field name="issue_date" eval="(DateTime.now() - relativedelta(months=18)).strftime('%Y-%m-%d')"/>
+        <field name="expiry_date" eval="(DateTime.now() + relativedelta(days=20)).strftime('%Y-%m-%d')"/>
+    </record>
+
+    <!-- ============ Xe máy 2 (29-H1 678.90) ============ -->
+    <record id="contract_purchase_motorbike_2" model="fleet.vehicle.log.contract">
+        <field name="vehicle_id" ref="vehicle_demo_motorbike_2"/>
+        <field name="cost_subtype_id" ref="type_contract_purchase"/>
+        <field name="insurer_id" ref="partner_vendor_truong_hai"/>
+        <field name="amount">21500000</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(months=10)).strftime('%Y-%m-%d')"/>
+        <field name="start_date" eval="(DateTime.now() - relativedelta(months=10)).strftime('%Y-%m-%d')"/>
+        <field name="cost_frequency">no</field>
+        <field name="state">open</field>
+    </record>
+    <record id="contract_insurance_motorbike_2" model="fleet.vehicle.log.contract">
+        <field name="vehicle_id" ref="vehicle_demo_motorbike_2"/>
+        <field name="cost_subtype_id" ref="type_contract_insurance"/>
+        <field name="insurer_id" ref="partner_vendor_bao_viet"/>
+        <field name="amount">350000</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(months=10)).strftime('%Y-%m-%d')"/>
+        <field name="start_date" eval="(DateTime.now() - relativedelta(months=10)).strftime('%Y-%m-%d')"/>
+        <field name="expiration_date" eval="(DateTime.now() + relativedelta(months=2)).strftime('%Y-%m-%d')"/>
+        <field name="cost_frequency">yearly</field>
+        <field name="state">open</field>
+    </record>
+    <record id="doc_motorbike_2_dangkiem" model="att.vehicle.document">
+        <field name="vehicle_id" ref="vehicle_demo_motorbike_2"/>
+        <field name="doc_type">dang_kiem</field>
+        <field name="name">DK-29H1-67890</field>
+        <field name="issue_date" eval="(DateTime.now() - relativedelta(months=10)).strftime('%Y-%m-%d')"/>
+        <field name="expiry_date" eval="(DateTime.now() + relativedelta(months=8)).strftime('%Y-%m-%d')"/>
+    </record>
+
+    <!-- ============ Xe van 500kg (30F-234.56) ============ -->
+    <record id="contract_purchase_van_500kg" model="fleet.vehicle.log.contract">
+        <field name="vehicle_id" ref="vehicle_demo_van_500kg"/>
+        <field name="cost_subtype_id" ref="type_contract_purchase"/>
+        <field name="insurer_id" ref="partner_vendor_truong_hai"/>
+        <field name="amount">295000000</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(months=24)).strftime('%Y-%m-%d')"/>
+        <field name="start_date" eval="(DateTime.now() - relativedelta(months=24)).strftime('%Y-%m-%d')"/>
+        <field name="cost_frequency">no</field>
+        <field name="state">open</field>
+    </record>
+    <record id="contract_insurance_van_500kg" model="fleet.vehicle.log.contract">
+        <field name="vehicle_id" ref="vehicle_demo_van_500kg"/>
+        <field name="cost_subtype_id" ref="type_contract_insurance"/>
+        <field name="insurer_id" ref="partner_vendor_bao_viet"/>
+        <field name="amount">6500000</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(months=3)).strftime('%Y-%m-%d')"/>
+        <field name="start_date" eval="(DateTime.now() - relativedelta(months=3)).strftime('%Y-%m-%d')"/>
+        <field name="expiration_date" eval="(DateTime.now() + relativedelta(months=9)).strftime('%Y-%m-%d')"/>
+        <field name="cost_frequency">yearly</field>
+        <field name="state">open</field>
+    </record>
+    <record id="service_van_500kg_maintenance" model="fleet.vehicle.log.services">
+        <field name="vehicle_id" ref="vehicle_demo_van_500kg"/>
+        <field name="service_type_id" ref="type_service_maintenance"/>
+        <field name="amount">1200000</field>
+        <field name="odometer">18500</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(months=2)).strftime('%Y-%m-%d')"/>
+    </record>
+    <record id="service_van_500kg_tire" model="fleet.vehicle.log.services">
+        <field name="vehicle_id" ref="vehicle_demo_van_500kg"/>
+        <field name="service_type_id" ref="type_service_tire"/>
+        <field name="amount">2800000</field>
+        <field name="odometer">20000</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(days=15)).strftime('%Y-%m-%d')"/>
+    </record>
+    <record id="doc_van_500kg_dangkiem" model="att.vehicle.document">
+        <field name="vehicle_id" ref="vehicle_demo_van_500kg"/>
+        <field name="doc_type">dang_kiem</field>
+        <field name="name">DK-30F-23456</field>
+        <field name="issue_date" eval="(DateTime.now() - relativedelta(months=6)).strftime('%Y-%m-%d')"/>
+        <field name="expiry_date" eval="(DateTime.now() + relativedelta(months=12)).strftime('%Y-%m-%d')"/>
+    </record>
+    <record id="doc_van_500kg_phuhieu" model="att.vehicle.document">
+        <field name="vehicle_id" ref="vehicle_demo_van_500kg"/>
+        <field name="doc_type">phu_hieu</field>
+        <field name="name">PH-30F-23456</field>
+        <field name="issue_date" eval="(DateTime.now() - relativedelta(months=6)).strftime('%Y-%m-%d')"/>
+        <field name="expiry_date" eval="(DateTime.now() + relativedelta(days=25)).strftime('%Y-%m-%d')"/>
+    </record>
+    <record id="handover_van_500kg" model="att.vehicle.handover">
+        <field name="vehicle_id" ref="vehicle_demo_van_500kg"/>
+        <field name="handover_type">hcns_lx</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(months=24)).strftime('%Y-%m-%d 09:00:00')"/>
+        <field name="from_employee_id" ref="employee_hcns"/>
+        <field name="to_employee_id" ref="employee_driver_1"/>
+        <field name="odometer">0</field>
+        <field name="state">done</field>
+        <field name="line_ids" eval="[(0, 0, {'name': 'Bộ chìa khoá xe', 'quantity': 2, 'condition': 'good'}),
+                                       (0, 0, {'name': 'Giấy đăng kiểm', 'quantity': 1, 'condition': 'good'}),
+                                       (0, 0, {'name': 'Bình chữa cháy', 'quantity': 1, 'condition': 'good'})]"/>
+    </record>
+
+    <!-- ============ Xe bán tải Ford Ranger (30F-345.67) ============ -->
+    <record id="contract_purchase_pickup" model="fleet.vehicle.log.contract">
+        <field name="vehicle_id" ref="vehicle_demo_pickup"/>
+        <field name="cost_subtype_id" ref="type_contract_purchase"/>
+        <field name="insurer_id" ref="partner_vendor_truong_hai"/>
+        <field name="amount">720000000</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(months=14)).strftime('%Y-%m-%d')"/>
+        <field name="start_date" eval="(DateTime.now() - relativedelta(months=14)).strftime('%Y-%m-%d')"/>
+        <field name="cost_frequency">no</field>
+        <field name="state">open</field>
+    </record>
+    <record id="contract_insurance_pickup" model="fleet.vehicle.log.contract">
+        <field name="vehicle_id" ref="vehicle_demo_pickup"/>
+        <field name="cost_subtype_id" ref="type_contract_insurance"/>
+        <field name="insurer_id" ref="partner_vendor_bao_viet"/>
+        <field name="amount">14500000</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(months=2)).strftime('%Y-%m-%d')"/>
+        <field name="start_date" eval="(DateTime.now() - relativedelta(months=2)).strftime('%Y-%m-%d')"/>
+        <field name="expiration_date" eval="(DateTime.now() + relativedelta(months=10)).strftime('%Y-%m-%d')"/>
+        <field name="cost_frequency">yearly</field>
+        <field name="state">open</field>
+    </record>
+    <record id="service_pickup_maintenance" model="fleet.vehicle.log.services">
+        <field name="vehicle_id" ref="vehicle_demo_pickup"/>
+        <field name="service_type_id" ref="type_service_maintenance"/>
+        <field name="amount">2500000</field>
+        <field name="odometer">32000</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(months=1)).strftime('%Y-%m-%d')"/>
+    </record>
+    <record id="service_pickup_repair" model="fleet.vehicle.log.services">
+        <field name="vehicle_id" ref="vehicle_demo_pickup"/>
+        <field name="service_type_id" ref="type_service_repair"/>
+        <field name="amount">4200000</field>
+        <field name="description">Sửa hệ thống phanh</field>
+        <field name="odometer">33500</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(days=10)).strftime('%Y-%m-%d')"/>
+    </record>
+    <record id="doc_pickup_dangkiem" model="att.vehicle.document">
+        <field name="vehicle_id" ref="vehicle_demo_pickup"/>
+        <field name="doc_type">dang_kiem</field>
+        <field name="name">DK-30F-34567</field>
+        <field name="issue_date" eval="(DateTime.now() - relativedelta(months=8)).strftime('%Y-%m-%d')"/>
+        <field name="expiry_date" eval="(DateTime.now() + relativedelta(months=10)).strftime('%Y-%m-%d')"/>
+    </record>
+    <record id="handover_pickup" model="att.vehicle.handover">
+        <field name="vehicle_id" ref="vehicle_demo_pickup"/>
+        <field name="handover_type">hcns_lx</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(months=14)).strftime('%Y-%m-%d 09:00:00')"/>
+        <field name="from_employee_id" ref="employee_hcns"/>
+        <field name="to_employee_id" ref="employee_driver_2"/>
+        <field name="odometer">0</field>
+        <field name="state">done</field>
+        <field name="line_ids" eval="[(0, 0, {'name': 'Bộ chìa khoá xe', 'quantity': 2, 'condition': 'good'}),
+                                       (0, 0, {'name': 'Bạt phủ thùng', 'quantity': 1, 'condition': 'good'}),
+                                       (0, 0, {'name': 'Lốp dự phòng', 'quantity': 1, 'condition': 'good'})]"/>
+    </record>
+
+    <!-- ============ Xe van 1 tấn Kia K250 (30H-456.78) ============ -->
+    <record id="contract_purchase_van_1t" model="fleet.vehicle.log.contract">
+        <field name="vehicle_id" ref="vehicle_demo_van_1t"/>
+        <field name="cost_subtype_id" ref="type_contract_purchase"/>
+        <field name="insurer_id" ref="partner_vendor_truong_hai"/>
+        <field name="amount">385000000</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(months=9)).strftime('%Y-%m-%d')"/>
+        <field name="start_date" eval="(DateTime.now() - relativedelta(months=9)).strftime('%Y-%m-%d')"/>
+        <field name="cost_frequency">no</field>
+        <field name="state">open</field>
+    </record>
+    <record id="contract_insurance_van_1t" model="fleet.vehicle.log.contract">
+        <field name="vehicle_id" ref="vehicle_demo_van_1t"/>
+        <field name="cost_subtype_id" ref="type_contract_insurance"/>
+        <field name="insurer_id" ref="partner_vendor_bao_viet"/>
+        <field name="amount">8500000</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(months=9)).strftime('%Y-%m-%d')"/>
+        <field name="start_date" eval="(DateTime.now() - relativedelta(months=9)).strftime('%Y-%m-%d')"/>
+        <field name="expiration_date" eval="(DateTime.now() + relativedelta(months=3)).strftime('%Y-%m-%d')"/>
+        <field name="cost_frequency">yearly</field>
+        <field name="state">open</field>
+    </record>
+    <record id="service_van_1t_oil" model="fleet.vehicle.log.services">
+        <field name="vehicle_id" ref="vehicle_demo_van_1t"/>
+        <field name="service_type_id" ref="type_service_oil"/>
+        <field name="amount">450000</field>
+        <field name="odometer">15000</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(months=1)).strftime('%Y-%m-%d')"/>
+    </record>
+    <record id="doc_van_1t_dangkiem" model="att.vehicle.document">
+        <field name="vehicle_id" ref="vehicle_demo_van_1t"/>
+        <field name="doc_type">dang_kiem</field>
+        <field name="name">DK-30H-45678</field>
+        <field name="issue_date" eval="(DateTime.now() - relativedelta(months=9)).strftime('%Y-%m-%d')"/>
+        <field name="expiry_date" eval="(DateTime.now() + relativedelta(months=9)).strftime('%Y-%m-%d')"/>
+    </record>
+
+    <!-- ============ Xe tải 5 tạ Hyundai Porter (30H-567.89) ============ -->
+    <record id="contract_purchase_truck_5ta" model="fleet.vehicle.log.contract">
+        <field name="vehicle_id" ref="vehicle_demo_truck_5ta"/>
+        <field name="cost_subtype_id" ref="type_contract_purchase"/>
+        <field name="insurer_id" ref="partner_vendor_truong_hai"/>
+        <field name="amount">355000000</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(months=30)).strftime('%Y-%m-%d')"/>
+        <field name="start_date" eval="(DateTime.now() - relativedelta(months=30)).strftime('%Y-%m-%d')"/>
+        <field name="cost_frequency">no</field>
+        <field name="state">open</field>
+    </record>
+    <record id="contract_insurance_truck_5ta" model="fleet.vehicle.log.contract">
+        <field name="vehicle_id" ref="vehicle_demo_truck_5ta"/>
+        <field name="cost_subtype_id" ref="type_contract_insurance"/>
+        <field name="insurer_id" ref="partner_vendor_bao_viet"/>
+        <field name="amount">7800000</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(months=6)).strftime('%Y-%m-%d')"/>
+        <field name="start_date" eval="(DateTime.now() - relativedelta(months=6)).strftime('%Y-%m-%d')"/>
+        <field name="expiration_date" eval="(DateTime.now() + relativedelta(months=6)).strftime('%Y-%m-%d')"/>
+        <field name="cost_frequency">yearly</field>
+        <field name="state">open</field>
+    </record>
+    <record id="service_truck_5ta_maintenance" model="fleet.vehicle.log.services">
+        <field name="vehicle_id" ref="vehicle_demo_truck_5ta"/>
+        <field name="service_type_id" ref="type_service_maintenance"/>
+        <field name="amount">1800000</field>
+        <field name="odometer">45000</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(months=3)).strftime('%Y-%m-%d')"/>
+    </record>
+    <record id="service_truck_5ta_repair" model="fleet.vehicle.log.services">
+        <field name="vehicle_id" ref="vehicle_demo_truck_5ta"/>
+        <field name="service_type_id" ref="type_service_repair"/>
+        <field name="amount">3500000</field>
+        <field name="description">Sửa hộp số</field>
+        <field name="odometer">47200</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(days=5)).strftime('%Y-%m-%d')"/>
+    </record>
+    <record id="doc_truck_5ta_dangkiem" model="att.vehicle.document">
+        <field name="vehicle_id" ref="vehicle_demo_truck_5ta"/>
+        <field name="doc_type">dang_kiem</field>
+        <field name="name">DK-30H-56789</field>
+        <field name="issue_date" eval="(DateTime.now() - relativedelta(months=5)).strftime('%Y-%m-%d')"/>
+        <field name="expiry_date" eval="(DateTime.now() - relativedelta(days=5)).strftime('%Y-%m-%d')"/>
+    </record>
+    <record id="doc_truck_5ta_phuhieu" model="att.vehicle.document">
+        <field name="vehicle_id" ref="vehicle_demo_truck_5ta"/>
+        <field name="doc_type">phu_hieu</field>
+        <field name="name">PH-30H-56789</field>
+        <field name="issue_date" eval="(DateTime.now() - relativedelta(months=5)).strftime('%Y-%m-%d')"/>
+        <field name="expiry_date" eval="(DateTime.now() + relativedelta(months=7)).strftime('%Y-%m-%d')"/>
+    </record>
+    <record id="handover_truck_5ta" model="att.vehicle.handover">
+        <field name="vehicle_id" ref="vehicle_demo_truck_5ta"/>
+        <field name="handover_type">hcns_lx</field>
+        <field name="date" eval="(DateTime.now() - relativedelta(months=30)).strftime('%Y-%m-%d 09:00:00')"/>
+        <field name="from_employee_id" ref="employee_hcns"/>
+        <field name="to_employee_id" ref="employee_driver_1"/>
+        <field name="odometer">0</field>
+        <field name="state">done</field>
+        <field name="line_ids" eval="[(0, 0, {'name': 'Bộ chìa khoá xe', 'quantity': 2, 'condition': 'good'}),
+                                       (0, 0, {'name': 'Giấy đăng kiểm', 'quantity': 1, 'condition': 'good'})]"/>
+    </record>
+</odoo>

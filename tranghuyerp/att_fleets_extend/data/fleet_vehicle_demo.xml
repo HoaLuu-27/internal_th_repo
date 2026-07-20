@@ -1,0 +1,108 @@
+<odoo>
+    <data noupdate="1">
+    <!-- Model xe — dùng lại brand có sẵn của module fleet gốc -->
+    <record id="model_honda_wave_alpha" model="fleet.vehicle.model">
+        <field name="name">Wave Alpha 110</field>
+        <field name="brand_id" ref="fleet.brand_honda"/>
+        <field name="vehicle_type">bike</field>
+    </record>
+    <record id="model_suzuki_carry" model="fleet.vehicle.model">
+        <field name="name">Carry Pro</field>
+        <field name="brand_id" ref="fleet.brand_suzuki"/>
+        <field name="vehicle_type">car</field>
+    </record>
+    <record id="model_ford_ranger" model="fleet.vehicle.model">
+        <field name="name">Ranger</field>
+        <field name="brand_id" ref="fleet.brand_ford"/>
+        <field name="vehicle_type">car</field>
+    </record>
+    <record id="model_kia_k250" model="fleet.vehicle.model">
+        <field name="name">K250</field>
+        <field name="brand_id" ref="fleet.brand_kia"/>
+        <field name="vehicle_type">car</field>
+    </record>
+    <record id="model_hyundai_porter" model="fleet.vehicle.model">
+        <field name="name">Porter 150</field>
+        <field name="brand_id" ref="fleet.brand_hyundai"/>
+        <field name="vehicle_type">car</field>
+    </record>
+
+    <!-- Xe thật — payload_capacity (tấn) + vietmap_vehicle_class khớp đúng
+         5 loại xe đã khai ở vehicle_type_data.xml -->
+    <record id="vehicle_demo_motorbike_1" model="fleet.vehicle">
+        <field name="model_id" ref="model_honda_wave_alpha"/>
+        <field name="license_plate">29-H1 123.45</field>
+        <field name="payload_capacity">0.1</field>
+        <field name="vietmap_vehicle_class">motorcycle</field>
+    </record>
+    <record id="vehicle_demo_motorbike_2" model="fleet.vehicle">
+        <field name="model_id" ref="model_honda_wave_alpha"/>
+        <field name="license_plate">29-H1 678.90</field>
+        <field name="payload_capacity">0.1</field>
+        <field name="vietmap_vehicle_class">motorcycle</field>
+    </record>
+    <record id="vehicle_demo_van_500kg" model="fleet.vehicle">
+        <field name="model_id" ref="model_suzuki_carry"/>
+        <field name="license_plate">30F-234.56</field>
+        <field name="payload_capacity">0.5</field>
+        <field name="volume_capacity">4.5</field>
+        <field name="vietmap_vehicle_class">truck</field>
+    </record>
+    <record id="vehicle_demo_pickup" model="fleet.vehicle">
+        <field name="model_id" ref="model_ford_ranger"/>
+        <field name="license_plate">30F-345.67</field>
+        <field name="payload_capacity">0.85</field>
+        <field name="volume_capacity">3.0</field>
+        <field name="vietmap_vehicle_class">truck</field>
+    </record>
+    <record id="vehicle_demo_van_1t" model="fleet.vehicle">
+        <field name="model_id" ref="model_kia_k250"/>
+        <field name="license_plate">30H-456.78</field>
+        <field name="payload_capacity">1.0</field>
+        <field name="volume_capacity">6.7</field>
+        <field name="vietmap_vehicle_class">truck</field>
+    </record>
+    <record id="vehicle_demo_truck_5ta" model="fleet.vehicle">
+        <field name="model_id" ref="model_hyundai_porter"/>
+        <field name="license_plate">30H-567.89</field>
+        <field name="payload_capacity">0.5</field>
+        <field name="volume_capacity">5.5</field>
+        <field name="vietmap_vehicle_class">truck</field>
+    </record>
+
+    </data>
+
+    <!-- ============ Vị trí hiện tại (mô phỏng) — để test bản đồ nhiệt ở
+         att_transport_orders/data/dispatch_demo.xml. vehicle_demo_van_500kg
+         KHÔNG đụng tới vì xe này đang gắn với 1 Lệnh vận chuyển thật của
+         user (TO/2026/00001-30F-234.56).
+         noupdate="0" CÓ CHỦ ĐÍCH: các record này GHI ĐÈ toạ độ lên xe đã
+         tồn tại — noupdate="1" sẽ bị Odoo bỏ qua khi nâng cấp (chỉ áp cho
+         record tạo mới), toạ độ không bao giờ vào DB. Đổi lại: mỗi lần
+         nâng cấp module, vị trí xe demo bị reset về các toạ độ này. -->
+    <data noupdate="0">
+    <record id="vehicle_demo_truck_5ta" model="fleet.vehicle">
+        <field name="current_lat">20.9886</field>
+        <field name="current_lng">105.9635</field>
+        <field name="th_state">in_transit</field>
+    </record>
+    <record id="vehicle_demo_pickup" model="fleet.vehicle">
+        <field name="current_lat">20.9437</field>
+        <field name="current_lng">106.1899</field>
+        <field name="th_state">in_transit</field>
+    </record>
+    <record id="vehicle_demo_van_1t" model="fleet.vehicle">
+        <field name="current_lat">20.8988</field>
+        <field name="current_lng">106.4164</field>
+        <field name="th_state">in_transit</field>
+    </record>
+    <record id="vehicle_demo_motorbike_1" model="fleet.vehicle">
+        <field name="current_lat">20.8500</field>
+        <field name="current_lng">106.6800</field>
+    </record>
+    <record id="vehicle_demo_motorbike_2" model="fleet.vehicle">
+        <field name="current_lat">21.0300</field>
+        <field name="current_lng">105.7900</field>
+    </record>
+    </data>
+</odoo>

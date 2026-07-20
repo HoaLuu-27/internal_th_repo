@@ -1,0 +1,163 @@
+<odoo>
+    <record id="view_att_cost_type_list" model="ir.ui.view">
+        <field name="name">att.transport.cost.type.list</field>
+        <field name="model">att.transport.cost.type</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"/>
+                <field name="paid_by"/>
+                <field name="expense_type"/>
+                <field name="product_id"/>
+                <field name="requires_approval" widget="boolean_toggle"/>
+                <field name="approval_threshold"/>
+                <field name="active" widget="boolean_toggle"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_att_cost_line_list" model="ir.ui.view">
+        <field name="name">att.transport.cost.line.list</field>
+        <field name="model">att.transport.cost.line</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="needs_approval and state == 'pending'"
+                  decoration-success="state == 'pushed'"
+                  decoration-muted="route_id != False">
+                <field name="date"/>
+                <field name="customer_id" optional="show"/>
+                <field name="sale_order_id" optional="show"/>
+                <field name="transport_order_id" optional="show"/>
+                <field name="source_route_id" optional="hide"/>
+                <field name="route_id" string="Template tuyến" optional="hide"/>
+                <field name="cost_type_id"/>
+                <field name="description" optional="show"/>
+                <field name="amount" sum="Tổng"/>
+                <field name="paid_by"/>
+                <field name="expense_type" optional="hide"/>
+                <field name="is_confirmed" widget="boolean_toggle" optional="show"/>
+                <button name="action_confirm_payer" string="Chốt" type="object" icon="fa-check"
+                        invisible="is_confirmed or route_id != False"/>
+                <field name="needs_approval" column_invisible="1"/>
+                <field name="state" widget="badge"
+                       decoration-danger="state == 'pending' and needs_approval"
+                       decoration-info="state == 'approved'"
+                       decoration-success="state == 'pushed'"/>
+                <button name="action_approve" string="Duyệt" type="object" icon="fa-check"
+                        invisible="state != 'pending' or not needs_approval"
+                        groups="sales_team.group_sale_manager"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_att_cost_line_form" model="ir.ui.view">
+        <field name="name">att.transport.cost.line.form</field>
+        <field name="model">att.transport.cost.line</field>
+        <field name="arch" type="xml">
+            <form string="Dòng chi phí">
+                <header>
+                    <button name="action_confirm_payer" string="Chốt bên chịu" type="object"
+                            class="btn-primary"
+                            invisible="is_confirmed or route_id != False"
+                            help="Xác nhận xong: ai trả + cách xử lý kế toán cho dòng này."/>
+                    <button name="action_approve" string="Duyệt" type="object"
+                            class="btn-primary"
+                            invisible="state != 'pending' or not needs_approval"
+                            groups="sales_team.group_sale_manager"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="pending,approved,pushed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="description" placeholder="Mô tả chi phí..."/></h1>
+                    </div>
+                    <group>
+                        <group string="Chi phí">
+                            <field name="cost_type_id"/>
+                            <field name="amount"/>
+                            <field name="date"/>
+                            <field name="paid_by"/>
+                            <field name="expense_type"/>
+                            <field name="is_confirmed" readonly="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string="Thuộc chứng từ">
+                            <field name="customer_id"/>
+                            <field name="sale_order_id"/>
+                            <field name="transport_order_id"/>
+                            <field name="source_route_id"/>
+                            <field name="route_id" string="Template của tuyến"
+                                   help="Chỉ set với dòng chi phí chuẩn của tuyến — không chốt/duyệt trên template."/>
+                            <field name="partner_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Phê duyệt" invisible="not needs_approval and not approved_by">
+                            <field name="needs_approval" readonly="1"/>
+                            <field name="approved_by"/>
+                            <field name="approved_date"/>
+                        </group>
+                        <group string="Kết quả đẩy kế toán"
+                               invisible="not sale_order_line_id and not vendor_bill_id">
+                            <field name="sale_order_line_id"/>
+                            <field name="vendor_bill_id"/>
+                        </group>
+                        <group string="Trạm thu phí (VietMap)" invisible="not is_toll">
+                            <field name="is_toll" invisible="1"/>
+                            <field name="toll_ref_id"/>
+                            <field name="toll_type"/>
+                            <field name="toll_lat"/>
+                            <field name="toll_lng"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_att_cost_line_search" model="ir.ui.view">
+        <field name="name">att.transport.cost.line.search</field>
+        <field name="model">att.transport.cost.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="transport_order_id"/>
+                <field name="sale_order_id"/>
+                <field name="customer_id"/>
+                <field name="cost_type_id"/>
+                <filter name="per_document" string="Bản ghi theo SO/TO"
+                        domain="[('route_id', '=', False)]"/>
+                <filter name="templates" string="Template tuyến"
+                        domain="[('route_id', '!=', False)]"/>
+                <separator/>
+                <filter name="pending" string="Chờ phê duyệt"
+                        domain="[('state', '=', 'pending'), ('needs_approval', '=', True)]"/>
+                <filter name="approved" string="Đã duyệt" domain="[('state', '=', 'approved')]"/>
+                <filter name="pushed" string="Đã xử lý" domain="[('state', '=', 'pushed')]"/>
+                <group name="groupby">
+                    <filter name="group_customer" string="Khách hàng" context="{'group_by': 'customer_id'}"/>
+                    <filter name="group_so" string="Báo giá/Đơn bán" context="{'group_by': 'sale_order_id'}"/>
+                    <filter name="group_to" string="Lệnh VC" context="{'group_by': 'transport_order_id'}"/>
+                    <filter name="group_type" string="Loại chi phí" context="{'group_by': 'cost_type_id'}"/>
+                    <filter name="group_paid_by" string="Bên chịu" context="{'group_by': 'paid_by'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_att_cost_type" model="ir.actions.act_window">
+        <field name="name">Loại chi phí</field>
+        <field name="res_model">att.transport.cost.type</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    <record id="action_att_cost_line_pending" model="ir.actions.act_window">
+        <field name="name">Chi phí chờ phê duyệt</field>
+        <field name="res_model">att.transport.cost.line</field>
+        <field name="view_mode">list</field>
+        <field name="domain">[('state', '=', 'pending'), ('needs_approval', '=', True)]</field>
+    </record>
+    <record id="action_att_cost_line_all" model="ir.actions.act_window">
+        <field name="name">Chi phí phát sinh</field>
+        <field name="res_model">att.transport.cost.line</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_group_to': 1}</field>
+    </record>
+</odoo>

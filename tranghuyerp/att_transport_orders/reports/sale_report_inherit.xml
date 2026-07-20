@@ -1,0 +1,316 @@
+<odoo>
+    <!-- Dọn view rác còn sót từ 1 lần nâng cấp lỗi trước đó (id này từng bị
+         đổi qua lại giữa "view inherit" và "template độc lập" mà không xoá
+         sạch bản cũ) — xoá tường minh trước khi khai báo lại cho chắc, dù
+         giờ khai báo lại ĐÚNG NHƯ BAN ĐẦU (có inherit_id) nên khả năng cao
+         không cần nữa, giữ lại phòng hờ. -->
+    <delete model="ir.ui.view" id="report_saleorder_document_th"/>
+
+    <!-- Gắn paperformat riêng (margin_top đủ rộng cho header 2 dòng) — áp
+         cho CẢ 2 report bên dưới (report inherit cũ lẫn report mới), chỉ
+         ảnh hưởng báo giá bán, chưa đụng hoá đơn/chứng từ kế toán khác.
+         report_name/report_file PHẢI ghi rõ về đúng giá trị GỐC của Odoo
+         — 1 bản sửa trước đó từng trỏ 2 field này sang template khác rồi
+         bị đổi tên, để trống ở đây sẽ KHÔNG tự trả lại giá trị cũ (XML chỉ
+         ghi field nào được khai, field bỏ qua giữ y nguyên trong DB), gây
+         lỗi "Template not found" khi bấm In. -->
+    <record id="sale.action_report_saleorder" model="ir.actions.report">
+        <field name="report_name">sale.report_saleorder</field>
+        <field name="report_file">sale.report_saleorder</field>
+        <field name="paperformat_id" ref="att_contract_management.paperformat_att_document"/>
+    </record>
+
+    <!-- ============================================================
+         REPORT 1 (GIỮ NGUYÊN — đây là bản inherit cũ, KHÔNG xoá) —
+         inherit thẳng vào report báo giá NATIVE của Odoo
+         (sale.report_saleorder_document), vẫn là report gắn với nút
+         "In"/"Print" mặc định (action sale.action_report_saleorder vẫn
+         report_name = sale.report_saleorder như nguyên bản Odoo, không
+         đổi report_name/report_file ở đây):
+         1. Đổi header/footer sang layout Trang Huy (att_external_layout).
+         2. Thêm dòng "Hợp đồng NT" vào khối thông tin khi báo giá đã gắn HĐNT.
+         3. Thay bảng dòng báo giá bằng bảng render cột THEO TAB "Cấu hình
+            PDF báo giá" trên từng báo giá.
+         Vẫn giữ nguyên phần tổng tiền/chữ ký/điều khoản native bên dưới.
+         ============================================================ -->
+    <template id="report_saleorder_document_th" inherit_id="sale.report_saleorder_document">
+
+        <xpath expr="//t[@t-call='web.external_layout']" position="attributes">
+            <attribute name="t-call">att_contract_management.att_external_layout</attribute>
+        </xpath>
+
+        <xpath expr="//div[@id='informations']" position="inside">
+            <div t-if="doc.att_contract_id" class="col" name="informations_contract">
+                <strong>Hợp đồng NT</strong>
+                <div t-field="doc.att_contract_id.display_name"/>
+            </div>
+        </xpath>
+
+        <xpath expr="//table[hasclass('o_has_total_table')]" position="replace">
+            <table class="table table-sm o_main_table table-borderless"
+                   style="font-size: 13px;">
+                <thead style="display: table-row-group">
+                    <tr style="background-color: #1f3a5f; color: #ffffff;">
+                        <th t-if="doc.th_pdf_show_content" class="text-start">Nội dung vận chuyển</th>
+                        <th t-if="doc.th_pdf_show_pickup" class="text-start">Điểm đi</th>
+                        <th t-if="doc.th_pdf_show_delivery" class="text-start">Điểm đến</th>
+                        <th t-if="doc.th_pdf_show_vehicle" class="text-start">Phương tiện</th>
+                        <th t-if="doc.th_pdf_show_transport_mode" class="text-start">Hình thức VC</th>
+                        <th t-if="doc.th_pdf_show_qty" class="text-end">Số lượng</th>
+                        <th t-if="doc.th_pdf_show_uom" class="text-start">ĐVT</th>
+                        <th t-if="doc.th_pdf_show_expected_date" class="text-start">Thời gian dự kiến</th>
+                        <th t-if="doc.th_pdf_show_cargo_desc" class="text-start">Mô tả hàng hóa</th>
+                        <th t-if="doc.th_pdf_show_price_unit" class="text-end">Đơn giá</th>
+                        <th t-if="doc.th_pdf_show_taxes" class="text-end">Thuế</th>
+                        <th t-if="doc.th_pdf_show_subtotal" class="text-end">Thành tiền chưa thuế</th>
+                        <th t-if="doc.th_pdf_show_total" class="text-end">Tổng tiền</th>
+                    </tr>
+                </thead>
+                <tbody class="sale_tbody">
+                    <t t-foreach="lines_to_report" t-as="line">
+                        <tr t-if="line.display_type == 'line_section'" class="fw-bolder o_line_section">
+                            <td colspan="99"><span t-field="line.name"/></td>
+                        </tr>
+                        <tr t-elif="line.display_type == 'line_note' and doc.th_pdf_show_notes"
+                            class="fst-italic o_line_note">
+                            <td colspan="99"><span t-field="line.name"/></td>
+                        </tr>
+                        <tr t-elif="not line.display_type">
+                            <td t-if="doc.th_pdf_show_content">
+                                <span t-field="line.name"/>
+                            </td>
+                            <td t-if="doc.th_pdf_show_pickup">
+                                <span t-field="line.pickup_location"/>
+                            </td>
+                            <td t-if="doc.th_pdf_show_delivery">
+                                <span t-field="line.delivery_location"/>
+                            </td>
+                            <td t-if="doc.th_pdf_show_vehicle">
+                                <span t-if="line.vehicle_id" t-field="line.vehicle_id.display_name"/>
+                            </td>
+                            <td t-if="doc.th_pdf_show_transport_mode">
+                                <span t-if="line.product_id" t-field="line.product_id.name"/>
+                            </td>
+                            <td t-if="doc.th_pdf_show_qty" class="text-end">
+                                <span t-field="line.product_uom_qty"/>
+                            </td>
+                            <td t-if="doc.th_pdf_show_uom">
+                                <span t-field="line.product_uom_id"/>
+                            </td>
+                            <td t-if="doc.th_pdf_show_expected_date">
+                                <span t-if="line.expected_date" t-field="line.expected_date"
+                                      t-options='{"widget": "datetime"}'/>
+                            </td>
+                            <td t-if="doc.th_pdf_show_cargo_desc">
+                                <span t-field="line.cargo_description"/>
+                            </td>
+                            <td t-if="doc.th_pdf_show_price_unit" class="text-end text-nowrap">
+                                <span t-field="line.price_unit"/>
+                            </td>
+                            <td t-if="doc.th_pdf_show_taxes" class="text-end">
+                                <span t-out="', '.join(tax.tax_label for tax in line.tax_ids if tax.tax_label)"/>
+                            </td>
+                            <td t-if="doc.th_pdf_show_subtotal" class="text-end text-nowrap">
+                                <span t-field="line.price_subtotal"/>
+                            </td>
+                            <td t-if="doc.th_pdf_show_total" class="text-end text-nowrap">
+                                <span t-field="line.price_total"/>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </xpath>
+    </template>
+
+    <!-- ============================================================
+         REPORT 2 — MỚI HOÀN TOÀN, TÁCH BIỆT với report 1 ở trên: id
+         riêng, template riêng, KHÔNG inherit/xpath vào bất kỳ report nào
+         (kể cả report 1) — action riêng (action_report_saleorder_th),
+         xuất hiện như 1 LỰA CHỌN THỨ 2 trong menu Print của báo giá, cạnh
+         report gốc/report 1 — không thay thế, không đụng vào report 1.
+         ============================================================ -->
+    <template id="saleorder_document_th">
+        <t t-call="att_contract_management.att_external_layout">
+            <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)"/>
+
+            <div class="page">
+                <div class="oe_structure"/>
+
+                <t t-set="layout_document_title">
+                    <span t-if="doc.state in ('draft', 'sent')">Báo giá # </span>
+                    <span t-else="">Đơn hàng # </span>
+                    <span t-field="doc.name">SO0000</span>
+                </t>
+                <h2 t-out="layout_document_title" style="margin-bottom: 4px;"/>
+
+                <div class="row mb-3">
+                    <div class="col-7">
+                        <strong>Khách hàng</strong>
+                        <div t-field="doc.partner_id"
+                             t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
+                        <div t-if="doc.partner_id.vat">
+                            Mã số thuế: <span t-field="doc.partner_id.vat"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4" id="informations">
+                    <div t-if="doc.date_order" class="col">
+                        <strong t-if="doc.state in ('draft', 'sent')">Ngày báo giá</strong>
+                        <strong t-else="">Ngày đặt hàng</strong>
+                        <div t-field="doc.date_order" t-options='{"widget": "date"}'>2023-12-31</div>
+                    </div>
+                    <div t-if="doc.validity_date and doc.state in ('draft', 'sent')" class="col">
+                        <strong>Hết hạn</strong>
+                        <div t-field="doc.validity_date">2023-12-31</div>
+                    </div>
+                    <div t-if="doc.user_id.name" class="col">
+                        <strong>Nhân viên KD</strong>
+                        <div t-field="doc.user_id">Mitchell Admin</div>
+                    </div>
+                    <div t-if="doc.att_contract_id" class="col">
+                        <strong>Hợp đồng NT</strong>
+                        <div t-field="doc.att_contract_id.display_name"/>
+                    </div>
+                </div>
+
+                <div class="oe_structure"/>
+                <table class="table table-sm o_main_table table-borderless" style="font-size: 13px;">
+                    <thead style="display: table-row-group">
+                        <tr style="border-bottom: 1px solid #1f3a5f;">
+                            <th t-if="doc.th_pdf_show_content" class="text-start">Nội dung vận chuyển</th>
+                            <th t-if="doc.th_pdf_show_pickup" class="text-start">Điểm đi</th>
+                            <th t-if="doc.th_pdf_show_delivery" class="text-start">Điểm đến</th>
+                            <th t-if="doc.th_pdf_show_vehicle" class="text-start">Phương tiện</th>
+                            <th t-if="doc.th_pdf_show_transport_mode" class="text-start">Hình thức VC</th>
+                            <th t-if="doc.th_pdf_show_qty" class="text-end">Số lượng</th>
+                            <th t-if="doc.th_pdf_show_uom" class="text-start">ĐVT</th>
+                            <th t-if="doc.th_pdf_show_expected_date" class="text-start">Thời gian dự kiến</th>
+                            <th t-if="doc.th_pdf_show_cargo_desc" class="text-start">Mô tả hàng hóa</th>
+                            <th t-if="doc.th_pdf_show_price_unit" class="text-end">Đơn giá</th>
+                            <th t-if="doc.th_pdf_show_taxes" class="text-end">Thuế</th>
+                            <th t-if="doc.th_pdf_show_subtotal" class="text-end">Thành tiền chưa thuế</th>
+                            <th t-if="doc.th_pdf_show_total" class="text-end">Tổng tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody class="sale_tbody">
+                        <t t-set="lines_to_report" t-value="doc._get_order_lines_to_report()"/>
+                        <t t-foreach="lines_to_report" t-as="line">
+                            <tr t-if="line.display_type == 'line_section'" class="fw-bolder o_line_section">
+                                <td colspan="99"><span t-field="line.name"/></td>
+                            </tr>
+                            <tr t-elif="line.display_type == 'line_note' and doc.th_pdf_show_notes"
+                                class="fst-italic o_line_note">
+                                <td colspan="99"><span t-field="line.name"/></td>
+                            </tr>
+                            <tr t-elif="not line.display_type">
+                                <td t-if="doc.th_pdf_show_content">
+                                    <span t-field="line.name"/>
+                                </td>
+                                <td t-if="doc.th_pdf_show_pickup">
+                                    <span t-field="line.pickup_location"/>
+                                </td>
+                                <td t-if="doc.th_pdf_show_delivery">
+                                    <span t-field="line.delivery_location"/>
+                                </td>
+                                <td t-if="doc.th_pdf_show_vehicle">
+                                    <span t-if="line.vehicle_id" t-field="line.vehicle_id.display_name"/>
+                                </td>
+                                <td t-if="doc.th_pdf_show_transport_mode">
+                                    <span t-if="line.product_id" t-field="line.product_id.name"/>
+                                </td>
+                                <td t-if="doc.th_pdf_show_qty" class="text-end">
+                                    <span t-field="line.product_uom_qty"/>
+                                </td>
+                                <td t-if="doc.th_pdf_show_uom">
+                                    <span t-field="line.product_uom_id"/>
+                                </td>
+                                <td t-if="doc.th_pdf_show_expected_date">
+                                    <span t-if="line.expected_date" t-field="line.expected_date"
+                                          t-options='{"widget": "datetime"}'/>
+                                </td>
+                                <td t-if="doc.th_pdf_show_cargo_desc">
+                                    <span t-field="line.cargo_description"/>
+                                </td>
+                                <td t-if="doc.th_pdf_show_price_unit" class="text-end text-nowrap">
+                                    <span t-field="line.price_unit"/>
+                                </td>
+                                <td t-if="doc.th_pdf_show_taxes" class="text-end">
+                                    <span t-out="', '.join(tax.tax_label for tax in line.tax_ids if tax.tax_label)"/>
+                                </td>
+                                <td t-if="doc.th_pdf_show_subtotal" class="text-end text-nowrap">
+                                    <span t-field="line.price_subtotal"/>
+                                </td>
+                                <td t-if="doc.th_pdf_show_total" class="text-end text-nowrap">
+                                    <span t-field="line.price_total"/>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+
+                <div class="clearfix" name="so_total_summary">
+                    <div class="row mt-n3">
+                        <div class="col-6 ms-auto">
+                            <table class="o_total_table table table-borderless">
+                                <t t-call="sale.document_tax_totals">
+                                    <t t-set="tax_totals" t-value="doc.tax_totals"/>
+                                    <t t-set="currency" t-value="doc.currency_id"/>
+                                </t>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="oe_structure"/>
+
+                <div t-if="doc.company_id.report_signature_image or doc.company_id.report_stamp_image"
+                     class="row mt-4">
+                    <div class="col-5 offset-7 text-center">
+                        <div t-if="doc.company_id.report_signer_title" t-field="doc.company_id.report_signer_title"/>
+                        <div style="position: relative; height: 90px;">
+                            <img t-if="doc.company_id.report_stamp_image"
+                                 t-att-src="image_data_uri(doc.company_id.report_stamp_image)"
+                                 style="max-height: 90px; position: absolute; left: 20px; opacity: 0.9;"/>
+                            <img t-if="doc.company_id.report_signature_image"
+                                 t-att-src="image_data_uri(doc.company_id.report_signature_image)"
+                                 style="max-height: 70px; position: relative;"/>
+                        </div>
+                        <strong t-if="doc.company_id.report_signer_name" t-field="doc.company_id.report_signer_name"/>
+                    </div>
+                </div>
+
+                <div>
+                    <span t-field="doc.note" name="order_note"/>
+                    <p t-if="not is_html_empty(doc.payment_term_id.note)">
+                        <span t-field="doc.payment_term_id.note"/>
+                    </p>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="saleorder_report_th">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="att_transport_orders.saleorder_document_th" t-lang="doc.partner_id.lang"/>
+            </t>
+        </t>
+    </template>
+
+    <!-- KHÔNG gắn binding_model_id/binding_type — cố ý không cho hiện
+         thêm lựa chọn trong menu Print (nút In chỉ có đúng 1 lựa chọn là
+         report gốc/inherit ở trên). Report này gọi ra từ nút/toggle riêng
+         (tự thêm sau) qua action này bằng xmlid
+         "att_transport_orders.action_report_saleorder_th", không qua menu
+         Print mặc định. -->
+    <record id="action_report_saleorder_th" model="ir.actions.report">
+        <field name="name">Báo giá Trang Huy (mẫu riêng)</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">att_transport_orders.saleorder_report_th</field>
+        <field name="report_file">att_transport_orders.saleorder_report_th</field>
+        <field name="print_report_name">(object.state in ('draft', 'sent') and 'Bao gia - %s' % (object.name)) or 'Don hang - %s' % (object.name)</field>
+        <field name="paperformat_id" ref="att_contract_management.paperformat_att_document"/>
+    </record>
+</odoo>

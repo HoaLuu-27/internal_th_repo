@@ -1,0 +1,216 @@
+/* Dashboard "Điều vận" — thuần danh sách/thống kê (không còn bản đồ, đã
+   tách sang att_vietmap_connector/route_finder và màn Bản đồ nhiệt riêng).
+   List ~60% : biểu đồ ~40% desktop, xếp dọc trên mobile. */
+.att_dispatch_dashboard {
+    height: calc(100vh - 100px);
+    min-height: 500px;
+    padding: 8px;
+}
+
+.att_dispatch_side_pane {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 8px;
+    height: 100%;
+    min-height: 400px;
+}
+
+.att_dispatch_list_pane, .att_dispatch_chart_pane {
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 12px;
+    overflow-y: auto;
+}
+
+/* ---- Tab danh sách Lệnh/Lộ trình/Xe/Chi phí ---- */
+.att_dispatch_tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.att_dispatch_tabs button {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 6px 10px;
+    font-size: 13px;
+    color: #6c757d;
+    cursor: pointer;
+}
+
+.att_dispatch_tabs button.active {
+    color: #2d6cdf;
+    border-bottom-color: #2d6cdf;
+    font-weight: 600;
+}
+
+.att_dispatch_tab_badge {
+    display: inline-block;
+    min-width: 16px;
+    margin-left: 4px;
+    padding: 0 5px;
+    border-radius: 8px;
+    background-color: #c0392b;
+    color: #fff;
+    font-size: 11px;
+    text-align: center;
+}
+
+.att_tab_badge_green {
+    background-color: #1fa189;
+}
+
+.att_vehicle_list {
+    max-height: 100%;
+    overflow-y: auto;
+}
+
+.att_vehicle_row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 6px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+
+    &:hover {
+        background: #f0f4f9;
+    }
+}
+
+.att_vehicle_dot {
+    display: inline-block;
+    vertical-align: middle;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.att_vehicle_plate {
+    font-weight: 600;
+    font-size: 13px;
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.att_vehicle_state_badge {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: #f6f8fb;
+    border: 1px solid #e3e9f2;
+    border-radius: 4px;
+    padding: 1px 6px;
+    flex-shrink: 0;
+}
+
+.att_vehicle_open_btn {
+    flex-shrink: 0;
+    border: 1px solid #dee2e6;
+    background: #fff;
+    border-radius: 4px;
+    font-size: 12px;
+    padding: 0 6px;
+    cursor: pointer;
+
+    &:hover {
+        background: #e9eef6;
+    }
+}
+
+.att_dispatch_order_table tbody tr {
+    cursor: pointer;
+}
+
+.att_dispatch_order_table tbody tr:hover {
+    background-color: #f0f4f9;
+}
+
+.att_dispatch_bar_chart {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.att_dispatch_bar_row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.att_dispatch_bar_label {
+    width: 120px;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.att_dispatch_bar_track {
+    flex-grow: 1;
+    height: 14px;
+    background-color: #f0f0f0;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.att_dispatch_bar_fill {
+    height: 100%;
+    border-radius: 3px;
+}
+
+.att_dispatch_bar_count {
+    width: 30px;
+    text-align: right;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+/* ---- Responsive — dùng được trên điện thoại/màn nhỏ ---- */
+@media (max-width: 900px) {
+    .att_dispatch_dashboard {
+        height: auto;
+        min-height: 0;
+    }
+
+    .att_dispatch_side_pane {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        min-height: 0;
+    }
+
+    .att_dispatch_list_pane, .att_dispatch_chart_pane {
+        min-height: 320px;
+        max-height: 60vh;
+    }
+
+    .att_dispatch_tabs {
+        flex-wrap: wrap;
+    }
+
+    .att_dispatch_order_table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .att_dispatch_dashboard {
+        padding: 4px;
+    }
+
+    .att_dispatch_side_pane {
+        gap: 4px;
+    }
+
+    .att_dispatch_bar_label {
+        width: 80px;
+        font-size: 12px;
+    }
+}

@@ -1,0 +1,61 @@
+<odoo>
+    <!-- Smart button xem phụ lục nguồn trên form PO -->
+    <record id="view_purchase_order_form_att_execution" model="ir.ui.view">
+        <field name="name">purchase.order.form.att.execution</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button name="action_view_att_appendix" type="object"
+                        class="oe_stat_button" icon="fa-file-text-o"
+                        invisible="not att_appendix_id">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Phụ lục nguồn</span>
+                    </div>
+                </button>
+            </div>
+        </field>
+    </record>
+
+    <record id="view_att_execution_po_list" model="ir.ui.view">
+        <field name="name">purchase.order.list.att.execution</field>
+        <field name="model">purchase.order</field>
+        <field name="arch" type="xml">
+            <list string="PO thực thi">
+                <field name="name"/>
+                <field name="partner_id" string="Nhà cung cấp"/>
+                <field name="att_contract_id"/>
+                <field name="att_appendix_id"/>
+                <field name="att_source_sale_order_id"/>
+                <field name="amount_total" sum="Tổng"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'purchase'"
+                       decoration-info="state in ('draft', 'sent')"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_att_execution_po" model="ir.actions.act_window">
+        <field name="name">PO thực thi</field>
+        <field name="res_model">purchase.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_att_execution_po_list"/>
+        <field name="domain">[('att_is_execution', '=', True)]</field>
+        <field name="group_ids" eval="[(4, ref('att_contract_management.group_att_qc_user'))]"/>
+    </record>
+
+    <!-- KHÔNG override menu "Purchase Orders" native (domain gốc chỉ lọc
+         state='purchase', không quan tâm att_is_execution) — lọc hẹp hơn sẽ
+         ẨN MẤT đơn xác nhận qua đường "mua lẻ gấp" khỏi nơi user quen tìm.
+         Thêm menu PHỤ NẰM TRONG dropdown "Orders" (parent =
+         purchase.menu_procurement_management — container chứa RFQ/PO/Vendors),
+         không phải tab riêng ngang hàng app. -->
+    <menuitem id="menu_att_execution_po"
+              name="PO thực thi"
+              parent="purchase.menu_procurement_management"
+              action="action_att_execution_po"
+              sequence="15"
+              groups="att_contract_management.group_att_qc_user"
+    />
+</odoo>

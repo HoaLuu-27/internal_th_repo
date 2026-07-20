@@ -1,8 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_att_vehicle_type_user,att.vehicle.type user,model_att_vehicle_type,base.group_user,1,0,0,0
-access_att_vehicle_type_fleet,att.vehicle.type fleet,model_att_vehicle_type,fleet.fleet_group_manager,1,1,1,1
-access_att_vehicle_document_user,att.vehicle.document user,model_att_vehicle_document,base.group_user,1,1,1,0
-access_att_vehicle_document_manager,att.vehicle.document manager,model_att_vehicle_document,fleet.fleet_group_manager,1,1,1,1
-access_att_vehicle_handover_user,att.vehicle.handover user,model_att_vehicle_handover,base.group_user,1,1,1,0
-access_att_vehicle_handover_manager,att.vehicle.handover manager,model_att_vehicle_handover,fleet.fleet_group_manager,1,1,1,1
-access_att_vehicle_handover_line_user,att.vehicle.handover.line user,model_att_vehicle_handover_line,base.group_user,1,1,1,1

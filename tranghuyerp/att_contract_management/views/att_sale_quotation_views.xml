@@ -1,0 +1,142 @@
+<odoo>
+    <record id="view_att_quotation_form" model="ir.ui.view">
+        <field name="name">sale.order.form.att.quotation</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <header position="inside">
+                <button name="action_att_request_approval" string="Trình duyệt giá"
+                        type="object" class="btn-primary"
+                        invisible="att_is_execution or att_quote_state != 'draft'"/>
+                <button name="action_att_approve" string="Duyệt giá"
+                        type="object" class="btn-primary"
+                        invisible="att_is_execution or att_quote_state != 'pending'"
+                        groups="att_contract_management.group_att_qc_manager"/>
+                <button name="action_att_refuse" string="Trả về nháp"
+                        type="object"
+                        invisible="att_is_execution or att_quote_state != 'pending'"
+                        groups="att_contract_management.group_att_qc_manager"/>
+                <button name="action_att_mark_won" string="KH chốt giá"
+                        type="object" class="btn-primary"
+                        invisible="att_is_execution or att_quote_state != 'approved'"/>
+                <button name="action_create_att_contract" string="Tạo hợp đồng NT"
+                        type="object" class="btn-primary"
+                        invisible="att_is_execution or att_quote_state != 'won' or att_contract_id"
+                        groups="att_contract_management.group_att_qc_manager"/>
+                <button name="action_create_att_contract" string="Thay báo giá nguồn của HĐNT"
+                        type="object" class="btn-primary"
+                        invisible="att_is_execution or att_quote_state != 'won' or not att_contract_id"
+                        groups="att_contract_management.group_att_qc_manager"/>
+                <field name="att_quote_state" widget="statusbar"
+                       invisible="att_is_execution"/>
+            </header>
+            <xpath expr="//field[@name='state'][@widget='statusbar']" position="attributes">
+                <attribute name="invisible">not att_is_execution</attribute>
+            </xpath>
+            <xpath expr="//button[@id='quotation_send_primary']" position="attributes">
+                <attribute name="invisible">not att_is_execution or state != 'draft'</attribute>
+            </xpath>
+            <xpath expr="//button[@id='send_proforma_primary']" position="attributes">
+                <attribute name="invisible">not att_is_execution or state != 'draft' or invoice_count &gt;= 1</attribute>
+            </xpath>
+            <xpath expr="//button[@id='action_confirm']" position="attributes">
+                <attribute name="invisible">not att_is_execution or state != 'sent'</attribute>
+            </xpath>
+            <xpath expr="(//button[@name='action_confirm'])[2]" position="attributes">
+                <attribute name="invisible">not att_is_execution or state != 'draft'</attribute>
+            </xpath>
+            <xpath expr="//button[@id='send_proforma']" position="attributes">
+                <attribute name="invisible">not att_is_execution or state == 'draft' or invoice_count &gt;= 1</attribute>
+            </xpath>
+            <xpath expr="//button[@id='quotation_send']" position="attributes">
+                <attribute name="invisible">not att_is_execution or state not in ('sent', 'sale')</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_unlock']" position="attributes">
+                <attribute name="invisible">not att_is_execution or not locked</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_cancel']" position="attributes">
+                <attribute name="invisible">not att_is_execution or state not in ['draft', 'sent', 'sale'] or not id or locked</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_draft']" position="attributes">
+                <attribute name="invisible">not att_is_execution or state != 'cancel'</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_lock']" position="attributes">
+                <attribute name="invisible">not att_is_execution or locked or state != 'sale'</attribute>
+            </xpath>
+            <field name="payment_term_id" position="after">
+                <field name="att_contract_id"
+                       readonly="att_is_execution or att_quote_state != 'draft'"
+                       invisible="att_is_execution"/>
+                <field name="att_appendix_id" readonly="1"
+                       invisible="not att_appendix_id"/>
+                <field name="att_is_execution" invisible="1"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- List RIÊNG cho báo giá (standalone — không inherit list native,
+         tránh phụ thuộc xmlid list dễ đổi giữa các version) -->
+    <record id="view_att_quotation_list" model="ir.ui.view">
+        <field name="name">sale.order.list.att.quotation</field>
+        <field name="model">sale.order</field>
+        <field name="arch" type="xml">
+            <list string="Báo giá">
+                <field name="name"/>
+                <field name="date_order"/>
+                <field name="partner_id"/>
+                <field name="user_id" optional="show"/>
+                <field name="amount_total" sum="Tổng"/>
+                <field name="att_quote_state" widget="badge"
+                       decoration-info="att_quote_state == 'pending'"
+                       decoration-success="att_quote_state in ('won', 'contracted')"
+                       decoration-muted="att_quote_state == 'expired'"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_att_quotation_search" model="ir.ui.view">
+        <field name="name">sale.order.search.att.quotation</field>
+        <field name="model">sale.order</field>
+        <field name="arch" type="xml">
+            <search string="Báo giá">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="user_id"/>
+                <filter name="my_quotes" string="Của tôi"
+                        domain="[('user_id', '=', uid)]"/>
+                <separator/>
+<!--                <filter name="pending" string="Chờ duyệt giá"-->
+<!--                        domain="[('att_quote_state', '=', 'pending')]"/>-->
+<!--                <filter name="won" string="KH đã chốt"-->
+<!--                        domain="[('att_quote_state', '=', 'won')]"/>-->
+<!--                <group expand="0" string="Nhóm theo">-->
+<!--                    <filter name="group_state" string="Trạng thái"-->
+<!--                            context="{'group_by': 'att_quote_state'}"/>-->
+<!--                    <filter name="group_partner" string="Khách hàng"-->
+<!--                            context="{'group_by': 'partner_id'}"/>-->
+<!--                </group>-->
+            </search>
+        </field>
+    </record>
+
+    <!-- Action + menu riêng — KHÔNG override action native của Sales -->
+    <record id="action_att_quotation" model="ir.actions.act_window">
+        <field name="name">Báo giá bán</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_att_quotation_list"/>
+        <field name="search_view_id" ref="view_att_quotation_search"/>
+        <field name="domain">[('att_is_execution', '=', False)]</field>
+        <field name="context">{'search_default_my_quotes': 1}</field>
+        <field name="group_ids" eval="[(4, ref('att_contract_management.group_att_qc_user'))]"/>
+    </record>
+
+    <!-- Thay action của menu Báo giá native trong Sales -->
+    <record id="sale.menu_sale_quotations" model="ir.ui.menu">
+        <field name="name">Báo giá</field>
+        <field name="action" ref="att_contract_management.action_att_quotation"/>
+    </record>
+
+
+</odoo>

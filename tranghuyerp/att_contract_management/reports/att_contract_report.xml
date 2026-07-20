@@ -1,0 +1,266 @@
+<odoo>
+    <record id="action_report_att_contract" model="ir.actions.report">
+        <field name="name">Hợp đồng nguyên tắc</field>
+        <field name="model">att.contract</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">att_contract_management.report_att_contract</field>
+        <field name="report_file">att_contract_management.report_att_contract</field>
+        <field name="print_report_name">'HD_%s' % (object.name or '').replace('/', '_')</field>
+        <field name="binding_model_id" ref="model_att_contract"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_att_contract">
+        <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="doc">
+                <t t-set="company" t-value="doc.company_id or res_company"/>
+                <t t-set="o" t-value="doc"/>
+                <t t-set="is_sale" t-value="doc.contract_type == 'sale'"/>
+
+                <div class="page">
+
+                    <table style="width:100%;border-collapse:collapse;margin-bottom:16px;">
+                        <tr>
+                            <td style="width:30%;vertical-align:middle;">
+                                <img t-if="company.report_header_logo"
+                                     t-att-src="image_data_uri(company.report_header_logo)"
+                                     style="max-height:60px;max-width:180px;"/>
+                            </td>
+                            <td style="width:70%;text-align:center;vertical-align:middle;">
+                                <div style="font-weight:bold;">CỘNG HOÀ XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+                                <div style="font-weight:bold;">Độc lập – Tự do – Hạnh phúc</div>
+                                <div>───────────────</div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div style="text-align:center;margin:16px 0 4px;">
+                        <div style="font-size:15px;font-weight:bold;">HỢP ĐỒNG NGUYÊN TẮC</div>
+                        <div>Số: <span t-field="doc.name"/></div>
+                        <div style="font-style:italic;">(V/v: Vận chuyển hàng hóa)</div>
+                    </div>
+
+                    <div style="margin:14px 0;font-style:italic;">
+                        <div>- Căn cứ vào Bộ luật dân sự số 91/2015/QH13 được Quốc hội nước Cộng hòa xã hội chủ nghĩa Việt Nam thông qua ngày 24 tháng 11 năm 2015, có hiệu lực từ ngày 1 tháng 1 năm 2017.</div>
+                        <div>- Căn cứ Luật Thương Mại của nước Cộng Hòa XHCN Việt Nam có hiệu lực từ ngày 01/01/2006.</div>
+                        <div>- Căn cứ vào chức năng, nhiệm vụ, khả năng và nhu cầu vận chuyển của mỗi bên.</div>
+                        <div style="margin-top:6px;">
+                            Hôm nay, ngày
+                            <span t-esc="doc.effective_date.strftime('%d') if doc.effective_date else '......'"/>
+                            tháng
+                            <span t-esc="doc.effective_date.strftime('%m') if doc.effective_date else '......'"/>
+                            năm
+                            <span t-esc="doc.effective_date.strftime('%Y') if doc.effective_date else '......'"/>
+                            tại văn phòng Công ty, chúng tôi gồm:
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom:12px;">
+                        <t t-if="is_sale">
+                            <div style="font-weight:bold;">BÊN A: (Bên thuê vận chuyển) <span t-field="doc.partner_id"/></div>
+                            <table style="width:100%;margin-left:16px;border-collapse:collapse;">
+                                <tr t-if="doc.partner_address">
+                                    <td style="width:180px;vertical-align:top;padding:2px 0;">Địa chỉ</td>
+                                    <td style="padding:2px 0;">: <span t-field="doc.partner_address"/></td>
+                                </tr>
+                                <tr t-if="doc.partner_phone">
+                                    <td style="padding:2px 0;">Điện thoại</td>
+                                    <td style="padding:2px 0;">: <span t-field="doc.partner_phone"/></td>
+                                </tr>
+                                <tr t-if="doc.partner_bank_account">
+                                    <td style="padding:2px 0;">Tài khoản số</td>
+                                    <td style="padding:2px 0;">: <span t-field="doc.partner_bank_account"/></td>
+                                </tr>
+                                <tr t-if="doc.partner_tax_code">
+                                    <td style="padding:2px 0;">Mã số thuế</td>
+                                    <td style="padding:2px 0;">: <span t-field="doc.partner_tax_code"/></td>
+                                </tr>
+                                <tr t-if="doc.partner_email">
+                                    <td style="padding:2px 0;">Email</td>
+                                    <td style="padding:2px 0;">: <span t-field="doc.partner_email"/></td>
+                                </tr>
+                                <tr t-if="doc.partner_representative">
+                                    <td style="padding:2px 0;">Đại diện</td>
+                                    <td style="padding:2px 0;">: <span t-field="doc.partner_representative"/>
+                                        <t t-if="doc.partner_position">&#160;&#160;Chức vụ: <span t-field="doc.partner_position"/></t>
+                                    </td>
+                                </tr>
+                            </table>
+                        </t>
+                        <t t-else="">
+                            <div style="font-weight:bold;">BÊN A: (Bên thuê vận chuyển) <span t-field="company.name"/></div>
+                            <table style="width:100%;margin-left:16px;border-collapse:collapse;">
+                                <tr>
+                                    <td style="width:180px;padding:2px 0;">Địa chỉ</td>
+                                    <td style="padding:2px 0;">: <span t-field="company.street"/><t t-if="company.city">, <span t-field="company.city"/></t></td>
+                                </tr>
+                                <tr t-if="company.phone">
+                                    <td style="padding:2px 0;">Điện thoại</td>
+                                    <td style="padding:2px 0;">: <span t-field="company.phone"/></td>
+                                </tr>
+                                <tr t-if="company.vat">
+                                    <td style="padding:2px 0;">Mã số thuế</td>
+                                    <td style="padding:2px 0;">: <span t-field="company.vat"/></td>
+                                </tr>
+                                <tr t-if="company.email">
+                                    <td style="padding:2px 0;">Email</td>
+                                    <td style="padding:2px 0;">: <span t-field="company.email"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:2px 0;">Đại diện</td>
+                                    <td style="padding:2px 0;">: <span t-esc="company.report_signer_name or ''"/>
+                                        &#160;&#160;Chức vụ: <span t-esc="company.report_signer_title or ''"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </t>
+                    </div>
+
+                    <div style="margin-bottom:14px;">
+                        <t t-if="is_sale">
+                            <div style="font-weight:bold;">BÊN B: (Bên nhận vận chuyển) <span t-field="company.name"/></div>
+                            <table style="width:100%;margin-left:16px;border-collapse:collapse;">
+                                <tr>
+                                    <td style="width:180px;padding:2px 0;">Địa chỉ</td>
+                                    <td style="padding:2px 0;">: <span t-field="company.street"/><t t-if="company.city">, <span t-field="company.city"/></t></td>
+                                </tr>
+                                <tr t-if="company.phone">
+                                    <td style="padding:2px 0;">Điện thoại</td>
+                                    <td style="padding:2px 0;">: <span t-field="company.phone"/></td>
+                                </tr>
+                                <tr t-if="company.vat">
+                                    <td style="padding:2px 0;">Mã số thuế</td>
+                                    <td style="padding:2px 0;">: <span t-field="company.vat"/></td>
+                                </tr>
+                                <tr t-if="company.email">
+                                    <td style="padding:2px 0;">Email</td>
+                                    <td style="padding:2px 0;">: <span t-field="company.email"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:2px 0;">Đại diện</td>
+                                    <td style="padding:2px 0;">: <span t-esc="company.report_signer_name or ''"/>
+                                        &#160;&#160;Chức vụ: <span t-esc="company.report_signer_title or ''"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </t>
+                        <t t-else="">
+                            <div style="font-weight:bold;">BÊN B: (Bên vận chuyển) <span t-field="doc.partner_id"/></div>
+                            <table style="width:100%;margin-left:16px;border-collapse:collapse;">
+                                <tr t-if="doc.partner_address">
+                                    <td style="width:180px;vertical-align:top;padding:2px 0;">Địa chỉ</td>
+                                    <td style="padding:2px 0;">: <span t-field="doc.partner_address"/></td>
+                                </tr>
+                                <tr t-if="doc.partner_phone">
+                                    <td style="padding:2px 0;">Điện thoại</td>
+                                    <td style="padding:2px 0;">: <span t-field="doc.partner_phone"/></td>
+                                </tr>
+                                <tr t-if="doc.partner_bank_account">
+                                    <td style="padding:2px 0;">Tài khoản số</td>
+                                    <td style="padding:2px 0;">: <span t-field="doc.partner_bank_account"/></td>
+                                </tr>
+                                <tr t-if="doc.partner_tax_code">
+                                    <td style="padding:2px 0;">Mã số thuế</td>
+                                    <td style="padding:2px 0;">: <span t-field="doc.partner_tax_code"/></td>
+                                </tr>
+                                <tr t-if="doc.partner_email">
+                                    <td style="padding:2px 0;">Email</td>
+                                    <td style="padding:2px 0;">: <span t-field="doc.partner_email"/></td>
+                                </tr>
+                                <tr t-if="doc.partner_representative">
+                                    <td style="padding:2px 0;">Đại diện</td>
+                                    <td style="padding:2px 0;">: <span t-field="doc.partner_representative"/>
+                                        <t t-if="doc.partner_position">&#160;&#160;Chức vụ: <span t-field="doc.partner_position"/></t>
+                                    </td>
+                                </tr>
+                            </table>
+                        </t>
+                    </div>
+
+                    <div style="font-style:italic;margin-bottom:16px;">
+                        Sau khi bàn bạc, hai bên thống nhất ký kết hợp đồng vận chuyển với nội dung các điều khoản như sau:
+                    </div>
+
+                    <t t-foreach="doc.term_line_ids" t-as="term">
+                        <div style="margin-bottom:14px;">
+                            <div style="font-weight:bold;text-decoration:underline;">
+                                <!-- Dùng display_title: số "Điều X" tự đánh theo vị trí dòng trong HĐ,
+                                     không lấy số hardcode lưu trong thư viện điều khoản -->
+                                <span t-esc="term.display_title"/>
+                            </div>
+                            <div t-if="term.content" t-out="term.content"/>
+                            <div t-if="term.note" style="font-style:italic;color:#444;margin-top:4px;">
+                                <span t-esc="term.note"/>
+                            </div>
+                        </div>
+                    </t>
+
+                    <div style="margin-top:30px;">
+                        <table style="width:100%;border-collapse:collapse;">
+                            <tr>
+                                <td style="width:50%;text-align:center;vertical-align:top;padding:0 8px;">
+                                    <div style="font-weight:bold;">ĐẠI DIỆN BÊN A</div>
+                                    <div style="font-style:italic;font-size:11px;">(Ký, ghi rõ họ tên, đóng dấu)</div>
+                                    <t t-if="is_sale">
+                                        <div style="min-height:90px;"/>
+                                        <div t-if="doc.partner_representative" style="font-weight:bold;">
+                                            <span t-field="doc.partner_representative"/>
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <div style="position:relative;min-height:100px;">
+                                            <t t-if="doc.state == 'running'">
+                                                <img t-if="company.report_stamp_image"
+                                                     t-att-src="image_data_uri(company.report_stamp_image)"
+                                                     style="position:absolute;width:100px;top:5px;left:60px;z-index:1;"/>
+                                                <img t-if="company.report_signature_image"
+                                                     t-att-src="image_data_uri(company.report_signature_image)"
+                                                     style="position:absolute;width:130px;top:20px;left:90px;z-index:2;"/>
+                                            </t>
+                                        </div>
+                                        <div style="font-weight:bold;margin-top:90px;">
+                                            <span t-esc="company.report_signer_title or ''"/>
+                                        </div>
+                                        <div style="font-weight:bold;font-style:italic;">
+                                            <span t-esc="company.report_signer_name or ''"/>
+                                        </div>
+                                    </t>
+                                </td>
+
+                                <td style="width:50%;text-align:center;vertical-align:top;padding:0 8px;">
+                                    <div style="font-weight:bold;">ĐẠI DIỆN BÊN B</div>
+                                    <div style="font-style:italic;font-size:11px;">(Ký, ghi rõ họ tên, đóng dấu)</div>
+                                    <t t-if="is_sale">
+                                        <div style="position:relative;min-height:100px;">
+                                            <t t-if="doc.state == 'running'">
+                                                <img t-if="company.report_stamp_image"
+                                                     t-att-src="image_data_uri(company.report_stamp_image)"
+                                                     style="position:absolute;width:100px;top:5px;left:60px;z-index:1;"/>
+                                                <img t-if="company.report_signature_image"
+                                                     t-att-src="image_data_uri(company.report_signature_image)"
+                                                     style="position:absolute;width:130px;top:20px;left:90px;z-index:2;"/>
+                                            </t>
+                                        </div>
+                                        <div style="font-weight:bold;margin-top:90px;">
+                                            <span t-esc="company.report_signer_title or ''"/>
+                                        </div>
+                                        <div style="font-weight:bold;font-style:italic;">
+                                            <span t-esc="company.report_signer_name or ''"/>
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <div style="min-height:90px;"/>
+                                        <div t-if="doc.partner_representative" style="font-weight:bold;">
+                                            <span t-field="doc.partner_representative"/>
+                                        </div>
+                                    </t>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

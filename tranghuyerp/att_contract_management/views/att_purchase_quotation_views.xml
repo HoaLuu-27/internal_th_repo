@@ -1,0 +1,160 @@
+<odoo>
+    <record id="view_att_purchase_quotation_form" model="ir.ui.view">
+        <field name="name">purchase.order.form.att.quotation</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <header position="inside">
+                <button name="action_att_mark_won" string="Duyệt NCC (đủ ĐK ký)"
+                        type="object" class="btn-primary"
+                        invisible="att_is_execution or att_quote_state != 'draft'"
+                        groups="att_contract_management.group_att_qc_manager"/>
+                <button name="action_create_att_contract" string="Tạo hợp đồng NT"
+                        type="object" class="btn-primary"
+                        invisible="att_is_execution or att_quote_state != 'won' or att_contract_id"
+                        groups="att_contract_management.group_att_qc_manager"/>
+                <button name="action_att_mark_lost" string="Không chọn (NCC nợ xấu)"
+                        type="object"
+                        confirm="Xác nhận loại NCC này vì nợ xấu / lịch sử giao dịch kém? NCC bị loại sẽ KHÔNG tạo được HĐNT."
+                        invisible="att_is_execution or att_quote_state in ('contracted', 'lost')"
+                        groups="att_contract_management.group_att_qc_manager"/>
+                <!-- Statusbar vòng đời báo giá TH — chỉ hiện với RFQ mời thầu -->
+                <field name="att_quote_state" widget="statusbar" invisible="att_is_execution"/>
+            </header>
+            <xpath expr="//field[@name='state'][@widget='statusbar']" position="attributes">
+                <attribute name="invisible">not att_is_execution</attribute>
+            </xpath>
+            <xpath expr="(//button[@name='action_rfq_send'])[1]" position="attributes">
+                <attribute name="invisible">not att_is_execution or state != 'draft'</attribute>
+            </xpath>
+            <xpath expr="//button[@id='bid_confirm']" position="attributes">
+                <attribute name="invisible">not att_is_execution or state != 'sent'</attribute>
+            </xpath>
+            <xpath expr="//button[@name='button_approve']" position="attributes">
+                <attribute name="invisible">not att_is_execution or state != 'to approve'</attribute>
+            </xpath>
+            <xpath expr="(//button[@name='action_rfq_send'])[2]" position="attributes">
+                <attribute name="invisible">not att_is_execution or state != 'sent'</attribute>
+            </xpath>
+            <xpath expr="//button[@id='draft_confirm']" position="attributes">
+                <attribute name="invisible">not att_is_execution or state != 'draft'</attribute>
+            </xpath>
+            <xpath expr="(//button[@name='action_rfq_send'])[3]" position="attributes">
+                <attribute name="invisible">not att_is_execution or state != 'purchase'</attribute>
+            </xpath>
+            <xpath expr="//button[@name='button_draft']" position="attributes">
+                <attribute name="invisible">not att_is_execution or state != 'cancel'</attribute>
+            </xpath>
+            <xpath expr="//button[@name='button_cancel']" position="attributes">
+                <attribute name="invisible">not att_is_execution or state not in ('draft', 'to approve', 'sent', 'purchase') or locked</attribute>
+            </xpath>
+            <field name="partner_ref" position="after">
+                <field name="att_source_sale_order_id"
+                       readonly="att_quote_state != 'draft' or att_is_execution"/>
+                <field name="att_rfq_group_count"
+                       invisible="att_is_execution or not att_source_sale_order_id"/>
+                <field name="att_contract_id" readonly="1"
+                       invisible="not att_contract_id"/>
+                <field name="att_appendix_id" readonly="1"
+                       invisible="not att_appendix_id"/>
+                <field name="att_is_execution" invisible="1"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_att_purchase_quotation_list" model="ir.ui.view">
+        <field name="name">purchase.order.list.att.quotation</field>
+        <field name="model">purchase.order</field>
+        <field name="arch" type="xml">
+            <list string="Báo giá NCC"
+                  decoration-muted="att_quote_state == 'lost'">
+                <field name="name"/>
+                <field name="partner_id" string="Nhà cung cấp"/>
+                <field name="att_source_sale_order_id"/>
+                <field name="date_order" string="Hạn chốt"/>
+                <field name="amount_total" sum="Tổng"/>
+                <field name="att_quote_state" widget="badge"
+                       decoration-success="att_quote_state in ('won', 'contracted')"
+                       decoration-danger="att_quote_state == 'lost'"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_att_purchase_quotation_search" model="ir.ui.view">
+        <field name="name">purchase.order.search.att.quotation</field>
+        <field name="model">purchase.order</field>
+        <field name="arch" type="xml">
+            <search string="Báo giá NCC">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="att_source_sale_order_id"/>
+                <filter name="quote_draft" string="Đang hỏi giá"
+                        domain="[('att_quote_state', '=', 'draft')]"/>
+                <filter name="quote_won" string="Đã duyệt NCC"
+                        domain="[('att_quote_state', '=', 'won')]"/>
+                <filter name="quote_contracted" string="Đã ký HĐNT"
+                        domain="[('att_quote_state', '=', 'contracted')]"/>
+                <separator/>
+<!--                <filter name="quote_lost" string="Không chọn (nợ xấu)"-->
+<!--                        domain="[('att_quote_state', '=', 'lost')]"/>-->
+<!--                <group expand="0" string="Nhóm theo">-->
+<!--                    &lt;!&ndash; Group theo SO nguồn = nhìn nguyên NHÓM hỏi giá để so NCC &ndash;&gt;-->
+<!--                    <filter name="group_source_so" string="SO nguồn (nhóm hỏi giá)"-->
+<!--                            context="{'group_by': 'att_source_sale_order_id'}"/>-->
+<!--                    <filter name="group_vendor" string="Nhà cung cấp"-->
+<!--                            context="{'group_by': 'partner_id'}"/>-->
+<!--                    <filter name="group_state" string="Trạng thái"-->
+<!--                            context="{'group_by': 'att_quote_state'}"/>-->
+<!--                </group>-->
+            </search>
+        </field>
+    </record>
+
+    <record id="action_att_purchase_quotation" model="ir.actions.act_window">
+        <field name="name">Báo giá NCC</field>
+        <field name="res_model">purchase.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_att_purchase_quotation_list"/>
+        <field name="search_view_id" ref="view_att_purchase_quotation_search"/>
+        <field name="domain">[('att_is_execution', '=', False)]</field>
+        <field name="context">{'search_default_group_source_so': 1}</field>
+        <field name="group_ids" eval="[(4, ref('att_contract_management.group_att_qc_user'))]"/>
+    </record>
+    <!-- Thay menu Đề nghị báo giá native -->
+    <record id="purchase.menu_purchase_rfq" model="ir.ui.menu">
+        <field name="name">Đề nghị báo giá</field>
+        <field name="action"
+               ref="att_contract_management.action_att_purchase_quotation"/>
+    </record>
+
+
+
+
+    <!-- ================= SO NGUỒN: nút flow mua + smart button ================= -->
+    <record id="view_sale_order_form_att_purchase_flow" model="ir.ui.view">
+        <field name="name">sale.order.form.att.purchase.flow</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <header position="inside">
+                <button name="action_att_create_ncc_rfq" string="Tạo RFQ NCC"
+                        type="object"
+                        invisible="state != 'sale'"/>
+                <button name="action_att_create_po_best_price"
+                        string="Đặt xe NCC giá tốt"
+                        type="object"
+                        invisible="state != 'sale' or att_rfq_count == 0"
+                        groups="att_contract_management.group_att_qc_manager"/>
+            </header>
+            <div name="button_box" position="inside">
+                <button name="action_view_att_rfqs" type="object"
+                        class="oe_stat_button" icon="fa-handshake-o"
+                        invisible="not att_rfq_count">
+                    <field name="att_rfq_count" widget="statinfo"
+                           string="Báo giá NCC"/>
+                </button>
+            </div>
+        </field>
+    </record>
+</odoo>

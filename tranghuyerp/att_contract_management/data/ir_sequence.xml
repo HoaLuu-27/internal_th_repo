@@ -1,0 +1,58 @@
+<odoo>
+    <data noupdate="1">
+        <!-- Số HĐNT KHÔNG dùng prefix/date_range của ir.sequence — bộ đếm
+             thuần (001, 002...), chuỗi hiển thị đầy đủ
+             "{stt}/{ddmmyyyy}/HĐNT/TH-{viết tắt đối tác}/{yyyy}" được ghép
+             hoàn toàn trong att_contract.py create(). 2 sequence tách riêng
+             sale/purchase chỉ để đếm độc lập, không in chữ B/M ra số. -->
+        <record id="seq_att_contract_sale" model="ir.sequence">
+            <field name="name">HĐ nguyên tắc bán</field>
+            <field name="code">att.contract.sale</field>
+            <field name="padding">3</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_att_contract_purchase" model="ir.sequence">
+            <field name="name">HĐ nguyên tắc mua</field>
+            <field name="code">att.contract.purchase</field>
+            <field name="padding">3</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_att_appendix" model="ir.sequence">
+            <field name="name">Phụ lục hợp đồng</field>
+            <field name="code">att.contract.appendix</field>
+            <field name="prefix">PL/%(day)s%(month)s%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="use_date_range" eval="True"/>
+        </record>
+
+        <!-- MỚI THÊM: báo giá bán/mua tách khỏi số đơn thực thi -->
+        <record id="seq_att_sale_quotation" model="ir.sequence">
+            <field name="name">Báo giá bán</field>
+            <field name="code">att.sale.quotation</field>
+            <field name="prefix">QT/%(day)s%(month)s%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="use_date_range" eval="True"/>
+        </record>
+        <record id="seq_att_purchase_quotation" model="ir.sequence">
+            <field name="name">Báo giá mua (NCC)</field>
+            <field name="code">att.purchase.quotation</field>
+            <field name="prefix">QT/%(day)s%(month)s%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="use_date_range" eval="True"/>
+        </record>
+        <record id="seq_att_sale_order_execution" model="ir.sequence">
+            <field name="name">SO thực thi</field>
+            <field name="code">att.sale.order.execution</field>
+            <field name="prefix">SO/%(day)s%(month)s%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="use_date_range" eval="True"/>
+        </record>
+        <record id="seq_att_purchase_order_execution" model="ir.sequence">
+            <field name="name">PO thực thi</field>
+            <field name="code">att.purchase.order.execution</field>
+            <field name="prefix">PO/%(day)s%(month)s%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="use_date_range" eval="True"/>
+        </record>
+    </data>
+</odoo>

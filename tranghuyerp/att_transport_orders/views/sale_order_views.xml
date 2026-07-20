@@ -1,0 +1,84 @@
+<odoo>
+    <record id="view_sale_order_form_att_transport" model="ir.ui.view">
+        <field name="name">sale.order.form.att.transport</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button name="action_view_transport_orders" type="object"
+                        class="oe_stat_button" icon="fa-truck"
+                        invisible="transport_order_count == 0">
+                    <field name="transport_order_count" widget="statinfo" string="Lệnh VC"/>
+                </button>
+                <button name="action_view_route_costs" type="object"
+                        class="oe_stat_button" icon="fa-money"
+                        invisible="th_route_cost_count == 0">
+                    <field name="th_route_cost_count" widget="statinfo" string="Chi phí tuyến"/>
+                </button>
+            </div>
+            <header position="inside">
+                <button name="action_create_transport_order" string="Tạo lệnh VC" type="object"
+                        invisible="state != 'sale'"
+                        groups="att_transport_orders.group_th_dispatcher"/>
+                <button name="action_th_sync_route_costs" string="Cập nhật chi phí tuyến"
+                        type="object" invisible="th_route_cost_count != 0"
+                        help="Copy chi phí chuẩn của tuyến (phí BOT...) thành bản ghi riêng của báo giá này để chốt/duyệt theo khách."/>
+            </header>
+            <!-- Field vận chuyển trên dòng SO -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="before">
+                <field name="pickup_address_id" string="Điểm đi" options="{'no_create': True, 'no_open': True}"/>
+                <field name="delivery_address_id" string="Điểm đến" options="{'no_create': True, 'no_open': True}"/>
+                <field name="pickup_location" column_invisible="1"/>
+                <field name="delivery_location" column_invisible="1"/>
+                <field name="pickup_lat" column_invisible="1"/>
+                <field name="pickup_lng" column_invisible="1"/>
+                <field name="delivery_lat" column_invisible="1"/>
+                <field name="delivery_lng" column_invisible="1"/>
+                <field name="vehicle_type_id" optional="show" domain="[('transport_mode_ids', 'in', product_id)] if product_id else []"/>
+                <field name="vehicle_id" optional="hide"/>
+                <field name="cargo_description" optional="hide"/>
+                <field name="expected_date" optional="hide"/>
+            </xpath>
+            <!-- "Product" -> "Dịch vụ" (đúng bản chất dòng SO ở Trang Huy là
+                 dịch vụ vận tải, không phải sản phẩm vật lý) -->
+            <xpath expr="//field[@name='order_line']//field[@name='product_template_id']" position="attributes">
+                <attribute name="string">Dịch vụ</attribute>
+            </xpath>
+            <!-- Dời "Đơn vị tính" lên TRƯỚC "Số lượng" thay vì nằm cuối sau
+                 Delivered/Invoiced — dễ nhìn hơn khi đọc theo dòng -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_id']" position="replace"/>
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="before">
+                <field name="product_uom_id" string="Đơn vị tính" groups="uom.group_uom"/>
+            </xpath>
+            <!-- Tab chọn cột dòng báo giá sẽ in ra PDF / gửi khách -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Cấu hình PDF báo giá" name="th_pdf_config">
+                    <div class="text-muted mb-3">
+                        Chọn cột hiển thị trên bản in báo giá — áp dụng cho cả
+                        file PDF tải về lẫn bản gửi khách hàng.
+                    </div>
+                    <group string="CHỌN CỘT HIỂN THỊ TRÊN BẢN IN BÁO GIÁ">
+                        <group>
+                            <field name="th_pdf_show_content" string="Nội dung vận chuyển"/>
+                            <field name="th_pdf_show_pickup" string="Điểm đi"/>
+                            <field name="th_pdf_show_delivery" string="Điểm đến"/>
+                            <field name="th_pdf_show_vehicle" string="Phương tiện"/>
+                            <field name="th_pdf_show_transport_mode" string="Hình thức vận chuyển"/>
+                            <field name="th_pdf_show_qty" string="Số lượng"/>
+                            <field name="th_pdf_show_uom" string="Đơn vị tính"/>
+                        </group>
+                        <group>
+                            <field name="th_pdf_show_expected_date" string="Thời gian dự kiến"/>
+                            <field name="th_pdf_show_cargo_desc" string="Mô tả hàng hóa"/>
+                            <field name="th_pdf_show_price_unit" string="Đơn giá"/>
+                            <field name="th_pdf_show_taxes" string="Thuế"/>
+                            <field name="th_pdf_show_subtotal" string="Thành tiền chưa thuế"/>
+                            <field name="th_pdf_show_total" string="Tổng tiền"/>
+                            <field name="th_pdf_show_notes" string="Ghi chú"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

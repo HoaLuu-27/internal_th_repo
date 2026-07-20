@@ -1,0 +1,58 @@
+<odoo>
+    <record id="view_sale_order_form_att_execution" model="ir.ui.view">
+        <field name="name">sale.order.form.att.execution</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button name="action_view_att_appendix" type="object"
+                        class="oe_stat_button" icon="fa-file-text-o"
+                        invisible="not att_appendix_id">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Phụ lục nguồn</span>
+                    </div>
+                </button>
+            </div>
+        </field>
+    </record>
+
+    <record id="view_att_execution_order_list" model="ir.ui.view">
+        <field name="name">sale.order.list.att.execution</field>
+        <field name="model">sale.order</field>
+        <field name="arch" type="xml">
+            <list string="SO thực thi">
+                <field name="name"/>
+                <field name="date_order"/>
+                <field name="partner_id"/>
+                <field name="att_appendix_id"/>
+                <field name="amount_total" sum="Tổng"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'sale'"
+                       decoration-info="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_att_execution_order" model="ir.actions.act_window">
+        <field name="name">SO thực thi</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_att_execution_order_list"/>
+        <field name="domain">[('att_is_execution', '=', True)]</field>
+        <field name="group_ids" eval="[(4, ref('att_contract_management.group_att_qc_user'))]"/>
+    </record>
+
+    <!-- KHÔNG override menu "Đơn hàng" native — domain của nó không giới hạn
+         theo att_is_execution, lọc hẹp hơn sẽ ẨN MẤT đơn xác nhận qua đường
+         "lẻ gấp" (không qua HĐ/PL) khỏi nơi user quen tìm.
+         Thay vào đó: thêm menu PHỤ NẰM TRONG dropdown "Orders" (parent =
+         sale.sale_order_menu — container chứa Quotations/Orders), không
+         phải tab riêng ngang hàng app. -->
+    <menuitem id="menu_att_execution_order"
+              name="SO thực thi"
+              parent="sale.sale_order_menu"
+              action="action_att_execution_order"
+              sequence="15"
+              groups="att_contract_management.group_att_qc_user"
+    />
+</odoo>

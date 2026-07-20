@@ -1,0 +1,24 @@
+<odoo>
+    <!-- Paperformat riêng cho chứng từ Trang Huy — margin_top ĐỦ RỘNG cho
+         header 2 dòng (logo+chứng chỉ / thông tin công ty). Đây là chỗ
+         DUY NHẤT thật sự khống chế khoảng cách header–body khi xuất PDF
+         thật (wkhtmltopdf tách header/footer/body thành 3 tài liệu HTML
+         riêng rồi in header trong đúng margin_top này — CSS margin/padding
+         trong att_report_layout.xml không có tác dụng ở đây, chỉ ăn khi
+         xem HTML preview trên trình duyệt). Tăng font trong header/table
+         thì margin_top phải tăng theo, không thì header lại đè lên body. -->
+    <record id="paperformat_att_document" model="report.paperformat">
+        <field name="name">Trang Huy Logistics - Chứng từ</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">55</field>
+        <field name="margin_bottom">20</field>
+        <field name="margin_left">7</field>
+        <field name="margin_right">7</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">8</field>
+        <field name="dpi">96</field>
+        <field name="disable_shrinking" eval="False"/>
+    </record>
+</odoo>

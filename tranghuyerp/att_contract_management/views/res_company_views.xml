@@ -1,0 +1,52 @@
+<odoo>
+    <!-- Tab Chữ ký & In ấn trên Cấu hình công ty — chỉ Admin hệ thống / CEO
+         thấy được, vì đây là ảnh con dấu + chữ ký dùng in lên chứng từ chính
+         thức (HĐNT, phụ lục), không phải thông tin nhân viên thường cần sửa. -->
+    <record id="view_company_form_att_signature" model="ir.ui.view">
+        <field name="name">res.company.form.att.signature</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Chữ ký &amp; In ấn" name="att_signature"
+                      groups="base.group_system,att_contract_management.group_att_qc_ceo">
+                    <group>
+                        <group string="Ảnh dùng in chứng từ">
+                            <field name="report_header_logo" widget="image" class="oe_avatar"/>
+                            <field name="report_stamp_image" widget="image" class="oe_avatar"/>
+                            <field name="report_signature_image" widget="image" class="oe_avatar"/>
+                        </group>
+                        <group string="Người ký mặc định">
+                            <field name="report_signer_name"/>
+                            <field name="report_signer_title"/>
+                        </group>
+                        <group string="Chứng chỉ in header">
+                            <field name="report_cert_iso9001" widget="image" class="oe_avatar"/>
+                            <field name="report_cert_iso27001" widget="image" class="oe_avatar"/>
+                            <field name="report_cert_esg" widget="image" class="oe_avatar"/>
+                        </group>
+                        <group string="Thông tin header/footer">
+                            <field name="report_office_address"/>
+                            <field name="report_hotline"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Ảnh chữ ký từng nhân viên — đặt trong form Users đầy đủ (Settings >
+         Users), không phải trang Preferences user tự sửa được. -->
+    <record id="view_users_form_att_signature" model="ir.ui.view">
+        <field name="name">res.users.form.att.signature</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='preferences']" position="after">
+                <page string="Chữ ký" name="att_signature">
+                    <field name="signature_image" widget="image" class="oe_avatar"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

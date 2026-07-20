@@ -1,0 +1,16 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_att_contract_user,att.contract user,model_att_contract,group_att_qc_user,1,1,1,0
+access_att_contract_manager,att.contract manager,model_att_contract,group_att_qc_manager,1,1,1,1
+access_att_contract_internal_read,att.contract internal read,model_att_contract,base.group_user,1,0,0,0
+access_att_appendix_user,att.contract.appendix user,model_att_contract_appendix,group_att_qc_user,1,1,1,0
+access_att_appendix_manager,att.contract.appendix manager,model_att_contract_appendix,group_att_qc_manager,1,1,1,1
+access_att_appendix_internal_read,att.contract.appendix internal read,model_att_contract_appendix,base.group_user,1,0,0,0
+access_att_appendix_line_user,att.contract.appendix.line user,model_att_contract_appendix_line,group_att_qc_user,1,1,1,1
+access_att_appendix_line_internal_read,att.contract.appendix.line internal read,model_att_contract_appendix_line,base.group_user,1,0,0,0
+access_att_clause_manager,att.contract.clause manager,model_att_contract_clause,group_att_qc_manager,1,1,1,1
+access_att_clause_internal_read,att.contract.clause internal read,model_att_contract_clause,base.group_user,1,0,0,0
+access_att_liquidation_reason_manager,att.contract.liquidation.reason manager,model_att_contract_liquidation_reason,group_att_qc_manager,1,1,1,1
+access_att_liquidation_reason_internal_read,att.contract.liquidation.reason internal read,model_att_contract_liquidation_reason,base.group_user,1,0,0,0
+access_att_term_line_user,att.contract.term.line user,model_att_contract_term_line,group_att_qc_user,1,1,1,1
+access_att_term_line_internal_read,att.contract.term.line internal read,model_att_contract_term_line,base.group_user,1,0,0,0
+access_att_send_document_wizard,att.send.document.wizard user,model_att_send_document_wizard,group_att_qc_user,1,1,1,1

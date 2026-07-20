@@ -1,0 +1,56 @@
+/* Bản đồ nhiệt Realtime — KHÔNG phải bản đồ địa lý, là bảng danh sách Lệnh
+   vận chuyển + trạng thái (màu) + xe + trạng thái xe (màu). .att_vehicle_dot
+   dùng lại từ dispatch_dashboard.scss (cùng bundle web.assets_backend). */
+.att_realtime_heatmap {
+    padding: 12px;
+}
+
+.att_realtime_table_wrap {
+    overflow-x: auto;
+
+    // Không nằm trong flex row như tab "Xe" (có gap sẵn) — tự thêm khoảng
+    // cách giữa chấm màu và chữ trạng thái ngay trong ô bảng.
+    .att_vehicle_dot {
+        margin-right: 6px;
+    }
+}
+
+.att_realtime_link {
+    cursor: pointer;
+    color: #2d6cdf;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.att_realtime_updated {
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+// Địa chỉ đầy đủ (không rút gọn) — giới hạn chiều rộng + cho xuống dòng,
+// tránh 1 dòng địa chỉ dài kéo giãn cả bảng.
+.att_realtime_table_wrap table td:nth-child(5),
+.att_realtime_table_wrap table td:nth-child(6) {
+    max-width: 260px;
+    white-space: normal;
+}
+
+/* ---- Responsive — dùng được trên điện thoại/màn nhỏ ---- */
+@media (max-width: 900px) {
+    .att_realtime_heatmap {
+        padding: 6px;
+    }
+
+    .att_realtime_table_wrap table {
+        display: block;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .att_realtime_heatmap h4 {
+        font-size: 16px;
+    }
+}

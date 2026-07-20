@@ -1,0 +1,39 @@
+<odoo>
+    <record id="view_purchase_order_form_att_transport" model="ir.ui.view">
+        <field name="name">purchase.order.form.att.transport</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button name="action_view_transport_orders" type="object"
+                        class="oe_stat_button" icon="fa-truck"
+                        invisible="transport_order_count == 0">
+                    <field name="transport_order_count" widget="statinfo" string="Lệnh VC"/>
+                </button>
+            </div>
+            <!-- Field vận chuyển trên dòng PO -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_qty']" position="before">
+                <field name="pickup_location" optional="hide" widget="att_address_autocomplete" options="{'lat_field': 'pickup_lat', 'lng_field': 'pickup_lng'}"/>
+                <field name="delivery_location" optional="hide" widget="att_address_autocomplete" options="{'lat_field': 'delivery_lat', 'lng_field': 'delivery_lng'}"/>
+                <field name="pickup_lat" column_invisible="1"/>
+                <field name="pickup_lng" column_invisible="1"/>
+                <field name="delivery_lat" column_invisible="1"/>
+                <field name="delivery_lng" column_invisible="1"/>
+                <field name="vehicle_type_id" optional="show"
+                       domain="[('transport_mode_ids', 'in', product_id)] if product_id else []"/>
+                <field name="vehicle_id" optional="hide"/>
+                <field name="cargo_description" optional="hide"/>
+            </xpath>
+            <!-- "Product" -> "Dịch vụ", đồng bộ cách gọi với bên Sale -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_id']" position="attributes">
+                <attribute name="string">Dịch vụ</attribute>
+            </xpath>
+            <!-- Dời "Đơn vị tính" lên TRƯỚC "Số lượng" thay vì nằm sau
+                 Received/Billed — đồng bộ layout với bên Sale -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_id']" position="replace"/>
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_qty']" position="before">
+                <field name="product_uom_id" string="Đơn vị tính" groups="uom.group_uom"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

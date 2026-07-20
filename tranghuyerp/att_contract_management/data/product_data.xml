@@ -1,0 +1,20 @@
+<odoo>
+    <data noupdate="0">
+        <!-- Product dịch vụ CHUẨN — vai kế toán duy nhất. Kế toán cấu hình
+             TK doanh thu + VAT một lần. KHÔNG tạo product theo tuyến. -->
+        <record id="product_service_freight_sale" model="product.product">
+            <field name="name">Cước vận chuyển</field>
+            <field name="type">service</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="list_price">0</field>
+        </record>
+        <record id="product_service_freight_purchase" model="product.product">
+            <field name="name">Cước thuê vận chuyển (NCC)</field>
+            <field name="type">service</field>
+            <field name="sale_ok" eval="False"/>
+            <field name="purchase_ok" eval="True"/>
+            <field name="list_price">0</field>
+        </record>
+    </data>
+</odoo>

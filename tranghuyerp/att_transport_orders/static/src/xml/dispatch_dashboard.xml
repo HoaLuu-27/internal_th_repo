@@ -1,0 +1,130 @@
+<templates xml:space="preserve">
+    <t t-name="att_transport_orders.DispatchDashboard" owl="1">
+        <div class="att_dispatch_dashboard">
+            <div class="att_dispatch_side_pane">
+                <div class="att_dispatch_list_pane">
+                    <div class="att_dispatch_tabs">
+                        <button type="button" t-att-class="{active: state.activeTab === 'orders'}"
+                                t-on-click="() => this.state.activeTab = 'orders'">
+                            Lệnh vận chuyển
+                        </button>
+                        <button type="button" t-att-class="{active: state.activeTab === 'routes'}"
+                                t-on-click="() => this.state.activeTab = 'routes'">
+                            Lộ trình
+                        </button>
+                        <button type="button" t-att-class="{active: state.activeTab === 'vehicles'}"
+                                t-on-click="() => this.state.activeTab = 'vehicles'">
+                            Xe
+                            <span t-if="state.vehicles.length" class="att_dispatch_tab_badge att_tab_badge_green"
+                                  t-esc="state.vehicles.length"/>
+                        </button>
+                        <button type="button" t-att-class="{active: state.activeTab === 'costs'}"
+                                t-on-click="() => this.state.activeTab = 'costs'">
+                            Chi phí cần duyệt
+                            <span t-if="state.costLines.length" class="att_dispatch_tab_badge"
+                                  t-esc="state.costLines.length"/>
+                        </button>
+                    </div>
+                    <t t-if="state.loading">
+                        <p class="text-muted">Đang tải...</p>
+                    </t>
+                    <table t-elif="state.activeTab === 'orders'" class="table table-sm att_dispatch_order_table">
+                        <thead>
+                            <tr>
+                                <th>Lệnh</th>
+                                <th>KH</th>
+                                <th>Tuyến</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="state.orders" t-as="order" t-key="order.id">
+                                <tr t-on-click="() => this.onOrderClick(order)">
+                                    <td><t t-esc="order.name"/></td>
+                                    <td><t t-esc="order.partner_id and order.partner_id[1]"/></td>
+                                    <td><t t-esc="shortRouteName(order)"/></td>
+                                    <td><t t-esc="stateLabel[order.state]"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                    <div t-elif="state.activeTab === 'vehicles'" class="att_vehicle_list">
+                        <t t-foreach="state.vehicles" t-as="v" t-key="v.id">
+                            <div class="att_vehicle_row" t-on-click="() => this.locateVehicle(v)">
+                                <span class="att_vehicle_dot"
+                                      t-attf-style="background-color: {{vehicleStateColor[v.th_state] || '#9e9e9e'}};"/>
+                                <span class="att_vehicle_plate" t-esc="v.license_plate || v.name"/>
+                                <span class="att_vehicle_state_badge"
+                                      t-attf-style="color: {{vehicleStateColor[v.th_state] || '#9e9e9e'}};"
+                                      t-esc="vehicleStateLabel[v.th_state] || v.th_state"/>
+                                <button type="button" class="att_vehicle_open_btn" title="Mở hồ sơ xe"
+                                        t-on-click.stop="() => this.openVehicleForm(v)">↗</button>
+                            </div>
+                        </t>
+                        <p t-if="!state.vehicles.length" class="text-muted">Chưa có xe nào.</p>
+                    </div>
+                    <table t-elif="state.activeTab === 'routes'" class="table table-sm att_dispatch_order_table">
+                        <thead>
+                            <tr>
+                                <th>Tuyến</th>
+                                <th>Km</th>
+                                <th>ETA (phút)</th>
+                                <th>Phí BOT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="state.routes" t-as="route" t-key="route.id">
+                                <tr t-on-click="() => this.onRouteClick(route)">
+                                    <td><t t-esc="shortRouteLabel(route)"/></td>
+                                    <td><t t-esc="route.distance_km || '—'"/></td>
+                                    <td><t t-esc="route.eta_minutes || '—'"/></td>
+                                    <td><t t-esc="route.cost_total || 0"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                    <t t-else="">
+                        <table class="table table-sm att_dispatch_order_table">
+                            <thead>
+                                <tr>
+                                    <th>Ngày</th>
+                                    <th>Loại chi phí</th>
+                                    <th>Số tiền</th>
+                                    <th>Lệnh</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="state.costLines" t-as="line" t-key="line.id">
+                                    <tr t-on-click="() => this.onCostLineClick(line)">
+                                        <td><t t-esc="line.date"/></td>
+                                        <td><t t-esc="line.cost_type_id and line.cost_type_id[1]"/></td>
+                                        <td><t t-esc="line.amount"/></td>
+                                        <td><t t-esc="line.transport_order_id and line.transport_order_id[1]"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                        <p t-if="!state.costLines.length" class="text-muted">
+                            Không có chi phí nào cần duyệt.
+                        </p>
+                    </t>
+                </div>
+                <div class="att_dispatch_chart_pane">
+                    <h5>Phân bố trạng thái lệnh</h5>
+                    <div class="att_dispatch_bar_chart">
+                        <t t-foreach="chartBars" t-as="bar" t-key="bar.key">
+                            <div class="att_dispatch_bar_row">
+                                <span class="att_dispatch_bar_label" t-esc="bar.label"/>
+                                <div class="att_dispatch_bar_track">
+                                    <div class="att_dispatch_bar_fill"
+                                         t-attf-style="width: {{bar.pct}}%; background-color: {{bar.color}};"/>
+                                </div>
+                                <span class="att_dispatch_bar_count" t-esc="bar.count"/>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

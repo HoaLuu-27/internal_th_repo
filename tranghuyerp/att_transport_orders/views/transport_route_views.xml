@@ -1,0 +1,125 @@
+<odoo>
+    <record id="view_att_transport_route_list" model="ir.ui.view">
+        <field name="name">att.transport.route.list</field>
+        <field name="model">att.transport.route</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="origin_name"/>
+                <field name="destination_name"/>
+                <field name="distance_km"/>
+                <field name="reverse_route_id" optional="show"/>
+                <field name="active_to_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_att_transport_route_form" model="ir.ui.view">
+        <field name="name">att.transport.route.form</field>
+        <field name="model">att.transport.route</field>
+        <field name="arch" type="xml">
+            <form string="Tuyến đường">
+                <header>
+                    <button name="action_resolve_route_info" string="Cập nhật từ VietMap"
+                            type="object" class="btn-secondary"
+                            help="Gọi lại Route v4 lấy khoảng cách/thời gian/toạ độ chi tiết
+                                  (route_geometry) — dùng cho route cũ tạo trước khi có tính
+                                  năng vẽ đường trên bản đồ."/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_transport_orders" type="object"
+                                class="oe_stat_button" icon="fa-truck">
+                            <field name="active_to_count" widget="statinfo" string="Lệnh đang chạy"/>
+                        </button>
+                    </div>
+                    <field name="currency_id" invisible="1"/>
+                    <div class="oe_title"><h1><field name="name" placeholder="Hà Nội – Hải Phòng"/></h1></div>
+                    <group>
+                        <group string="Hai đầu tuyến">
+                            <field name="origin_name"/>
+                            <field name="destination_name"/>
+                            <field name="distance_km"/>
+                            <field name="eta_minutes"/>
+                            <field name="reverse_route_id"/>
+                        </group>
+                        <group string="Tọa độ GPS (bản đồ nhiệt)">
+                            <field name="origin_lat"/>
+                            <field name="origin_lng"/>
+                            <field name="destination_lat"/>
+                            <field name="destination_lng"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Chi phí phát sinh" name="cost_lines">
+                            <field name="cost_total" widget="monetary" readonly="1"/>
+                            <div class="text-muted mb-2">
+                                Chi phí CHUẨN của tuyến (template) — ai đi tuyến này cũng
+                                gặp. Không chốt/duyệt ở đây: khi báo giá/SO dùng tuyến,
+                                hệ thống tự copy thành bản ghi riêng theo từng khách để
+                                chốt trên đó (smart button "Chi phí tuyến" trên báo giá).
+                            </div>
+                            <field name="cost_line_ids">
+                                <list editable="bottom">
+                                    <field name="date"/>
+                                    <field name="cost_type_id"/>
+                                    <field name="description"/>
+                                    <field name="amount" sum="Tổng"/>
+                                    <field name="paid_by" string="Bên chịu (mặc định)"/>
+                                    <field name="expense_type" string="Xử lý KT (mặc định)"/>
+                                    <field name="is_toll" column_invisible="1"/>
+                                    <field name="toll_type" optional="hide"/>
+                                    <field name="toll_ref_id" optional="hide"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="NCC chuyên tuyến">
+                            <field name="vendor_route_ids">
+                                <list editable="bottom">
+                                    <field name="priority"/>
+                                    <field name="vendor_id"/>
+                                    <field name="vehicle_type_id"/>
+                                    <field name="price_per_trip"/>
+                                    <field name="active" widget="boolean_toggle"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_att_transport_route" model="ir.actions.act_window">
+        <field name="name">Tuyến đường</field>
+        <field name="res_model">att.transport.route</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    <record id="action_att_vendor_route_rule" model="ir.actions.act_window">
+        <field name="name">NCC chuyên tuyến</field>
+        <field name="res_model">att.vendor.route.rule</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    <record id="view_att_vendor_route_rule_list" model="ir.ui.view">
+        <field name="name">att.vendor.route.rule.list</field>
+        <field name="model">att.vendor.route.rule</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="route_id"/>
+                <field name="priority"/>
+                <field name="vendor_id"/>
+                <field name="vehicle_type_id"/>
+                <field name="price_per_trip"/>
+                <field name="active" widget="boolean_toggle"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_att_commodity" model="ir.actions.act_window">
+        <field name="name">Loại hàng hóa</field>
+        <field name="res_model">att.commodity</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

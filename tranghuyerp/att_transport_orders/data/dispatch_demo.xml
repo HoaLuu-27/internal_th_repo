@@ -1,0 +1,190 @@
+<odoo noupdate="1">
+    <!-- Demo cho dashboard Điều vận: 3 tuyến + 6 Lệnh vận chuyển ở nhiều
+         trạng thái khác nhau, dồn 3 lệnh Đang vận chuyển vào CÙNG 1 tuyến
+         (R1) để test bản đồ nhiệt thấy rõ chênh lệch mật độ so với 2 tuyến
+         còn lại (0 lệnh đang chạy). Toạ độ xe (current_lat/lng) tương ứng
+         khai ở att_fleets_extend/data/fleet_vehicle_demo.xml.
+         origin_type để 'sale' nhưng KHÔNG gán sale_order_id — demo thuần
+         cho bản đồ, không cần tạo thêm đơn hàng bán nháp kèm theo. -->
+
+    <record id="partner_demo_customer_a" model="res.partner">
+        <field name="name">Công ty CP Thép Miền Bắc</field>
+        <field name="is_company">True</field>
+        <field name="customer_rank">1</field>
+        <field name="city">Hà Nội</field>
+    </record>
+    <record id="partner_demo_customer_b" model="res.partner">
+        <field name="name">Công ty TNHH Thương mại Sông Hồng</field>
+        <field name="is_company">True</field>
+        <field name="customer_rank">1</field>
+        <field name="city">Ninh Bình</field>
+    </record>
+
+    <!-- ============ Tuyến demo ============ -->
+    <record id="route_demo_r1_hn_hp" model="att.transport.route">
+        <field name="name">1 Đường Cầu Giấy, Phường Cầu Giấy, Thành phố Hà Nội – 15 Đường Lạch Tray, Phường Đông Hải, Thành phố Hải Phòng</field>
+        <field name="origin_name">1 Đường Cầu Giấy, Phường Cầu Giấy, Thành phố Hà Nội</field>
+        <field name="destination_name">15 Đường Lạch Tray, Phường Đông Hải, Thành phố Hải Phòng</field>
+        <field name="origin_lat">21.0245</field>
+        <field name="origin_lng">105.7823</field>
+        <field name="destination_lat">20.8449</field>
+        <field name="destination_lng">106.6881</field>
+        <field name="distance_km">105.0</field>
+        <field name="eta_minutes">120</field>
+        <field name="route_geometry">[[21.0245, 105.7823], [20.8449, 106.6881]]</field>
+    </record>
+    <record id="route_demo_r2_hn_nb" model="att.transport.route">
+        <field name="name">1 Đường Cầu Giấy, Phường Cầu Giấy, Thành phố Hà Nội – 50 Đường Trần Hưng Đạo, Phường Ninh Bình, Tỉnh Ninh Bình</field>
+        <field name="origin_name">1 Đường Cầu Giấy, Phường Cầu Giấy, Thành phố Hà Nội</field>
+        <field name="destination_name">50 Đường Trần Hưng Đạo, Phường Ninh Bình, Tỉnh Ninh Bình</field>
+        <field name="origin_lat">21.0245</field>
+        <field name="origin_lng">105.7823</field>
+        <field name="destination_lat">20.2506</field>
+        <field name="destination_lng">105.9745</field>
+        <field name="distance_km">95.0</field>
+        <field name="eta_minutes">115</field>
+        <field name="route_geometry">[[21.0245, 105.7823], [20.2506, 105.9745]]</field>
+    </record>
+    <record id="route_demo_r3_hp_nb" model="att.transport.route">
+        <field name="name">20 Đường Lạch Tray, Phường Đông Hải, Thành phố Hải Phòng – 60 Đường Lê Hồng Phong, Phường Tam Điệp, Tỉnh Ninh Bình</field>
+        <field name="origin_name">20 Đường Lạch Tray, Phường Đông Hải, Thành phố Hải Phòng</field>
+        <field name="destination_name">60 Đường Lê Hồng Phong, Phường Tam Điệp, Tỉnh Ninh Bình</field>
+        <field name="origin_lat">20.8449</field>
+        <field name="origin_lng">106.6881</field>
+        <field name="destination_lat">20.1500</field>
+        <field name="destination_lng">105.9200</field>
+        <field name="distance_km">145.0</field>
+        <field name="eta_minutes">170</field>
+        <field name="route_geometry">[[20.8449, 106.6881], [20.1500, 105.9200]]</field>
+    </record>
+
+    <!-- ============ Lệnh vận chuyển demo ============ -->
+    <!-- 3 lệnh Đang vận chuyển dồn vào route_demo_r1_hn_hp -> active_to_count=3 -->
+    <record id="to_demo_1" model="att.transport.order">
+        <field name="partner_id" ref="partner_demo_customer_a"/>
+        <field name="route_id" ref="route_demo_r1_hn_hp"/>
+        <field name="vehicle_id" ref="att_fleets_extend.vehicle_demo_truck_5ta"/>
+        <field name="driver_id" ref="att_fleets_extend.employee_driver_1"/>
+        <field name="commodity_id" ref="commodity_normal"/>
+        <field name="cargo_description">Thép cuộn</field>
+        <field name="cargo_weight">4.5</field>
+        <field name="base_freight">8500000</field>
+        <field name="scheduled_date" eval="(DateTime.now() - relativedelta(hours=3)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="actual_departure" eval="(DateTime.now() - relativedelta(hours=3)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="state">in_transit</field>
+    </record>
+    <record id="to_demo_2" model="att.transport.order">
+        <field name="partner_id" ref="partner_demo_customer_a"/>
+        <field name="route_id" ref="route_demo_r1_hn_hp"/>
+        <field name="vehicle_id" ref="att_fleets_extend.vehicle_demo_pickup"/>
+        <field name="driver_id" ref="att_fleets_extend.employee_driver_2"/>
+        <field name="commodity_id" ref="commodity_material"/>
+        <field name="cargo_description">Vật tư xây dựng</field>
+        <field name="cargo_weight">0.8</field>
+        <field name="base_freight">3200000</field>
+        <field name="scheduled_date" eval="(DateTime.now() - relativedelta(hours=1)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="actual_departure" eval="(DateTime.now() - relativedelta(hours=1)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="state">in_transit</field>
+    </record>
+    <record id="to_demo_3" model="att.transport.order">
+        <field name="partner_id" ref="partner_demo_customer_a"/>
+        <field name="route_id" ref="route_demo_r1_hn_hp"/>
+        <field name="vehicle_id" ref="att_fleets_extend.vehicle_demo_van_1t"/>
+        <field name="driver_id" ref="att_fleets_extend.employee_driver_1"/>
+        <field name="commodity_id" ref="commodity_normal"/>
+        <field name="cargo_description">Hàng tiêu dùng đóng kiện</field>
+        <field name="cargo_weight">1.0</field>
+        <field name="base_freight">4100000</field>
+        <field name="scheduled_date" eval="(DateTime.now() - relativedelta(hours=2, minutes=30)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="actual_departure" eval="(DateTime.now() - relativedelta(hours=2, minutes=30)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="state">in_transit</field>
+    </record>
+
+    <!-- 2 lệnh Nháp trên route_demo_r2_hn_nb -> active_to_count=0, test tương phản với R1 -->
+    <record id="to_demo_4" model="att.transport.order">
+        <field name="partner_id" ref="partner_demo_customer_b"/>
+        <field name="route_id" ref="route_demo_r2_hn_nb"/>
+        <field name="commodity_id" ref="commodity_normal"/>
+        <field name="cargo_description">Hàng bách hoá</field>
+        <field name="base_freight">3800000</field>
+        <field name="scheduled_date" eval="(DateTime.now() + relativedelta(hours=4)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="state">draft</field>
+    </record>
+    <record id="to_demo_5" model="att.transport.order">
+        <field name="partner_id" ref="partner_demo_customer_b"/>
+        <field name="route_id" ref="route_demo_r2_hn_nb"/>
+        <field name="vehicle_id" ref="att_fleets_extend.vehicle_demo_motorbike_2"/>
+        <field name="commodity_id" ref="commodity_normal"/>
+        <field name="cargo_description">Hàng nhẹ giao nhanh</field>
+        <field name="base_freight">1200000</field>
+        <field name="scheduled_date" eval="(DateTime.now() + relativedelta(hours=6)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="state">draft</field>
+    </record>
+
+    <!-- 1 lệnh Hoàn thành trên route_demo_r3_hp_nb -->
+    <record id="to_demo_6" model="att.transport.order">
+        <field name="partner_id" ref="partner_demo_customer_a"/>
+        <field name="route_id" ref="route_demo_r3_hp_nb"/>
+        <field name="vehicle_id" ref="att_fleets_extend.vehicle_demo_motorbike_1"/>
+        <field name="commodity_id" ref="commodity_normal"/>
+        <field name="cargo_description">Hàng đã giao</field>
+        <field name="base_freight">5600000</field>
+        <field name="scheduled_date" eval="(DateTime.now() - relativedelta(days=1, hours=6)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="actual_departure" eval="(DateTime.now() - relativedelta(days=1, hours=6)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="actual_arrival" eval="(DateTime.now() - relativedelta(days=1, hours=2)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="state">done</field>
+    </record>
+
+    <!-- ============ Chi phí demo — test tab "Chi phí cần duyệt" ============ -->
+    <record id="cost_line_demo_1" model="att.transport.cost.line">
+        <field name="transport_order_id" ref="to_demo_1"/>
+        <field name="source_route_id" ref="route_demo_r1_hn_hp"/>
+        <field name="cost_type_id" ref="cost_type_cau_ho"/>
+        <field name="description">Cẩu hộ xe hỏng giữa đường</field>
+        <field name="amount">850000</field>
+        <field name="paid_by">customer</field>
+        <field name="expense_type">so_line</field>
+        <field name="state">pending</field>
+    </record>
+    <record id="cost_line_demo_2" model="att.transport.cost.line">
+        <field name="transport_order_id" ref="to_demo_2"/>
+        <field name="source_route_id" ref="route_demo_r1_hn_hp"/>
+        <field name="cost_type_id" ref="cost_type_bot"/>
+        <field name="description">Trạm thu phí QL5 Km10 — Hưng Yên</field>
+        <field name="amount">70000</field>
+        <field name="paid_by">customer</field>
+        <field name="expense_type">so_line</field>
+        <field name="state">pending</field>
+        <field name="toll_ref_id">demo-ql5-km10</field>
+        <field name="toll_type">exit</field>
+        <field name="toll_lat">20.9437</field>
+        <field name="toll_lng">106.0938</field>
+    </record>
+    <record id="cost_line_demo_3" model="att.transport.cost.line">
+        <field name="transport_order_id" ref="to_demo_1"/>
+        <field name="source_route_id" ref="route_demo_r1_hn_hp"/>
+        <field name="cost_type_id" ref="cost_type_bot"/>
+        <field name="description">Trạm thu phí QL5 Km82 — Hải Phòng</field>
+        <field name="amount">85000</field>
+        <field name="paid_by">customer</field>
+        <field name="expense_type">so_line</field>
+        <field name="state">pending</field>
+        <field name="toll_ref_id">demo-ql5-km82</field>
+        <field name="toll_type">exit</field>
+        <field name="toll_lat">20.8862</field>
+        <field name="toll_lng">106.5580</field>
+    </record>
+    <record id="cost_line_demo_4" model="att.transport.cost.line">
+        <field name="route_id" ref="route_demo_r2_hn_nb"/>
+        <field name="cost_type_id" ref="cost_type_bot"/>
+        <field name="description">Trạm thu phí Pháp Vân – Cầu Giẽ</field>
+        <field name="amount">65000</field>
+        <field name="paid_by">customer</field>
+        <field name="expense_type">so_line</field>
+        <field name="state">pending</field>
+        <field name="toll_ref_id">demo-phap-van</field>
+        <field name="toll_type">exit</field>
+        <field name="toll_lat">20.8180</field>
+        <field name="toll_lng">105.9110</field>
+    </record>
+</odoo>

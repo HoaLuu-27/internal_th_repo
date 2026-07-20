@@ -1,0 +1,51 @@
+<templates xml:space="preserve">
+    <t t-name="att_transport_orders.RealtimeHeatmap" owl="1">
+        <div class="att_realtime_heatmap">
+            <h4>Bản đồ nhiệt — Trạng thái Realtime</h4>
+            <p t-if="state.loading" class="text-muted">Đang tải...</p>
+            <div t-else="" class="att_realtime_table_wrap">
+                <table class="table table-sm att_dispatch_order_table">
+                    <thead>
+                        <tr>
+                            <th>Lệnh</th>
+                            <th>Trạng thái</th>
+                            <th>Xe</th>
+                            <th>Trạng thái xe</th>
+                            <th>Điểm bốc hàng</th>
+                            <th>Điểm giao hàng</th>
+                            <th>Cập nhật vị trí</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="state.rows" t-as="row" t-key="row.id">
+                            <tr>
+                                <td t-on-click="() => this.onOrderClick(row)" class="att_realtime_link"
+                                    t-esc="row.name"/>
+                                <td>
+                                    <span class="att_vehicle_dot"
+                                          t-attf-style="background-color: {{stateColor[row.state]}};"/>
+                                    <t t-esc="stateLabel[row.state]"/>
+                                </td>
+                                <td t-if="row.vehicle" t-on-click="() => this.onVehicleClick(row.vehicle)"
+                                    class="att_realtime_link"
+                                    t-esc="row.vehicle.license_plate || row.vehicle.name"/>
+                                <td t-else="" class="text-muted">—</td>
+                                <td t-if="row.vehicle">
+                                    <span class="att_vehicle_dot"
+                                          t-attf-style="background-color: {{vehicleStateColor[row.vehicle.th_display_state]}};"/>
+                                    <t t-esc="vehicleStateLabel[row.vehicle.th_display_state]"/>
+                                </td>
+                                <td t-else="" class="text-muted">—</td>
+                                <td t-esc="row.pickup || '—'"/>
+                                <td t-esc="row.delivery || '—'"/>
+                                <td class="text-muted att_realtime_updated"
+                                    t-esc="(row.vehicle &amp;&amp; row.vehicle.current_position_updated) || '—'"/>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+                <p t-if="!state.rows.length" class="text-muted">Không có lệnh vận chuyển nào.</p>
+            </div>
+        </div>
+    </t>
+</templates>

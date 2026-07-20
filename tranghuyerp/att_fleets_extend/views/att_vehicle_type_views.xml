@@ -1,0 +1,65 @@
+<odoo>
+    <record id="view_att_vehicle_type_list" model="ir.ui.view">
+        <field name="name">att.vehicle.type.list</field>
+        <field name="model">att.vehicle.type</field>
+        <field name="arch" type="xml">
+            <list string="Loại xe vận chuyển">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="dimension_text"/>
+                <field name="max_volume_m3"/>
+                <field name="max_weight_kg"/>
+                <field name="max_weight_per_package_kg"/>
+                <field name="vietmap_vehicle_class"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_att_vehicle_type_form" model="ir.ui.view">
+        <field name="name">att.vehicle.type.form</field>
+        <field name="model">att.vehicle.type</field>
+        <field name="arch" type="xml">
+            <form string="Loại xe vận chuyển">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                            <field name="length_cm"/>
+                            <field name="width_cm"/>
+                            <field name="height_cm"/>
+                            <field name="dimension_text" readonly="1"/>
+                            <field name="max_volume_m3" readonly="1"/>
+                            <label for="weight_input_value" string="Tải trọng (nhập nhanh)"/>
+                            <div class="o_row">
+                                <field name="weight_input_value"/>
+                                <field name="weight_input_unit"/>
+                            </div>
+                            <field name="max_weight_kg"/>
+                            <field name="max_weight_per_package_kg"/>
+                            <field name="vietmap_vehicle_class"/>
+                            <field name="description"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_att_vehicle_type" model="ir.actions.act_window">
+        <field name="name">Loại xe vận chuyển</field>
+        <field name="res_model">att.vehicle.type</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Chưa có loại xe nào</p>
+            <p>Khai báo các loại xe (Xe máy, Xe van 5 tạ, Xe tải 5 tạ...) kèm kích thước thùng và tải trọng.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_att_vehicle_type" name="Loại xe vận chuyển"
+              parent="fleet.fleet_configuration" action="action_att_vehicle_type"
+              sequence="50"/>
+</odoo>
