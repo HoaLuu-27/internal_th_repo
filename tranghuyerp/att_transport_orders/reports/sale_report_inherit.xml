@@ -1,69 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- =========================================================
-         ÁP DỤNG PAPER FORMAT CHO BÁO GIÁ / ĐƠN HÀNG MẶC ĐỊNH
-         ========================================================= -->
     <record id="sale.action_report_saleorder" model="ir.actions.report">
         <field name="report_name">sale.report_saleorder</field>
         <field name="report_file">sale.report_saleorder</field>
         <field name="paperformat_id" ref="att_contract_management.paperformat_att_document"/>
     </record>
 
-
-    <!-- =========================================================
-         EXTERNAL LAYOUT RIÊNG CHO BÁO GIÁ TRANG HUY
-         - Dùng đúng 4 image field hiện có trên res.company:
-           + report_header_logo
-           + report_cert_iso9001
-           + report_cert_iso27001
-           + report_cert_esg
-         ========================================================= -->
     <template id="att_transport_sale_external_layout"
               name="Trang Huy Logistics - Sale External Layout">
-
-        <t t-set="company"
-           t-value="doc.company_id if doc and doc.company_id else res_company"/>
-
-        <!-- HEADER -->
-        <div class="header"
-             style="font-family: 'Times New Roman', Times, serif; color: #222222;"
+        <t t-set="company" t-value="doc.company_id if doc and doc.company_id else res_company"/>
+        <div class="header" style="font-family: 'Times New Roman', Times, serif; color: #222222;"
              t-att-data-oe-model="company._name"
              t-att-data-oe-id="company.id">
-
             <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
                 <tbody>
                     <tr>
-                        <!-- KHỐI 4 LOGO -->
                         <td style="width:55%; vertical-align:middle; padding:0 15px 0 0;">
                             <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
                                 <tbody>
                                     <tr>
-                                        <!-- Logo Trang Huy -->
                                         <td style="width:34%; height:110px; text-align:left; vertical-align:middle;">
                                             <img t-if="company.report_header_logo or company.logo"
                                                  t-att-src="image_data_uri(company.report_header_logo or company.logo)"
                                                  alt="Trang Huy"
                                                  style="display:block; max-height:90px; max-width:100%; width:auto; height:auto; object-fit:contain;"/>
                                         </td>
-
-                                        <!-- ISO 9001 -->
                                         <td style="width:22%; height:110px; text-align:center; vertical-align:middle; padding-left:35px;">
                                             <img t-if="company.report_cert_iso9001"
                                                  t-att-src="image_data_uri(company.report_cert_iso9001)"
                                                  alt="ISO 9001"
                                                  style="display:inline-block; max-height:62px; max-width:100%; width:auto; height:auto; object-fit:contain;"/>
                                         </td>
-
-                                        <!-- ISO 27001 -->
                                         <td style="width:22%; height:110px; text-align:center; vertical-align:middle; padding-left:35px;">
                                             <img t-if="company.report_cert_iso27001"
                                                  t-att-src="image_data_uri(company.report_cert_iso27001)"
                                                  alt="ISO 27001"
                                                  style="display:inline-block; max-height:62px; max-width:100%; width:auto; height:auto; object-fit:contain;"/>
                                         </td>
-
-                                        <!-- ESG -->
                                         <td style="width:22%; height:110px; text-align:center; vertical-align:middle; padding-left:35px;">
                                             <img t-if="company.report_cert_esg"
                                                  t-att-src="image_data_uri(company.report_cert_esg)"
@@ -74,43 +48,24 @@
                                 </tbody>
                             </table>
                         </td>
-
-                        <!-- THÔNG TIN CÔNG TY -->
                         <td style="width:45%; vertical-align:top; padding:0 0 0 15px;">
-
-                            <div class="th-company-name"
-                                 style="font-family:'Times New Roman', Times, serif;
-                                        font-size:16px;
-                                        font-weight:700;
-                                        line-height:1.2;
-                                        text-transform:uppercase;
-                                        white-space:nowrap;
-                                        margin:0 0 5px 0;">
+                            <div class="th-company-name" style="font-family:'Times New Roman', Times, serif;font-size:16px;font-weight:700;line-height:1.2;text-transform:uppercase;white-space:nowrap;margin:0 0 5px 0;">
                                 <span t-field="company.name"/>
                             </div>
-
-                            <div class="th-company-info"
-                                 style="font-family:'Times New Roman', Times, serif;
-                                        font-size:11px;
-                                        line-height:1.45;
-                                        color:#222222;">
-
+                            <div class="th-company-info" style="font-family:'Times New Roman', Times, serif;font-size:11px;line-height:1.45;color:#222222;">
                                 <div t-if="company.partner_id and company.partner_id.contact_address_inline">
                                     <strong>Trụ sở chính:</strong>
                                     <span t-out="company.partner_id.contact_address_inline"/>
                                 </div>
-
                                 <div t-if="company.report_office_address">
                                     <strong>VPGD:</strong>
                                     <span t-field="company.report_office_address"/>
                                 </div>
-
                                 <div>
                                     <t t-if="company.vat">
                                         <strong>Mã số thuế:</strong>
                                         <span t-field="company.vat"/>
                                     </t>
-
                                     <t t-if="company.email">
                                         <t t-if="company.vat">
                                             <span> - </span>
@@ -119,13 +74,11 @@
                                         <span t-field="company.email"/>
                                     </t>
                                 </div>
-
                                 <div>
                                     <t t-if="company.report_hotline">
                                         <strong>Hotline:</strong>
                                         <span t-field="company.report_hotline"/>
                                     </t>
-
                                     <t t-if="company.phone">
                                         <t t-if="company.report_hotline">
                                             <span> / </span>
@@ -133,177 +86,83 @@
                                         <span t-field="company.phone"/>
                                     </t>
                                 </div>
-
                                 <div t-if="company.website">
                                     <strong>Website:</strong>
                                     <span t-field="company.website"/>
                                 </div>
                             </div>
-
                         </td>
                     </tr>
                 </tbody>
             </table>
-
-            <div style="border-bottom:1px solid #b9bec6;
-                        margin-top:10px;
-                        margin-bottom:12px;"/>
-
+            <div style="border-bottom:1px solid #b9bec6; margin-top:10px; margin-bottom:12px;"/>
             <t t-if="doc">
-                <div style="width:100%;
-                            margin:0 0 12px 0;
-                            padding:0;
-                            font-family:'Times New Roman', Times, serif;
-                            font-size:24px;
-                            line-height:1.2;
-                            font-weight:700;
-                            color:#222222;">
+                <div style="width:100%; margin:0 0 12px 0; padding:0; font-family:'Times New Roman', Times, serif; font-size:24px; line-height:1.2; font-weight:700; color:#222222;">
                     <span>BÁO GIÁ #</span>
                     <span t-field="doc.name"/>
                 </div>
             </t>
         </div>
-
-        <!-- NỘI DUNG -->
-        <div class="article"
-             style="font-family: 'Times New Roman', Times, serif; color: #222222; font-size: 15px;"
+        <div class="article" style="font-family: 'Times New Roman', Times, serif; color: #222222; font-size: 15px;"
              t-att-data-oe-model="doc and doc._name"
              t-att-data-oe-id="doc and doc.id"
              t-att-data-oe-lang="doc and doc.env.context.get('lang')">
             <t t-out="0"/>
         </div>
-
-        <!-- FOOTER -->
-        <div class="footer th-footer"
-             style="width:100%;
-                    font-family:'Times New Roman', Times, serif;
-                    color:#222222;
-                    font-size:10px;
-                    line-height:1.35;
-                    border-top:1px solid #b9bec6;
-                    padding-top:8px;">
-
-            <table style="width:100%;
-                          border-collapse:collapse;
-                          table-layout:fixed;">
+        <div class="footer th-footer" style="width:100%;font-family:'Times New Roman', Times, serif;color:#222222;font-size:10px;line-height:1.35;border-top:1px solid #b9bec6;padding-top:8px;">
+            <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
                 <tbody>
                     <tr>
-                        <!-- KHỐI 4 LOGO FOOTER -->
-                        <td style="width:55%;
-                                   vertical-align:middle;
-                                   padding:0 15px 0 0;">
-
-                            <table style="width:100%;
-                                          border-collapse:collapse;
-                                          table-layout:fixed;">
+                        <td style="width:55%;vertical-align:middle;padding:0 15px 0 0;">
+                            <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
                                 <tbody>
                                     <tr>
-                                        <!-- Logo Trang Huy -->
-                                        <td style="width:34%;
-                                                   height:82px;
-                                                   text-align:left;
-                                                   vertical-align:middle;">
+                                        <td style="width:34%;height:82px;text-align:left;vertical-align:middle;">
                                             <img t-if="company.report_header_logo or company.logo"
                                                  t-att-src="image_data_uri(company.report_header_logo or company.logo)"
                                                  alt="Trang Huy"
-                                                 style="display:block;
-                                                        max-height:72px;
-                                                        max-width:100%;
-                                                        width:auto;
-                                                        height:auto;
-                                                        object-fit:contain;"/>
+                                                 style="display:block;max-height:72px;max-width:100%;width:auto;height:auto;object-fit:contain;"/>
                                         </td>
-
-                                        <!-- ISO 9001 -->
-                                        <td style="width:22%;
-                                                   height:82px;
-                                                   text-align:center;
-                                                   vertical-align:middle;
-                                                   padding-left:35px;">
+                                        <td style="width:22%;height:82px;text-align:center;vertical-align:middle;padding-left:35px;">
                                             <img t-if="company.report_cert_iso9001"
                                                  t-att-src="image_data_uri(company.report_cert_iso9001)"
                                                  alt="ISO 9001"
-                                                 style="display:inline-block;
-                                                        max-height:52px;
-                                                        max-width:100%;
-                                                        width:auto;
-                                                        height:auto;
-                                                        object-fit:contain;"/>
+                                                 style="display:inline-block;max-height:52px;max-width:100%;width:auto;height:auto;object-fit:contain;"/>
                                         </td>
-
-                                        <!-- ISO 27001 -->
-                                        <td style="width:22%;
-                                                   height:82px;
-                                                   text-align:center;
-                                                   vertical-align:middle;
-                                                   padding-left:35px;">
+                                        <td style="width:22%;height:82px;text-align:center;vertical-align:middle;padding-left:35px;">
                                             <img t-if="company.report_cert_iso27001"
                                                  t-att-src="image_data_uri(company.report_cert_iso27001)"
                                                  alt="ISO 27001"
-                                                 style="display:inline-block;
-                                                        max-height:52px;
-                                                        max-width:100%;
-                                                        width:auto;
-                                                        height:auto;
-                                                        object-fit:contain;"/>
+                                                 style="display:inline-block;max-height:52px;max-width:100%;width:auto;height:auto;object-fit:contain;"/>
                                         </td>
-
-                                        <!-- ESG -->
-                                        <td style="width:22%;
-                                                   height:82px;
-                                                   text-align:center;
-                                                   vertical-align:middle;
-                                                   padding-left:35px;">
+                                        <td style="width:22%;height:82px;text-align:center;vertical-align:middle;padding-left:35px;">
                                             <img t-if="company.report_cert_esg"
                                                  t-att-src="image_data_uri(company.report_cert_esg)"
                                                  alt="ESG"
-                                                 style="display:inline-block;
-                                                        max-height:52px;
-                                                        max-width:100%;
-                                                        width:auto;
-                                                        height:auto;
-                                                        object-fit:contain;"/>
+                                                 style="display:inline-block;max-height:52px;max-width:100%;width:auto;height:auto;object-fit:contain;"/>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </td>
-
-                        <!-- THÔNG TIN CÔNG TY FOOTER -->
-                        <td style="width:45%;
-                                   vertical-align:top;
-                                   padding:0 0 0 15px;">
-
-                            <div style="font-family:'Times New Roman', Times, serif;
-                                        font-size:14px;
-                                        font-weight:700;
-                                        line-height:1.2;
-                                        text-transform:uppercase;
-                                        white-space:nowrap;
-                                        margin-bottom:4px;">
+                        <td style="width:45%;vertical-align:top;padding:0 0 0 15px;">
+                            <div style="font-family:'Times New Roman', Times, serif;font-size:14px;font-weight:700;line-height:1.2;text-transform:uppercase;white-space:nowrap;margin-bottom:4px;">
                                 <span t-field="company.name"/>
                             </div>
-
-                            <div style="font-family:'Times New Roman', Times, serif;
-                                        font-size:10px;
-                                        line-height:1.4;">
-
+                            <div style="font-family:'Times New Roman', Times, serif;font-size:10px;line-height:1.4;">
                                 <div t-if="company.partner_id and company.partner_id.contact_address_inline">
                                     <strong>Trụ sở chính:</strong>
                                     <span t-out="company.partner_id.contact_address_inline"/>
                                 </div>
-
                                 <div t-if="company.report_office_address">
                                     <strong>VPGD:</strong>
                                     <span t-field="company.report_office_address"/>
                                 </div>
-
                                 <div>
                                     <t t-if="company.vat">
                                         <strong>Mã số thuế:</strong>
                                         <span t-field="company.vat"/>
                                     </t>
-
                                     <t t-if="company.email">
                                         <t t-if="company.vat">
                                             <span> - </span>
@@ -312,13 +171,11 @@
                                         <span t-field="company.email"/>
                                     </t>
                                 </div>
-
                                 <div>
                                     <t t-if="company.report_hotline">
                                         <strong>Hotline:</strong>
                                         <span t-field="company.report_hotline"/>
                                     </t>
-
                                     <t t-if="company.phone">
                                         <t t-if="company.report_hotline">
                                             <span> / </span>
@@ -331,28 +188,15 @@
                     </tr>
                 </tbody>
             </table>
-
-            <table style="width:100%;
-                          border-collapse:collapse;
-                          margin-top:3px;">
+            <table style="width:100%;border-collapse:collapse;margin-top:3px;">
                 <tbody>
                     <tr>
-                        <td style="width:80%;
-                                   text-align:left;
-                                   vertical-align:middle;
-                                   font-size:9px;
-                                   color:#555555;">
+                        <td style="width:80%;text-align:left;vertical-align:middle;font-size:9px;color:#555555;">
                             <t t-if="company.report_footer">
                                 <span t-field="company.report_footer"/>
                             </t>
                         </td>
-
-                        <td style="width:20%;
-                                   text-align:right;
-                                   vertical-align:middle;
-                                   font-size:9px;
-                                   color:#555555;
-                                   white-space:nowrap;">
+                        <td style="width:20%;text-align:right;vertical-align:middle;font-size:9px;color:#555555;white-space:nowrap;">
                             Trang <span class="page"/> / <span class="topage"/>
                         </td>
                     </tr>
@@ -361,139 +205,39 @@
         </div>
     </template>
 
-
-    <!-- =========================================================
-         KẾ THỪA BÁO CÁO BÁO GIÁ / ĐƠN HÀNG MẶC ĐỊNH CỦA ODOO
-         ========================================================= -->
     <template id="report_saleorder_document_th"
               inherit_id="sale.report_saleorder_document"
               name="Trang Huy Logistics - Báo giá vận chuyển"
-              priority="90">
-
-        <!-- Dùng external layout riêng -->
+              priority="200">
         <xpath expr="//t[@t-call='web.external_layout']" position="attributes">
             <attribute name="t-call">att_transport_orders.att_transport_sale_external_layout</attribute>
         </xpath>
-
-        <!-- Đổi tiêu đề báo cáo -->
         <xpath expr="//t[@t-set='layout_document_title']" position="replace">
             <t t-set="layout_document_title"/>
         </xpath>
-
-        <!-- Thay toàn bộ khối thông tin -->
         <xpath expr="//div[@id='informations']" position="replace">
-            <div id="informations"
-                 style="width:100%;
-                        margin:0 0 24px 0;
-                        padding:0;
-                        font-family:'Times New Roman', Times, serif;
-                        font-size:15px;
-                        line-height:1.5;
-                        color:#222222;">
-
-
-
-                <table style="width:100%;
-                              border-collapse:collapse;
-                              table-layout:fixed;
-                              margin:0;
-                              padding:0;">
+            <div id="informations" style="width:100%;margin:0 0 24px 0;padding:0;font-family:'Times New Roman', Times, serif;font-size:15px;line-height:1.5;color:#222222;">
+                <table style="width:100%;border-collapse:collapse;table-layout:fixed;margin:0;padding:0;">
                     <tbody>
                         <tr>
-                            <td style="width:33.33%;
-                                       vertical-align:top;
-                                       text-align:left;
-                                       padding:0 18px 0 0;">
-                                <div style="margin:0 0 6px 0;
-                                            padding:0;
-                                            color:#c00000;
-                                            font-size:15px;
-                                            line-height:1.3;
-                                            font-weight:700;">
-                                    Ngày báo giá
-                                </div>
-                                <div style="margin:0;
-                                            padding:0;
-                                            color:#222222;
-                                            font-size:15px;
-                                            line-height:1.4;">
-                                    <span t-field="doc.date_order"
-                                          t-options="{'widget': 'date'}"/>
+                            <td style="width:33.33%;vertical-align:top;text-align:left;padding:0 18px 0 0;">
+                                <div style="margin:0 0 6px 0;padding:0;color:#c00000;font-size:15px;line-height:1.3;font-weight:700;">Ngày báo giá</div>
+                                <div style="margin:0;padding:0;color:#222222;font-size:15px;line-height:1.4;">
+                                    <span t-field="doc.date_order" t-options="{'widget': 'date'}"/>
                                 </div>
                             </td>
-
-                            <td style="width:33.33%;
-                                       vertical-align:top;
-                                       text-align:left;
-                                       padding:0 9px;">
-                                <div style="margin:0 0 6px 0;
-                                            padding:0;
-                                            color:#c00000;
-                                            font-size:15px;
-                                            line-height:1.3;
-                                            font-weight:700;">
-                                    Ngày hết hạn
-                                </div>
-                                <div style="margin:0;
-                                            padding:0;
-                                            color:#222222;
-                                            font-size:15px;
-                                            line-height:1.4;">
-                                    <t t-if="doc.validity_date">
-                                        <span t-field="doc.validity_date"/>
-                                    </t>
-                                    <t t-else="">
-                                        <span>Không có</span>
-                                    </t>
+                            <td style="width:33.33%;vertical-align:top;text-align:left;padding:0 9px;">
+                                <div style="margin:0 0 6px 0;padding:0;color:#c00000;font-size:15px;line-height:1.3;font-weight:700;">Ngày hết hạn</div>
+                                <div style="margin:0;padding:0;color:#222222;font-size:15px;line-height:1.4;">
+                                    <t t-if="doc.validity_date"><span t-field="doc.validity_date"/></t>
+                                    <t t-else=""><span>Không có</span></t>
                                 </div>
                             </td>
-
-                            <td style="width:33.34%;
-                                       vertical-align:top;
-                                       text-align:left;
-                                       padding:0 0 0 18px;">
-                                <div style="margin:0 0 6px 0;
-                                            padding:0;
-                                            color:#c00000;
-                                            font-size:15px;
-                                            line-height:1.3;
-                                            font-weight:700;">
-                                    Nhân viên sales
-                                </div>
-                                <div style="margin:0;
-                                            padding:0;
-                                            color:#222222;
-                                            font-size:15px;
-                                            line-height:1.4;">
-                                    <t t-if="doc.user_id">
-                                        <span t-field="doc.user_id.name"/>
-                                    </t>
-                                    <t t-else="">
-                                        <span>Không có</span>
-                                    </t>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr t-if="doc.att_contract_id">
-                            <td colspan="3"
-                                style="vertical-align:top;
-                                       text-align:left;
-                                       padding:16px 0 0 0;">
-                                <div style="margin:0 0 6px 0;
-                                            padding:0;
-                                            color:#c00000;
-                                            font-size:15px;
-                                            line-height:1.3;
-                                            font-weight:700;">
-                                    Hợp đồng NT
-                                </div>
-                                <div style="margin:0;
-                                            padding:0;
-                                            color:#222222;
-                                            font-size:15px;
-                                            line-height:1.4;">
-                                    <span t-field="doc.att_contract_id.display_name"/>
+                            <td style="width:33.34%;vertical-align:top;text-align:left;padding:0 0 0 18px;">
+                                <div style="margin:0 0 6px 0;padding:0;color:#c00000;font-size:15px;line-height:1.3;font-weight:700;">Nhân viên sales</div>
+                                <div style="margin:0;padding:0;color:#222222;font-size:15px;line-height:1.4;">
+                                    <t t-if="doc.user_id"><span t-field="doc.user_id.name"/></t>
+                                    <t t-else=""><span>Không có</span></t>
                                 </div>
                             </td>
                         </tr>
@@ -501,407 +245,107 @@
                 </table>
             </div>
         </xpath>
-
-        <!-- Thay bảng dòng báo giá -->
         <xpath expr="//table[hasclass('o_has_total_table')]" position="replace">
-            <table class="th-sale-table"
-                   style="width:100%;
-                          border-collapse:collapse;
-                          table-layout:fixed;
-                          font-family:'Times New Roman', Times, serif;
-                          font-size:15px;
-                          line-height:1.35;
-                          margin-top:10px;
-                          margin-bottom:0;
-                          page-break-inside:auto;">
-
+            <table class="th-sale-table" style="width:100%;border-collapse:collapse;table-layout:fixed;font-family:'Times New Roman', Times, serif;font-size:15px;line-height:1.35;margin-top:10px;margin-bottom:0;page-break-inside:auto;">
                 <thead style="display:table-header-group;">
                     <tr style="page-break-inside:avoid;">
-                        <th t-if="doc.th_pdf_show_content"
-                            class="text-start"
-                            style="width:23%;
-                                   background-color:#ffffff;
-                                   color:#222222;
-                                   font-weight:700;
-                                   vertical-align:bottom;
-                                   padding:10px 7px;
-                                   border-bottom:1px solid #cdd2d8;
-                                   text-align:left;">
-                            Diễn giải
-                        </th>
-
-                        <th t-if="doc.th_pdf_show_pickup"
-                            class="text-start"
-                            style="width:10%;
-                                   background-color:#ffffff;
-                                   color:#222222;
-                                   font-weight:700;
-                                   vertical-align:bottom;
-                                   padding:10px 7px;
-                                   border-bottom:1px solid #cdd2d8;
-                                   text-align:left;
-                                   white-space:nowrap;">
-                            Điểm đi
-                        </th>
-
-                        <th t-if="doc.th_pdf_show_delivery"
-                            class="text-start"
-                            style="width:10%;
-                                   background-color:#ffffff;
-                                   color:#222222;
-                                   font-weight:700;
-                                   vertical-align:bottom;
-                                   padding:10px 7px;
-                                   border-bottom:1px solid #cdd2d8;
-                                   text-align:left;
-                                   white-space:nowrap;">
-                            Điểm đến
-                        </th>
-
-                        <th t-if="doc.th_pdf_show_qty"
-                            class="text-end"
-                            style="width:9%;
-                                   background-color:#ffffff;
-                                   color:#222222;
-                                   font-weight:700;
-                                   vertical-align:bottom;
-                                   padding:10px 7px;
-                                   border-bottom:1px solid #cdd2d8;
-                                   text-align:right;
-                                   white-space:nowrap;">
-                            Số lượng
-                        </th>
-
-                        <th t-if="doc.th_pdf_show_uom"
-                            class="text-start"
-                            style="width:8%;
-                                   background-color:#ffffff;
-                                   color:#222222;
-                                   font-weight:700;
-                                   vertical-align:bottom;
-                                   padding:10px 7px;
-                                   border-bottom:1px solid #cdd2d8;
-                                   text-align:left;
-                                   white-space:nowrap;">
-                            Đơn vị
-                        </th>
-
-                        <th t-if="doc.th_pdf_show_price_unit"
-                            class="text-end"
-                            style="width:14%;
-                                   background-color:#ffffff;
-                                   color:#222222;
-                                   font-weight:700;
-                                   vertical-align:bottom;
-                                   padding:10px 7px;
-                                   border-bottom:1px solid #cdd2d8;
-                                   text-align:right;
-                                   white-space:nowrap;">
-                            Đơn giá
-                        </th>
-
-                        <th t-if="doc.th_pdf_show_taxes"
-                            class="text-start"
-                            style="width:11%;
-                                   background-color:#ffffff;
-                                   color:#222222;
-                                   font-weight:700;
-                                   vertical-align:bottom;
-                                   padding:10px 7px;
-                                   border-bottom:1px solid #cdd2d8;
-                                   text-align:left;">
-                            Thuế
-                        </th>
-
-                        <th t-if="doc.th_pdf_show_subtotal"
-                            class="text-end"
-                            style="width:15%;
-                                   background-color:#ffffff;
-                                   color:#222222;
-                                   font-weight:700;
-                                   vertical-align:bottom;
-                                   padding:10px 7px;
-                                   border-bottom:1px solid #cdd2d8;
-                                   text-align:right;
-                                   white-space:nowrap;">
-                            Số tiền
-                        </th>
+                        <th t-if="doc.th_pdf_show_content" class="text-start" style="width:18%;background-color:#ffffff;color:#222222;font-weight:700;vertical-align:bottom;padding:10px 7px;border-bottom:1px solid #cdd2d8;text-align:left;">Diễn giải</th>
+                        <th t-if="doc.th_pdf_show_pickup" class="text-start" style="width:10%;background-color:#ffffff;color:#222222;font-weight:700;vertical-align:bottom;padding:10px 7px;border-bottom:1px solid #cdd2d8;text-align:left;white-space:nowrap;">Điểm đi</th>
+                        <th t-if="doc.th_pdf_show_delivery" class="text-start" style="width:10%;background-color:#ffffff;color:#222222;font-weight:700;vertical-align:bottom;padding:10px 7px;border-bottom:1px solid #cdd2d8;text-align:left;white-space:nowrap;">Điểm đến</th>
+                        <th t-if="doc.th_pdf_show_vehicle" class="text-start" style="width:9%;background-color:#ffffff;color:#222222;font-weight:700;vertical-align:bottom;padding:10px 7px;border-bottom:1px solid #cdd2d8;text-align:left;white-space:nowrap;">Phương tiện</th>
+                        <th t-if="doc.th_pdf_show_transport_mode" class="text-start" style="width:11%;background-color:#ffffff;color:#222222;font-weight:700;vertical-align:bottom;padding:10px 7px;border-bottom:1px solid #cdd2d8;text-align:left;">Hình thức</th>
+                        <th t-if="doc.th_pdf_show_expected_date" class="text-start" style="width:11%;background-color:#ffffff;color:#222222;font-weight:700;vertical-align:bottom;padding:10px 7px;border-bottom:1px solid #cdd2d8;text-align:left;white-space:nowrap;">Thời gian dự kiến</th>
+                        <th t-if="doc.th_pdf_show_cargo_desc" class="text-start" style="width:11%;background-color:#ffffff;color:#222222;font-weight:700;vertical-align:bottom;padding:10px 7px;border-bottom:1px solid #cdd2d8;text-align:left;">Mô tả hàng hóa</th>
+                        <th t-if="doc.th_pdf_show_qty" class="text-end" style="width:7%;background-color:#ffffff;color:#222222;font-weight:700;vertical-align:bottom;padding:10px 7px;border-bottom:1px solid #cdd2d8;text-align:right;white-space:nowrap;">Số lượng</th>
+                        <th t-if="doc.th_pdf_show_uom" class="text-start" style="width:8%;background-color:#ffffff;color:#222222;font-weight:700;vertical-align:bottom;padding:10px 7px;border-bottom:1px solid #cdd2d8;text-align:left;white-space:nowrap;">Đơn vị</th>
+                        <th t-if="doc.th_pdf_show_price_unit" class="text-end" style="width:10%;background-color:#ffffff;color:#222222;font-weight:700;vertical-align:bottom;padding:10px 7px;border-bottom:1px solid #cdd2d8;text-align:right;white-space:nowrap;">Đơn giá</th>
+                        <th t-if="doc.th_pdf_show_taxes" class="text-start" style="width:8%;background-color:#ffffff;color:#222222;font-weight:700;vertical-align:bottom;padding:10px 7px;border-bottom:1px solid #cdd2d8;text-align:left;">Thuế</th>
+                        <th t-if="doc.th_pdf_show_subtotal" class="text-end" style="width:8%;background-color:#ffffff;color:#222222;font-weight:700;vertical-align:bottom;padding:10px 7px;border-bottom:1px solid #cdd2d8;text-align:right;white-space:nowrap;">Số tiền</th>
                     </tr>
                 </thead>
-
                 <tbody class="sale_tbody">
                     <t t-foreach="lines_to_report" t-as="line">
-                        <tr t-if="line.display_type == 'line_section'"
-                            class="th-section-line"
-                            style="background-color:#e3e7eb;
-                                   font-weight:700;
-                                   page-break-inside:avoid;">
-                            <td colspan="99"
-                                style="padding:10px 7px;
-                                       vertical-align:top;
-                                       border:1px solid #d5dae0;">
-                                <span t-field="line.name"/>
-                            </td>
+                        <tr t-if="line.display_type == 'line_section'" class="th-section-line" style="background-color:#e3e7eb;font-weight:700;page-break-inside:avoid;">
+                            <td colspan="99" style="padding:10px 7px;vertical-align:top;border:1px solid #d5dae0;"><span t-field="line.name"/></td>
                         </tr>
-
-                        <tr t-elif="line.display_type == 'line_note' and doc.th_pdf_show_notes"
-                            class="th-note-line"
-                            style="background-color:#f4f6f8;
-                                   font-style:italic;
-                                   page-break-inside:avoid;">
-                            <td colspan="99"
-                                style="padding:10px 7px;
-                                       vertical-align:top;
-                                       border:1px solid #d5dae0;">
-                                <span t-field="line.name"/>
-                            </td>
+                        <tr t-elif="line.display_type == 'line_note' and doc.th_pdf_show_notes" class="th-note-line" style="background-color:#f4f6f8;font-style:italic;page-break-inside:avoid;">
+                            <td colspan="99" style="padding:10px 7px;vertical-align:top;border:1px solid #d5dae0;"><span t-field="line.name"/></td>
                         </tr>
-
-                        <tr t-elif="not line.display_type"
-                            class="th-normal-line"
-                            t-attf-style="background-color: {{ '#f8f9fb' if line_index % 2 == 0 else '#eceff3' }}; page-break-inside: avoid;">
-
-                            <td t-if="doc.th_pdf_show_content"
-                                class="text-start"
-                                style="padding:10px 7px;
-                                       vertical-align:top;
-                                       border:1px solid #d5dae0;
-                                       text-align:left;
-                                       font-size:15px;
-                                       background-color:transparent;
-                                       overflow-wrap:break-word;
-                                       word-wrap:break-word;">
-                                <span t-field="line.name"/>
+                        <tr t-elif="not line.display_type" class="th-normal-line" t-attf-style="background-color: {{ '#f8f9fb' if line_index % 2 == 0 else '#eceff3' }}; page-break-inside: avoid;">
+                            <td t-if="doc.th_pdf_show_content" style="padding:10px 7px;vertical-align:top;border:1px solid #d5dae0;text-align:left;font-size:15px;background-color:transparent;overflow-wrap:break-word;word-wrap:break-word;"><span t-field="line.name"/></td>
+                            <td t-if="doc.th_pdf_show_pickup" style="padding:10px 7px;vertical-align:top;border:1px solid #d5dae0;text-align:left;font-size:15px;background-color:transparent;overflow-wrap:break-word;word-wrap:break-word;">
+                                <t t-if="line.pickup_location"><span t-field="line.pickup_location"/></t><t t-else=""><span>Không có</span></t>
                             </td>
-
-                            <td t-if="doc.th_pdf_show_pickup"
-                                class="text-start"
-                                style="padding:10px 7px;
-                                       vertical-align:top;
-                                       border:1px solid #d5dae0;
-                                       text-align:left;
-                                       font-size:15px;
-                                       background-color:transparent;
-                                       overflow-wrap:break-word;
-                                       word-wrap:break-word;">
-                                <t t-if="line.pickup_location">
-                                    <span t-field="line.pickup_location"/>
-                                </t>
-                                <t t-else="">
-                                    <span>Không có</span>
-                                </t>
+                            <td t-if="doc.th_pdf_show_delivery" style="padding:10px 7px;vertical-align:top;border:1px solid #d5dae0;text-align:left;font-size:15px;background-color:transparent;overflow-wrap:break-word;word-wrap:break-word;">
+                                <t t-if="line.delivery_location"><span t-field="line.delivery_location"/></t><t t-else=""><span>Không có</span></t>
                             </td>
-
-                            <td t-if="doc.th_pdf_show_delivery"
-                                class="text-start"
-                                style="padding:10px 7px;
-                                       vertical-align:top;
-                                       border:1px solid #d5dae0;
-                                       text-align:left;
-                                       font-size:15px;
-                                       background-color:transparent;
-                                       overflow-wrap:break-word;
-                                       word-wrap:break-word;">
-                                <t t-if="line.delivery_location">
-                                    <span t-field="line.delivery_location"/>
-                                </t>
-                                <t t-else="">
-                                    <span>Không có</span>
-                                </t>
+                            <td t-if="doc.th_pdf_show_vehicle" style="padding:10px 7px;vertical-align:top;border:1px solid #d5dae0;text-align:left;font-size:15px;background-color:transparent;overflow-wrap:break-word;word-wrap:break-word;">
+                                <t t-if="line.vehicle_id"><span t-field="line.vehicle_id"/></t><t t-else=""><span>Không có</span></t>
                             </td>
-
-                            <td t-if="doc.th_pdf_show_qty"
-                                class="text-end"
-                                style="padding:10px 7px;
-                                       vertical-align:top;
-                                       border:1px solid #d5dae0;
-                                       text-align:right;
-                                       white-space:nowrap;
-                                       font-size:15px;
-                                       background-color:transparent;">
-                                <span t-field="line.product_uom_qty"/>
+                            <td t-if="doc.th_pdf_show_transport_mode" style="padding:10px 7px;vertical-align:top;border:1px solid #d5dae0;text-align:left;font-size:15px;background-color:transparent;overflow-wrap:break-word;word-wrap:break-word;">
+                                <t t-if="line.product_id"><span t-field="line.product_id"/></t><t t-else=""><span>Không có</span></t>
                             </td>
-
-                            <td t-if="doc.th_pdf_show_uom"
-                                class="text-start"
-                                style="padding:10px 7px;
-                                       vertical-align:top;
-                                       border:1px solid #d5dae0;
-                                       text-align:left;
-                                       font-size:15px;
-                                       background-color:transparent;">
-                                <t t-if="line.product_uom_id">
-                                    <span t-field="line.product_uom_id"/>
-                                </t>
-                                <t t-else="">
-                                    <span>Không có</span>
-                                </t>
+                            <td t-if="doc.th_pdf_show_expected_date" style="padding:10px 7px;vertical-align:top;border:1px solid #d5dae0;text-align:left;font-size:15px;background-color:transparent;white-space:nowrap;">
+                                <t t-if="line.expected_date"><span t-field="line.expected_date"/></t><t t-else=""><span>Không có</span></t>
                             </td>
-
-                            <td t-if="doc.th_pdf_show_price_unit"
-                                class="text-end"
-                                style="padding:10px 7px;
-                                       vertical-align:top;
-                                       border:1px solid #d5dae0;
-                                       text-align:right;
-                                       white-space:nowrap;
-                                       font-size:15px;
-                                       background-color:transparent;">
-                                <span t-field="line.price_unit"
-                                      t-options="{
-                                          'widget': 'monetary',
-                                          'display_currency': doc.currency_id
-                                      }"/>
+                            <td t-if="doc.th_pdf_show_cargo_desc" style="padding:10px 7px;vertical-align:top;border:1px solid #d5dae0;text-align:left;font-size:15px;background-color:transparent;overflow-wrap:break-word;word-wrap:break-word;">
+                                <t t-if="line.cargo_description"><span t-field="line.cargo_description"/></t><t t-else=""><span>Không có</span></t>
                             </td>
-
-                            <td t-if="doc.th_pdf_show_taxes"
-                                class="text-start"
-                                style="padding:10px 7px;
-                                       vertical-align:top;
-                                       border:1px solid #d5dae0;
-                                       text-align:left;
-                                       font-size:15px;
-                                       background-color:transparent;
-                                       overflow-wrap:break-word;
-                                       word-wrap:break-word;">
+                            <td t-if="doc.th_pdf_show_qty" style="padding:10px 7px;vertical-align:top;border:1px solid #d5dae0;text-align:right;white-space:nowrap;font-size:15px;background-color:transparent;"><span t-field="line.product_uom_qty"/></td>
+                            <td t-if="doc.th_pdf_show_uom" style="padding:10px 7px;vertical-align:top;border:1px solid #d5dae0;text-align:left;font-size:15px;background-color:transparent;">
+                                <t t-if="line.product_uom_id"><span t-field="line.product_uom_id"/></t><t t-else=""><span>Không có</span></t>
+                            </td>
+                            <td t-if="doc.th_pdf_show_price_unit" style="padding:10px 7px;vertical-align:top;border:1px solid #d5dae0;text-align:right;white-space:nowrap;font-size:15px;background-color:transparent;">
+                                <span t-field="line.price_unit" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                            </td>
+                            <td t-if="doc.th_pdf_show_taxes" style="padding:10px 7px;vertical-align:top;border:1px solid #d5dae0;text-align:left;font-size:15px;background-color:transparent;overflow-wrap:break-word;word-wrap:break-word;">
                                 <t t-if="line.tax_ids">
-                                    <span t-out="', '.join(
-                                        (tax.tax_label or tax.name)
-                                        for tax in line.tax_ids
-                                        if tax.tax_label or tax.name
-                                    )"/>
+                                    <span t-out="', '.join((tax.tax_label or tax.name) for tax in line.tax_ids if tax.tax_label or tax.name)"/>
                                 </t>
-                                <t t-else="">
-                                    <span>Không có</span>
-                                </t>
+                                <t t-else=""><span>Không có</span></t>
                             </td>
-
-                            <td t-if="doc.th_pdf_show_subtotal"
-                                class="text-end"
-                                style="padding:10px 7px;
-                                       vertical-align:top;
-                                       border:1px solid #d5dae0;
-                                       text-align:right;
-                                       white-space:nowrap;
-                                       font-size:15px;
-                                       background-color:transparent;">
-                                <span t-field="line.price_subtotal"
-                                      t-options="{
-                                          'widget': 'monetary',
-                                          'display_currency': doc.currency_id
-                                      }"/>
+                            <td t-if="doc.th_pdf_show_subtotal" style="padding:10px 7px;vertical-align:top;border:1px solid #d5dae0;text-align:right;white-space:nowrap;font-size:15px;background-color:transparent;">
+                                <span t-field="line.price_subtotal" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
                             </td>
                         </tr>
                     </t>
                 </tbody>
             </table>
         </xpath>
-
-        <!-- Thay khối tổng tiền -->
         <xpath expr="//div[@name='so_total_summary']" position="replace">
-            <div class="clearfix"
-                 name="so_total_summary"
-                 style="width:100%;
-                        margin:0;
-                        padding:0;
-                        page-break-inside:avoid;">
-
-                <table class="th-total-table"
-                       style="width:46%;
-                              margin-left:auto;
-                              border-collapse:collapse;
-                              table-layout:fixed;
-                              font-family:'Times New Roman', Times, serif;
-                              font-size:15px;
-                              line-height:1.4;
-                              page-break-inside:avoid;">
+            <div class="clearfix" name="so_total_summary" style="width:100%;margin:0;padding:0;page-break-inside:avoid;">
+                <table t-if="doc.th_pdf_show_total" class="th-total-table" style="width:46%;margin-left:auto;border-collapse:collapse;table-layout:fixed;font-family:'Times New Roman', Times, serif;font-size:15px;line-height:1.4;page-break-inside:avoid;">
                     <tbody>
                         <tr style="page-break-inside:avoid; background-color:#ffffff;">
-                            <td style="width:63%;
-                                       text-align:left;
-                                       vertical-align:middle;
-                                       padding:10px 8px;
-                                       border:1px solid #d5dae0;">
-                                Số tiền trước thuế
-                            </td>
-                            <td style="width:37%;
-                                       text-align:right;
-                                       vertical-align:middle;
-                                       white-space:nowrap;
-                                       padding:10px 8px;
-                                       border:1px solid #d5dae0;">
-                                <span t-field="doc.amount_untaxed"
-                                      t-options="{
-                                          'widget': 'monetary',
-                                          'display_currency': doc.currency_id
-                                      }"/>
+                            <td style="width:63%;text-align:left;vertical-align:middle;padding:10px 8px;border:1px solid #d5dae0;">Số tiền trước thuế</td>
+                            <td style="width:37%;text-align:right;vertical-align:middle;white-space:nowrap;padding:10px 8px;border:1px solid #d5dae0;">
+                                <span t-field="doc.amount_untaxed" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
                             </td>
                         </tr>
-
                         <tr style="page-break-inside:avoid; background-color:#f8f9fb;">
-                            <td style="text-align:left;
-                                       vertical-align:middle;
-                                       padding:10px 8px;
-                                       border:1px solid #d5dae0;">
-                                Thuế GTGT
-                            </td>
-                            <td style="text-align:right;
-                                       vertical-align:middle;
-                                       white-space:nowrap;
-                                       padding:10px 8px;
-                                       border:1px solid #d5dae0;">
-                                <span t-field="doc.amount_tax"
-                                      t-options="{
-                                          'widget': 'monetary',
-                                          'display_currency': doc.currency_id
-                                      }"/>
+                            <td style="text-align:left;vertical-align:middle;padding:10px 8px;border:1px solid #d5dae0;">Thuế GTGT</td>
+                            <td style="text-align:right;vertical-align:middle;white-space:nowrap;padding:10px 8px;border:1px solid #d5dae0;">
+                                <span t-field="doc.amount_tax" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
                             </td>
                         </tr>
-
-                        <tr class="th-total-row"
-                            style="background-color:#e3e7eb;
-                                   font-weight:700;
-                                   page-break-inside:avoid;">
-                            <td style="text-align:left;
-                                       vertical-align:middle;
-                                       padding:10px 8px;
-                                       border:1px solid #d5dae0;">
-                                Tổng
-                            </td>
-                            <td style="text-align:right;
-                                       vertical-align:middle;
-                                       white-space:nowrap;
-                                       padding:10px 8px;
-                                       border:1px solid #d5dae0;">
-                                <span t-field="doc.amount_total"
-                                      t-options="{
-                                          'widget': 'monetary',
-                                          'display_currency': doc.currency_id
-                                      }"/>
+                        <tr class="th-total-row" style="background-color:#e3e7eb;font-weight:700;page-break-inside:avoid;">
+                            <td style="text-align:left;vertical-align:middle;padding:10px 8px;border:1px solid #d5dae0;">Tổng</td>
+                            <td style="text-align:right;vertical-align:middle;white-space:nowrap;padding:10px 8px;border:1px solid #d5dae0;">
+                                <span t-field="doc.amount_total" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </xpath>
-
-        <!-- Thay phần ghi chú / điều khoản -->
         <xpath expr="//div[span[@t-field='doc.note']]" position="replace">
-            <div class="th-note-block" style="margin-top: 16px; font-family: 'Times New Roman', Times, serif; font-size: 14px; line-height: 1.65;">
-                <div t-if="doc.note">
-                    <span t-field="doc.note"
-                          name="order_note"/>
-                </div>
-
-                <div t-if="doc.payment_term_id
-                           and doc.payment_term_id.note
-                           and not is_html_empty(doc.payment_term_id.note)"
-                     style="margin-top: 5px;">
+            <div class="th-note-block" style="margin-top:16px;font-family:'Times New Roman', Times, serif;font-size:14px;line-height:1.65;">
+                <div t-if="doc.note"><span t-field="doc.note" name="order_note"/></div>
+                <div t-if="doc.payment_term_id and doc.payment_term_id.note and not is_html_empty(doc.payment_term_id.note)" style="margin-top:5px;">
                     <span t-field="doc.payment_term_id.note"/>
                 </div>
             </div>
         </xpath>
-
     </template>
 
 </odoo>
