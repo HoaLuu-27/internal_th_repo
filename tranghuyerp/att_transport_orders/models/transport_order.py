@@ -1,4 +1,5 @@
 import logging
+from datetime import timedelta
 
 from markupsafe import Markup
 
@@ -52,10 +53,58 @@ class AttTransportOrder(models.Model):
     cargo_weight = fields.Float('Trọng lượng (tấn)')
     cargo_volume = fields.Float('Thể tích (m³)')
     container_no = fields.Char('Số container')
+    cargo_package_qty = fields.Float('Số lượng / số kiện')
+    cargo_package_uom = fields.Char('Đơn vị kiện')
+    cargo_is_fragile = fields.Boolean('Hàng dễ vỡ')
+    cargo_requires_cold_chain = fields.Boolean('Hàng lạnh')
+    cargo_is_dangerous = fields.Boolean('Hàng nguy hiểm')
+    cargo_is_high_value = fields.Boolean('Hàng giá trị cao')
+    cargo_special_requirement = fields.Text('Yêu cầu đặc biệt về hàng')
 
     scheduled_date = fields.Datetime('Ngày xuất phát dự kiến', required=True, tracking=True)
+    estimated_arrival = fields.Datetime('Ngày đến dự kiến (ETA)',
+                                        compute='_compute_estimated_arrival', store=True)
     actual_departure = fields.Datetime('Giờ xuất phát thực tế', readonly=True, copy=False)
     actual_arrival = fields.Datetime('Giờ đến thực tế', readonly=True, copy=False)
+    priority = fields.Selection([
+        ('urgent', 'Khẩn cấp'),
+        ('normal', 'Bình thường'),
+        ('flexible', 'Linh hoạt'),
+    ], string='Mức độ ưu tiên', default='normal', required=True)
+    trip_type = fields.Selection([
+        ('urban', 'Nội thành'),
+        ('interprovincial', 'Liên tỉnh'),
+        ('international', 'Quốc tế'),
+        ('internal', 'Nội bộ'),
+    ], string='Loại chuyến', default='interprovincial', required=True)
+
+    pickup_warehouse = fields.Char('Kho / bãi lấy hàng')
+    pickup_contact_name = fields.Char('Người liên hệ lấy hàng')
+    pickup_contact_phone = fields.Char('SĐT liên hệ lấy hàng')
+    pickup_time_from = fields.Float('Giờ mở cửa lấy hàng', digits=(4, 2))
+    pickup_time_to = fields.Float('Giờ đóng cửa lấy hàng', digits=(4, 2))
+    delivery_contact_name = fields.Char('Người nhận hàng')
+    delivery_contact_phone = fields.Char('SĐT người nhận')
+    delivery_contact_identity = fields.Char('CCCD người nhận')
+    delivery_time_from = fields.Float('Giờ nhận hàng từ', digits=(4, 2))
+    delivery_time_to = fields.Float('Giờ nhận hàng đến', digits=(4, 2))
+    delivery_requirement = fields.Text('Yêu cầu đặc biệt khi giao hàng')
+
+    has_stock_picking = fields.Boolean('Có phiếu xuất kho')
+    has_vat_invoice = fields.Boolean('Có hóa đơn VAT')
+    has_packing_list = fields.Boolean('Có packing list')
+    has_domestic_waybill = fields.Boolean('Có vận đơn nội địa')
+    has_special_permit = fields.Boolean('Có giấy phép đặc biệt')
+    has_certificate_origin = fields.Boolean('Có C/O')
+    has_handover_record = fields.Boolean('Có biên bản bàn giao')
+    other_document_note = fields.Char('Chứng từ khác')
+    route_instruction = fields.Text('Lộ trình')
+    toll_restriction_note = fields.Text('Điểm thu phí / hạn chế')
+
+    dispatcher_id = fields.Many2one('res.users', 'Điều phối viên lập lệnh',
+                                    default=lambda self: self.env.user, copy=False)
+    approver_id = fields.Many2one('res.users', 'Trưởng bộ phận điều vận', copy=False)
+    customer_representative = fields.Char('Đại diện khách hàng nhận lệnh')
 
     is_backhaul = fields.Boolean('Chuyến về', default=False, copy=False)
     origin_to_id = fields.Many2one('att.transport.order', 'Lệnh gốc chiều đi',
@@ -122,6 +171,15 @@ class AttTransportOrder(models.Model):
                 rec.cost_line_ids.filtered(lambda l: l.paid_by == 'customer').mapped('amount'))
             rec.total_th_cost = sum(
                 rec.cost_line_ids.filtered(lambda l: l.paid_by == 'company').mapped('amount'))
+
+    @api.depends('scheduled_date', 'route_id.eta_minutes')
+    def _compute_estimated_arrival(self):
+        for rec in self:
+            if rec.scheduled_date and rec.route_id.eta_minutes:
+                rec.estimated_arrival = rec.scheduled_date + timedelta(
+                    minutes=rec.route_id.eta_minutes)
+            else:
+                rec.estimated_arrival = False
 
     @api.onchange('vehicle_id')
     def _onchange_vehicle_id(self):

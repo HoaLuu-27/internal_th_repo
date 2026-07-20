@@ -33,6 +33,7 @@
         "views/menu_views.xml",
         "views/dispatch_dashboard_views.xml",
         "reports/sale_report_inherit.xml",
+        "reports/transport_order_report.xml",
         "data/dispatch_demo.xml",
     ],
     "assets": {

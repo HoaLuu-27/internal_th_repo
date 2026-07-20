@@ -51,6 +51,9 @@
                             <field name="partner_id" readonly="state != 'draft'"/>
                             <field name="route_id" readonly="state != 'draft'"/>
                             <field name="scheduled_date" readonly="state != 'draft'"/>
+                            <field name="estimated_arrival" readonly="1"/>
+                            <field name="priority" readonly="state != 'draft'"/>
+                            <field name="trip_type" readonly="state != 'draft'"/>
                             <field name="is_backhaul" invisible="1"/>
                         </group>
                         <group string="Xe &amp; lái xe">
@@ -71,6 +74,8 @@
                             <field name="cargo_weight"/>
                             <field name="cargo_volume"/>
                             <field name="container_no"/>
+                            <field name="cargo_package_qty"/>
+                            <field name="cargo_package_uom"/>
                             <field name="cargo_description"/>
                         </group>
                         <group string="Giá trị">
@@ -127,6 +132,67 @@
                             <group>
                                 <field name="pnv_number"/>
                                 <field name="survey_sent" readonly="1"/>
+                            </group>
+                        </page>
+                        <page string="Thông tin lệnh điều xe" name="dispatch_order_info">
+                            <group string="Điểm lấy hàng">
+                                <group>
+                                    <field name="pickup_warehouse"/>
+                                    <field name="pickup_contact_name"/>
+                                    <field name="pickup_contact_phone"/>
+                                </group>
+                                <group>
+                                    <field name="pickup_time_from" widget="float_time"/>
+                                    <field name="pickup_time_to" widget="float_time"/>
+                                </group>
+                            </group>
+                            <group string="Điểm giao hàng">
+                                <group>
+                                    <field name="delivery_contact_name"/>
+                                    <field name="delivery_contact_phone"/>
+                                    <field name="delivery_contact_identity"/>
+                                </group>
+                                <group>
+                                    <field name="delivery_time_from" widget="float_time"/>
+                                    <field name="delivery_time_to" widget="float_time"/>
+                                    <field name="delivery_requirement"/>
+                                </group>
+                            </group>
+                            <group string="Yêu cầu hàng hóa">
+                                <group>
+                                    <field name="cargo_is_fragile"/>
+                                    <field name="cargo_requires_cold_chain"/>
+                                    <field name="cargo_is_dangerous"/>
+                                    <field name="cargo_is_high_value"/>
+                                </group>
+                                <group>
+                                    <field name="cargo_special_requirement"/>
+                                </group>
+                            </group>
+                            <group string="Chứng từ đi kèm">
+                                <group>
+                                    <field name="has_stock_picking"/>
+                                    <field name="has_vat_invoice"/>
+                                    <field name="has_packing_list"/>
+                                    <field name="has_domestic_waybill"/>
+                                </group>
+                                <group>
+                                    <field name="has_special_permit"/>
+                                    <field name="has_certificate_origin"/>
+                                    <field name="has_handover_record"/>
+                                    <field name="other_document_note"/>
+                                </group>
+                            </group>
+                            <group string="Lộ trình và người xác nhận">
+                                <group>
+                                    <field name="route_instruction"/>
+                                    <field name="toll_restriction_note"/>
+                                </group>
+                                <group>
+                                    <field name="dispatcher_id"/>
+                                    <field name="approver_id"/>
+                                    <field name="customer_representative"/>
+                                </group>
                             </group>
                         </page>
                         <page string="Sự cố / Huỷ" name="incident">

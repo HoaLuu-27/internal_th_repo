@@ -1,0 +1,51 @@
+# Python bytecode and interpreter caches
+__pycache__/
+*.py[cod]
+*$py.class
+.gitignore
+# Test, lint and coverage artefacts
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Python environments and package build output
+.venv/
+venv/
+env/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# Odoo runtime data and logs
+*.log
+odoo.log
+filestore/
+sessions/
+data_dir/
+.odoo/
+
+# JavaScript dependencies and build caches
+node_modules/
+.npm/
+.pnpm-store/
+
+# IDE and operating-system files
+.idea/
+.vscode/
+*.code-workspace
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Local environment and temporary files
+.env
+.env.*
+!.env.example
+*.tmp
+*.bak
+*.swp
+*~

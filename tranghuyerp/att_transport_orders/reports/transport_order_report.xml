@@ -1,0 +1,145 @@
+<odoo>
+    <!-- Standalone F01 layout: do not use the generic company header/footer. -->
+    <template id="report_transport_order_document">
+        <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)"/>
+        <div class="page th-dispatch-order">
+            <style>
+                .th-dispatch-order { color: #1f2933; font-family: Arial, sans-serif; font-size: 10px; line-height: 1.35; }
+                .th-dispatch-order h1 { color: #ffffff; font-size: 19px; letter-spacing: .4px; margin: 0; text-align: center; }
+                .th-dispatch-order table { border-collapse: collapse; width: 100%; }
+                .th-dispatch-order td, .th-dispatch-order th { border: 1px solid #718096; padding: 5px 7px; vertical-align: top; }
+                .th-dispatch-order th { background: #1A3E6F; color: #ffffff; text-align: center; }
+                .th-dispatch-order .header-dark { background: #1A3E6F; color: #ffffff; }
+                .th-dispatch-order .header-blue { background: #2E6DA4; color: #ffffff; }
+                .th-dispatch-order .header-light, .th-dispatch-order .label, .th-dispatch-order .total td { background: #E8EFF8; }
+                .th-dispatch-order .label { font-weight: 700; width: 24%; }
+                .th-dispatch-order .section { background: #2E6DA4; color: #ffffff; font-size: 10.5px; font-weight: 700; letter-spacing: .15px; margin-top: 12px; padding: 5px 7px; page-break-after: avoid; }
+                .th-dispatch-order .check { display: inline-block; margin: 2px 12px 2px 0; }
+                .th-dispatch-order thead { display: table-header-group; }
+                .th-dispatch-order tr { page-break-inside: avoid; }
+                .th-dispatch-order .signature { margin-top: 16px; page-break-inside: avoid; }
+                .th-dispatch-order .signature tr:first-child td { background: #E8EFF8; height: auto; text-align: center; }
+                .th-dispatch-order .signature tr:last-child td { height: 92px; text-align: center; }
+            </style>
+
+            <table>
+                <tr>
+                    <td class="header-dark" rowspan="3" style="width: 52%;">
+                        <strong t-field="doc.company_id.name"/><br/>BIỂU MẪU VẬN HÀNH
+                    </td>
+                    <td class="header-blue" style="width: 48%;"><h1>LỆNH ĐIỀU XE</h1></td>
+                </tr>
+                <tr><td class="header-light"><strong>Mã biểu mẫu:</strong> THL-OPS-F01 &#160;&#160; <strong>Phiên bản:</strong> 1.0</td></tr>
+                <tr><td><strong>Ngày lập:</strong> <span t-field="doc.create_date" t-options='{"widget": "date"}'/> &#160;&#160; <strong>Số hiệu:</strong> <span t-field="doc.name"/></td></tr>
+            </table>
+
+            <div class="section">A. THÔNG TIN CHUYẾN VẬN CHUYỂN</div>
+            <table>
+                <tr><td class="label">Mã Lệnh Điều Xe (LĐX)</td><td colspan="3"><span t-field="doc.name"/></td></tr>
+                <tr>
+                    <td class="label">Ngày xuất phát (ETD)</td><td><span t-field="doc.scheduled_date" t-options='{"widget": "datetime"}'/></td>
+                    <td class="label">Ngày đến dự kiến (ETA)</td><td><span t-if="doc.estimated_arrival" t-field="doc.estimated_arrival" t-options='{"widget": "datetime"}'/><span t-else="">—</span></td>
+                </tr>
+                <tr><td class="label">Mức độ ưu tiên</td><td><span t-field="doc.priority"/></td><td class="label">Loại chuyến</td><td><span t-field="doc.trip_type"/></td></tr>
+                <tr><td class="label">Mã đơn hàng / Hợp đồng</td><td colspan="3"><span t-if="doc.sale_order_id" t-field="doc.sale_order_id.name"/><span t-else="">—</span></td></tr>
+            </table>
+
+            <div class="section">B. THÔNG TIN ĐIỂM LẤY HÀNG</div>
+            <table>
+                <tr><td class="label">Địa chỉ lấy hàng</td><td colspan="3"><span t-field="doc.route_id.origin_name"/></td></tr>
+                <tr><td class="label">Kho / Bãi</td><td colspan="3"><span t-if="doc.pickup_warehouse" t-field="doc.pickup_warehouse"/><span t-else="">—</span></td></tr>
+                <tr>
+                    <td class="label">Người liên hệ</td><td><span t-if="doc.pickup_contact_name" t-field="doc.pickup_contact_name"/><span t-else="">—</span><t t-if="doc.pickup_contact_phone"> - <span t-field="doc.pickup_contact_phone"/></t></td>
+                    <td class="label">Giờ mở cửa / nhận hàng</td><td><span t-if="doc.pickup_time_from" t-field="doc.pickup_time_from" t-options='{"widget": "float_time"}'/><span t-else="">—</span> đến <span t-if="doc.pickup_time_to" t-field="doc.pickup_time_to" t-options='{"widget": "float_time"}'/><span t-else="">—</span></td>
+                </tr>
+            </table>
+
+            <div class="section">C. THÔNG TIN ĐIỂM GIAO HÀNG</div>
+            <table>
+                <tr><td class="label">Địa chỉ giao hàng</td><td colspan="3"><span t-field="doc.route_id.destination_name"/></td></tr>
+                <tr>
+                    <td class="label">Người nhận hàng</td><td><span t-if="doc.delivery_contact_name" t-field="doc.delivery_contact_name"/><span t-else="">—</span><t t-if="doc.delivery_contact_phone"> - <span t-field="doc.delivery_contact_phone"/></t><t t-if="doc.delivery_contact_identity"> - CCCD: <span t-field="doc.delivery_contact_identity"/></t></td>
+                    <td class="label">Giờ nhận hàng</td><td><span t-if="doc.delivery_time_from" t-field="doc.delivery_time_from" t-options='{"widget": "float_time"}'/><span t-else="">—</span> đến <span t-if="doc.delivery_time_to" t-field="doc.delivery_time_to" t-options='{"widget": "float_time"}'/><span t-else="">—</span></td>
+                </tr>
+                <tr><td class="label">Yêu cầu đặc biệt</td><td colspan="3"><span t-if="doc.delivery_requirement" t-field="doc.delivery_requirement"/><span t-else="">—</span></td></tr>
+            </table>
+
+            <div class="section">D. THÔNG TIN HÀNG HÓA</div>
+            <table>
+                <thead><tr><th>Tên hàng hóa</th><th>Số lượng / số kiện</th><th>Khối lượng (kg)</th><th>Thể tích (m³)</th></tr></thead>
+                <tbody><tr>
+                    <td><span t-if="doc.cargo_description" t-field="doc.cargo_description"/><span t-else="">—</span><t t-if="doc.commodity_id"> (<span t-field="doc.commodity_id.name"/>)</t></td>
+                    <td class="text-center"><span t-if="doc.cargo_package_qty" t-field="doc.cargo_package_qty"/><span t-else="">—</span> <span t-if="doc.cargo_package_uom" t-field="doc.cargo_package_uom"/></td>
+                    <td class="text-end"><t t-if="doc.cargo_weight"><span t-esc="doc.cargo_weight * 1000"/></t><span t-else="">—</span></td>
+                    <td class="text-end"><span t-if="doc.cargo_volume" t-field="doc.cargo_volume"/><span t-else="">—</span></td>
+                </tr></tbody>
+                <tfoot><tr class="total"><td><strong>Tổng cộng</strong></td><td><span t-if="doc.cargo_package_qty" t-field="doc.cargo_package_qty"/><span t-else="">—</span></td><td><t t-if="doc.cargo_weight"><span t-esc="doc.cargo_weight * 1000"/></t><span t-else="">—</span></td><td><span t-if="doc.cargo_volume" t-field="doc.cargo_volume"/><span t-else="">—</span></td></tr></tfoot>
+            </table>
+            <table><tr><td class="label">Yêu cầu đặc biệt về hàng</td><td>
+                <span class="check"><t t-if="doc.cargo_is_fragile">[x]</t><t t-else="">[ ]</t> Hàng dễ vỡ</span>
+                <span class="check"><t t-if="doc.cargo_requires_cold_chain">[x]</t><t t-else="">[ ]</t> Hàng lạnh</span>
+                <span class="check"><t t-if="doc.cargo_is_dangerous">[x]</t><t t-else="">[ ]</t> Hàng nguy hiểm</span>
+                <span class="check"><t t-if="doc.cargo_is_high_value">[x]</t><t t-else="">[ ]</t> Hàng giá trị cao</span>
+                <span class="check">Khác: <span t-if="doc.cargo_special_requirement" t-field="doc.cargo_special_requirement"/><span t-else="">—</span></span>
+            </td></tr></table>
+
+            <div class="section">E. PHƯƠNG TIỆN &amp; TÀI XẾ ĐƯỢC PHÂN CÔNG</div>
+            <table>
+                <tr><td class="label">Phương tiện / biển số xe</td><td><span t-if="doc.vehicle_id" t-field="doc.vehicle_id.display_name"/><span t-elif="doc.carrier_id" t-field="doc.carrier_id.name"/><span t-else="">—</span></td><td class="label">Lái xe</td><td><span t-if="doc.driver_id" t-field="doc.driver_id.name"/><span t-else="">—</span></td></tr>
+                <tr><td class="label">Nguồn xe / NCC vận tải</td><td><span t-field="doc.vehicle_source"/><t t-if="doc.carrier_id">: <span t-field="doc.carrier_id.name"/></t></td><td class="label">Số container</td><td><span t-if="doc.container_no" t-field="doc.container_no"/><span t-else="">—</span></td></tr>
+            </table>
+
+            <div class="section">F. CHỨNG TỪ ĐI KÈM</div>
+            <table><tr><td>
+                <span class="check"><t t-if="doc.has_stock_picking">[x]</t><t t-else="">[ ]</t> Phiếu xuất kho</span><span class="check"><t t-if="doc.has_vat_invoice">[x]</t><t t-else="">[ ]</t> Hóa đơn VAT</span><span class="check"><t t-if="doc.has_packing_list">[x]</t><t t-else="">[ ]</t> Packing list</span><span class="check"><t t-if="doc.has_domestic_waybill">[x]</t><t t-else="">[ ]</t> Vận đơn nội địa</span><br/>
+                <span class="check"><t t-if="doc.has_special_permit">[x]</t><t t-else="">[ ]</t> Giấy phép đặc biệt</span><span class="check"><t t-if="doc.has_certificate_origin">[x]</t><t t-else="">[ ]</t> C/O</span><span class="check"><t t-if="doc.has_handover_record">[x]</t><t t-else="">[ ]</t> Biên bản bàn giao hàng</span><span class="check">Khác: <span t-if="doc.other_document_note" t-field="doc.other_document_note"/><span t-else="">—</span></span>
+            </td></tr></table>
+
+            <div class="section">G. GHI CHÚ ĐẶC BIỆT VÀ LỘ TRÌNH</div>
+            <table>
+                <tr><td class="label">Lộ trình</td><td><span t-if="doc.route_instruction" t-field="doc.route_instruction"/><span t-else="" t-field="doc.route_id.name"/></td></tr>
+                <tr><td class="label">Điểm thu phí / hạn chế</td><td><span t-if="doc.toll_restriction_note" t-field="doc.toll_restriction_note"/><span t-else="">—</span></td></tr>
+                <tr><td class="label">Ghi chú khác</td><td><span t-if="doc.note" t-field="doc.note"/><span t-else="">—</span></td></tr>
+            </table>
+
+            <table class="signature">
+                <tr><td><strong>Điều phối viên lập lệnh</strong></td><td><strong>Trưởng bộ phận Điều vận<br/>(Phê duyệt)</strong></td><td><strong>Tài xế nhận lệnh</strong></td><td><strong>Khách hàng / Đại diện</strong></td></tr>
+                <tr><td><br/><br/><span t-if="doc.dispatcher_id" t-field="doc.dispatcher_id.name"/><br/>Ký và ghi rõ họ tên</td><td><br/><br/><span t-if="doc.approver_id" t-field="doc.approver_id.name"/><br/>Ký và ghi rõ họ tên</td><td><br/><br/><span t-if="doc.driver_id" t-field="doc.driver_id.name"/><br/>Ký và ghi rõ họ tên</td><td><br/><br/><span t-if="doc.customer_representative" t-field="doc.customer_representative"/><br/>Ký và ghi rõ họ tên</td></tr>
+            </table>
+        </div>
+    </template>
+
+    <template id="report_transport_order">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="att_transport_orders.report_transport_order_document" t-lang="doc.partner_id.lang"/>
+            </t>
+        </t>
+    </template>
+
+    <record id="paperformat_transport_order" model="report.paperformat">
+        <field name="name">Lệnh điều xe A4</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">15.875</field>
+        <field name="margin_bottom">15.875</field>
+        <field name="margin_left">15.875</field>
+        <field name="margin_right">15.875</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_transport_order" model="ir.actions.report">
+        <field name="name">Lệnh điều xe</field>
+        <field name="model">att.transport.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">att_transport_orders.report_transport_order</field>
+        <field name="report_file">att_transport_orders.report_transport_order</field>
+        <field name="binding_model_id" ref="model_att_transport_order"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'Lenh dieu xe - %s' % (object.name)</field>
+        <field name="paperformat_id" ref="paperformat_transport_order"/>
+    </record>
+</odoo>
