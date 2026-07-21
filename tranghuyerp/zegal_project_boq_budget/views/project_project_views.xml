@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_project_project_form_zegal_boq_budget" model="ir.ui.view">
+        <field name="name">project.project.form.zegal.boq.budget</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group string="Budget Snapshot">
+                    <field name="zegal_budget_amount"/>
+                    <field name="zegal_expected_revenue"/>
+                    <field name="zegal_expected_margin"/>
+                    <field name="zegal_expected_margin_rate" widget="percentage"/>
+                </group>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="BoQ &amp; Budget">
+                    <field name="zegal_boq_line_ids" context="{'default_project_id': id}">
+                        <list editable="bottom" default_order="sequence,id">
+                            <field name="sequence" widget="handle"/>
+                            <field name="code"/>
+                            <field name="parent_id" optional="hide"/>
+                            <field name="line_type"/>
+                            <field name="product_id"/>
+                            <field name="name"/>
+                            <field name="product_uom_id"/>
+                            <field name="quantity"/>
+                            <field name="budget_unit_price"/>
+                            <field name="budget_amount"/>
+                            <field name="sale_unit_price"/>
+                            <field name="sale_amount"/>
+                            <field name="margin_amount"/>
+                            <field name="margin_rate" widget="percentage"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

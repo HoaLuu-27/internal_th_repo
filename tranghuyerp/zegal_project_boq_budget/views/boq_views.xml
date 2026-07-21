@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_zegal_project_boq_line" model="ir.actions.act_window">
+        <field name="name">Project BoQ &amp; Budget</field>
+        <field name="res_model">zegal.project.boq.line</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_zegal_project_boq_line_list" model="ir.ui.view">
+        <field name="name">zegal.project.boq.line.list</field>
+        <field name="model">zegal.project.boq.line</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="project_id"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="line_type"/>
+                <field name="quantity"/>
+                <field name="budget_amount" sum="Budget"/>
+                <field name="sale_amount" sum="Revenue"/>
+                <field name="margin_amount" sum="Margin"/>
+            </list>
+        </field>
+    </record>
+</odoo>
