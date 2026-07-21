@@ -1,0 +1,64 @@
+<odoo>
+    <record id="view_zegal_project_document_list" model="ir.ui.view">
+        <field name="name">zegal.project.document.list</field>
+        <field name="model">zegal.project.document</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="reference"/>
+                <field name="project_id"/>
+                <field name="document_type"/>
+                <field name="sale_order_id"/>
+                <field name="purchase_order_id"/>
+                <field name="owner_id"/>
+                <field name="approval_request_id"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_zegal_project_document_form" model="ir.ui.view">
+        <field name="name">zegal.project.document.form</field>
+        <field name="model">zegal.project.document</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_link" type="object" string="Link" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_submit_review" type="object" string="Submit Review" class="btn-primary" invisible="state != 'linked'"/>
+                    <button name="action_approve" type="object" string="Approve" class="btn-primary" invisible="state not in ('draft','linked')"/>
+                    <button name="action_archive" type="object" string="Archive" class="btn-secondary"/>
+                    <button name="action_reset" type="object" string="Reset" invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,linked,approved,archived"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="reference"/>
+                        <field name="project_id"/>
+                        <field name="document_type"/>
+                        <field name="company_id"/>
+                        <field name="owner_id"/>
+                        <field name="sale_order_id"/>
+                        <field name="purchase_order_id"/>
+                        <field name="approval_request_id"/>
+                        <field name="attachment_count" readonly="1"/>
+                        <field name="attachment_domain" invisible="1"/>
+                    </group>
+                    <group>
+                        <field name="description"/>
+                        <field name="attachment_note"/>
+                    </group>
+                    <group string="Files">
+                        <field name="attachment_ids" widget="many2many_binary"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="action_zegal_project_document" model="ir.actions.act_window">
+        <field name="name">Project Documents</field>
+        <field name="res_model">zegal.project.document</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_project_id': active_id}</field>
+    </record>
+</odoo>

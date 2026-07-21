@@ -1,0 +1,69 @@
+<odoo>
+    <record id="view_zegal_vendor_quote_comparison_list" model="ir.ui.view">
+        <field name="name">zegal.vendor.quote.comparison.list</field>
+        <field name="model">zegal.vendor.quote.comparison</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="material_request_id"/>
+                <field name="best_vendor_id"/>
+                <field name="best_amount"/>
+                <field name="best_lead_days"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_zegal_vendor_quote_comparison_form" model="ir.ui.view">
+        <field name="name">zegal.vendor.quote.comparison.form</field>
+        <field name="model">zegal.vendor.quote.comparison</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_mark_sent" type="object" string="Sent" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_mark_quoted" type="object" string="Quoted" class="btn-primary" invisible="state != 'sent'"/>
+                    <button name="action_approve" type="object" string="Approve" class="btn-primary" invisible="state not in ('sent','quoted')"/>
+                    <button name="action_ordered" type="object" string="Ordered" class="btn-secondary" invisible="state != 'approved'"/>
+                    <button name="action_cancel" type="object" string="Cancel" class="btn-secondary"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,sent,quoted,approved,ordered,cancel"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="project_id"/>
+                        <field name="material_request_id"/>
+                        <field name="best_vendor_id" readonly="1"/>
+                        <field name="best_amount" readonly="1"/>
+                        <field name="best_lead_days" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="note"/>
+                    </group>
+                    <notebook>
+                        <page string="Vendor Quotes">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="partner_id"/>
+                                    <field name="product_id"/>
+                                    <field name="description"/>
+                                    <field name="quantity"/>
+                                    <field name="unit_price"/>
+                                    <field name="lead_time_days"/>
+                                    <field name="quality_score"/>
+                                    <field name="is_selected"/>
+                                    <field name="total_amount" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="action_zegal_vendor_quote_comparison" model="ir.actions.act_window">
+        <field name="name">Vendor Quote Comparison</field>
+        <field name="res_model">zegal.vendor.quote.comparison</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

@@ -1,0 +1,27 @@
+<odoo>
+    <record id="view_purchase_order_form_zegal_flow" model="ir.ui.view">
+        <field name="name">purchase.order.form.zegal.flow</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group string="Zegal Flow">
+                    <field name="project_id"/>
+                    <field name="zegal_approval_request_id"/>
+                    <field name="zegal_approval_state" readonly="1"/>
+                </group>
+                <group string="Approval Checklist">
+                    <field name="checklist_scope"/>
+                    <field name="checklist_budget"/>
+                    <field name="checklist_timeline"/>
+                    <field name="checklist_attachment"/>
+                    <field name="checklist_terms"/>
+                </group>
+            </xpath>
+            <xpath expr="//header" position="inside">
+                <button name="action_request_zegal_approval" type="object" string="Request Approval" class="btn-primary"/>
+                <button name="action_create_project_document" type="object" string="Create Project Dossier" class="btn-secondary"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

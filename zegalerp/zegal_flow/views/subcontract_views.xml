@@ -1,0 +1,86 @@
+<odoo>
+    <record id="view_zegal_subcontract_list" model="ir.ui.view">
+        <field name="name">zegal.subcontract.list</field>
+        <field name="model">zegal.subcontract</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="partner_id"/>
+                <field name="amount_total"/>
+                <field name="paid_amount"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_zegal_subcontract_form" model="ir.ui.view">
+        <field name="name">zegal.subcontract.form</field>
+        <field name="model">zegal.subcontract</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_submit" type="object" string="Submit Approval" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_approve" type="object" string="Approve" class="btn-primary" invisible="state != 'to_approve'"/>
+                    <button name="action_start" type="object" string="Start" class="btn-secondary" invisible="state != 'approved'"/>
+                    <button name="action_accept" type="object" string="Accept" class="btn-secondary" invisible="state != 'in_progress'"/>
+                    <button name="action_mark_paid" type="object" string="Paid" class="btn-secondary" invisible="state != 'accepted'"/>
+                    <button name="action_cancel" type="object" string="Cancel" class="btn-secondary"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,to_approve,approved,in_progress,accepted,paid,cancelled"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="project_id"/>
+                        <field name="partner_id"/>
+                        <field name="source_request_id"/>
+                        <field name="approval_request_id" readonly="1"/>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                        <field name="amount_total"/>
+                        <field name="paid_amount" readonly="1"/>
+                        <field name="unbilled_amount" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="scope"/>
+                        <field name="note"/>
+                    </group>
+                    <notebook>
+                        <page string="Lines">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="name"/>
+                                    <field name="scope"/>
+                                    <field name="quantity"/>
+                                    <field name="uom_id"/>
+                                    <field name="unit_price"/>
+                                    <field name="timeline_start"/>
+                                    <field name="timeline_end"/>
+                                    <field name="total_amount" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Acceptance">
+                            <field name="acceptance_ids">
+                                <list editable="bottom">
+                                    <field name="name"/>
+                                    <field name="acceptance_date"/>
+                                    <field name="quantity"/>
+                                    <field name="amount"/>
+                                    <field name="state"/>
+                                    <field name="payment_approval_id"/>
+                                    <field name="note"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="action_zegal_subcontract" model="ir.actions.act_window">
+        <field name="name">Subcontracts</field>
+        <field name="res_model">zegal.subcontract</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

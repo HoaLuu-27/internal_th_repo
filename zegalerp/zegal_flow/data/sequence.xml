@@ -1,0 +1,8 @@
+<odoo>
+    <record id="seq_zegal_approval_request" model="ir.sequence">
+        <field name="name">Zegal Approval Request</field>
+        <field name="code">zegal.approval.request</field>
+        <field name="prefix">ZAPR/%(y)s/%(month)s/</field>
+        <field name="padding">4</field>
+    </record>
+</odoo>

@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_zegal_approval_matrix_user,zegal.approval.matrix user,model_zegal_approval_matrix,,1,1,1,1
+access_zegal_approval_request_user,zegal.approval.request user,model_zegal_approval_request,,1,1,1,1
+access_zegal_approval_log_user,zegal.approval.log user,model_zegal_approval_log,,1,1,1,1
+access_zegal_purchase_request_user,zegal.purchase.request user,model_zegal_purchase_request,,1,1,1,1
+access_zegal_project_document_user,zegal.project.document user,model_zegal_project_document,,1,1,1,1
+access_zegal_material_request_user,zegal.project.material.request user,model_zegal_project_material_request,,1,1,1,1
+access_zegal_material_request_line_user,zegal.project.material.request.line user,model_zegal_project_material_request_line,,1,1,1,1
+access_zegal_vendor_quote_user,zegal.vendor.quote.comparison user,model_zegal_vendor_quote_comparison,,1,1,1,1
+access_zegal_vendor_quote_line_user,zegal.vendor.quote.comparison.line user,model_zegal_vendor_quote_comparison_line,,1,1,1,1
+access_zegal_subcontract_user,zegal.subcontract user,model_zegal_subcontract,,1,1,1,1
+access_zegal_subcontract_line_user,zegal.subcontract.line user,model_zegal_subcontract_line,,1,1,1,1
+access_zegal_subcontract_acceptance_user,zegal.subcontract.acceptance user,model_zegal_subcontract_acceptance,,1,1,1,1

@@ -1,0 +1,13 @@
+<odoo>
+    <menuitem id="menu_zegal_root" name="Zegal" sequence="10"/>
+    <menuitem id="menu_zegal_ops_root" name="Operations" parent="menu_zegal_root" sequence="10"/>
+    <menuitem id="menu_zegal_approval_root" name="Approvals" parent="menu_zegal_ops_root" sequence="10"/>
+    <menuitem id="menu_zegal_approval_requests" name="Requests" parent="menu_zegal_approval_root" action="action_zegal_approval_request" sequence="10"/>
+    <menuitem id="menu_zegal_approval_matrix" name="Matrix" parent="menu_zegal_approval_root" action="action_zegal_approval_matrix" sequence="20"/>
+    <menuitem id="menu_zegal_procurement_root" name="Procurement" parent="menu_zegal_ops_root" sequence="20"/>
+    <menuitem id="menu_zegal_purchase_request" name="Purchase Requests" parent="menu_zegal_procurement_root" action="action_zegal_purchase_request" sequence="10"/>
+    <menuitem id="menu_zegal_material_request" name="Material Requests" parent="menu_zegal_procurement_root" action="action_zegal_project_material_request" sequence="20"/>
+    <menuitem id="menu_zegal_vendor_quotes" name="Vendor Quote Comparison" parent="menu_zegal_procurement_root" action="action_zegal_vendor_quote_comparison" sequence="30"/>
+    <menuitem id="menu_zegal_subcontracts" name="Subcontracts" parent="menu_zegal_procurement_root" action="action_zegal_subcontract" sequence="40"/>
+    <menuitem id="menu_zegal_project_docs" name="Project Documents" parent="menu_zegal_ops_root" action="action_zegal_project_document" sequence="30"/>
+</odoo>

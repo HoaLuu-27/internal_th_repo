@@ -1,0 +1,30 @@
+<odoo>
+    <record id="view_project_form_zegal_flow" model="ir.ui.view">
+        <field name="name">project.project.form.zegal.flow</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group string="Zegal Flow">
+                    <field name="zegal_approval_state" readonly="1"/>
+                    <field name="zegal_approval_count" readonly="1"/>
+                    <field name="zegal_document_count" readonly="1"/>
+                    <field name="zegal_project_document_count" readonly="1"/>
+                    <field name="budget_total" readonly="1"/>
+                    <field name="committed_cost" readonly="1"/>
+                    <field name="actual_cost" readonly="1"/>
+                    <field name="budget_remaining" readonly="1"/>
+                    <field name="over_budget" readonly="1"/>
+                    <field name="purchase_delay_count" readonly="1"/>
+                    <field name="subcontract_count" readonly="1"/>
+                </group>
+            </xpath>
+            <xpath expr="//header" position="inside">
+                <button name="action_create_zegal_project_document" type="object" string="New Project Dossier" class="btn-primary"/>
+                <button name="action_view_zegal_project_documents" type="object" string="Project Dossiers" class="btn-primary"/>
+                <button name="action_view_purchase_requests" type="object" string="Purchase Requests" class="btn-secondary"/>
+                <button name="action_view_subcontracts" type="object" string="Subcontracts" class="btn-secondary"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

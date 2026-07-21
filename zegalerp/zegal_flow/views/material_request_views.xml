@@ -1,0 +1,62 @@
+<odoo>
+    <record id="view_zegal_project_material_request_list" model="ir.ui.view">
+        <field name="name">zegal.project.material.request.list</field>
+        <field name="model">zegal.project.material.request</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="request_date"/>
+                <field name="need_date"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_zegal_project_material_request_form" model="ir.ui.view">
+        <field name="name">zegal.project.material.request.form</field>
+        <field name="model">zegal.project.material.request</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_request_quote" type="object" string="Request Quote" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_create_purchase_request" type="object" string="Create Purchase Request" class="btn-primary" invisible="state not in ('draft','to_quote')"/>
+                    <button name="action_submit_approval" type="object" string="Approval" class="btn-secondary"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,to_quote,to_purchase,approved,rejected"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="project_id"/>
+                        <field name="request_date"/>
+                        <field name="need_date"/>
+                        <field name="purchase_request_id" readonly="1"/>
+                        <field name="approval_request_id" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="note"/>
+                    </group>
+                    <notebook>
+                        <page string="Lines">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="description"/>
+                                    <field name="quantity"/>
+                                    <field name="uom_id"/>
+                                    <field name="needed_date"/>
+                                    <field name="budget_amount"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="action_zegal_project_material_request" model="ir.actions.act_window">
+        <field name="name">Material Requests</field>
+        <field name="res_model">zegal.project.material.request</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>
