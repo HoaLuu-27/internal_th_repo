@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_crm_lead_form_zegal_intake" model="ir.ui.view">
+        <field name="name">crm.lead.form.zegal.intake</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Project Intake" invisible="type == 'lead' and zegal_lead_type != 'project'">
+                    <group>
+                        <group>
+                            <field name="zegal_lead_type"/>
+                            <field name="zegal_requirement_type"/>
+                            <field name="zegal_site_address"/>
+                            <field name="zegal_required_completion_date"/>
+                        </group>
+                    </group>
+                    <group string="Customer Requirement"><field name="zegal_scope_summary"/></group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

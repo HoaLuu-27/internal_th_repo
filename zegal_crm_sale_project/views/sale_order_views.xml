@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_sale_order_form_zegal_project" model="ir.ui.view">
+        <field name="name">sale.order.form.zegal.project</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_new_revision" type="object" string="New Revision" invisible="state not in ('draft', 'sent')"/>
+                <button name="action_zegal_create_project" type="object" string="Create Project" class="btn-primary" invisible="state not in ('sale', 'done') or zegal_sale_type != 'project' or zegal_project_id"/>
+                <button name="action_zegal_open_project" type="object" string="Open Project" invisible="not zegal_project_id"/>
+            </xpath>
+            <xpath expr="//sheet//group" position="inside">
+                <field name="zegal_sale_type"/>
+                <field name="zegal_quotation_type"/>
+                <field name="zegal_revision"/>
+                <field name="zegal_project_id" invisible="not zegal_project_id"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Project Handover" invisible="zegal_sale_type != 'project'">
+                    <group><field name="zegal_scope_summary"/><field name="zegal_customer_timeline"/><field name="zegal_payment_terms_summary"/></group>
+                    <field name="zegal_handover_line_ids">
+                        <list editable="bottom"><field name="sequence" widget="handle"/><field name="name"/><field name="required"/><field name="completed"/><field name="note"/></list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

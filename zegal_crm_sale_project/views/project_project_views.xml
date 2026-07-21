@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_project_project_form_zegal_source" model="ir.ui.view">
+        <field name="name">project.project.form.zegal.source</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group string="Sales Handover">
+                    <group><field name="zegal_sale_order_id"/><field name="zegal_opportunity_id"/><field name="zegal_document_folder_id"/></group>
+                    <group><field name="zegal_customer_timeline"/><field name="zegal_payment_terms_summary"/></group>
+                    <field name="zegal_scope_summary"/>
+                    <button name="action_zegal_create_dossier_folder" type="object" string="Create Project Dossier Folder" invisible="zegal_document_folder_id"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
