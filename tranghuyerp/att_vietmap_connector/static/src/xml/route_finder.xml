@@ -14,7 +14,8 @@
                         <button type="button"
                                 t-att-class="{active: state.search.vehicleClass === vc.key}"
                                 t-on-click="() => this.pickVehicleClass(vc.key)">
-                            <t t-esc="vc.label"/>
+                            <span class="att_route_vehicle_icon" t-out="vc.icon"/>
+                            <span t-esc="vc.label"/>
                         </button>
                     </t>
                 </div>
@@ -23,6 +24,26 @@
                     <input type="number" class="form-control form-control-sm"
                            t-model="state.search.capacityKg" placeholder="VD: 2000"/>
                 </div>
+                <div class="att_route_field_row">
+                    <div class="att_route_field">
+                        <label>Ngày khởi hành</label>
+                        <input type="date" class="form-control form-control-sm"
+                               t-model="state.search.departureDate"/>
+                    </div>
+                    <div class="att_route_field att_route_field_time">
+                        <label>Giờ khởi hành (24h)</label>
+                        <input type="text" class="form-control form-control-sm"
+                               t-model="state.search.departureTimeStr"
+                               placeholder="VD: 14:30" pattern="([01][0-9]|2[0-3]):[0-5][0-9]"
+                               maxlength="5"/>
+                    </div>
+                </div>
+                <p t-if="state.search.vehicleClass === 'truck' and isPeakHour"
+                   class="att_route_peak_warning">
+                    Khung giờ cao điểm — xe tải có thể bị hạn chế vào 1 số tuyến
+                    đường nội thành. VietMap không cho biết trước đoạn đường cụ
+                    thể nào bị cấm, nếu tìm đường báo lỗi hãy thử đổi giờ khác.
+                </p>
 
                 <div class="att_route_mode_row">
                     <button type="button"
@@ -33,48 +54,82 @@
                             t-on-click="() => this.setInputMode('coords')">Toạ độ</button>
                 </div>
 
-                <t t-if="state.search.inputMode === 'address'">
-                    <div class="att_route_field">
-                        <label>Điểm đi</label>
-                        <input type="text" class="form-control form-control-sm"
-                               t-att-value="state.search.originText"
-                               t-on-input="(ev) => this.onAddressInput('origin', ev)"
-                               placeholder="Nhập địa chỉ điểm đi..."/>
-                        <div t-if="state.search.originSuggestions.length" class="att_route_suggest">
-                            <t t-foreach="state.search.originSuggestions" t-as="sug" t-key="sug_index">
-                                <div t-on-click="() => this.selectSuggestion('origin', sug)"
-                                     t-esc="suggestionLabel(sug)"/>
-                            </t>
-                        </div>
+                <div class="att_route_points_wrap">
+                    <div class="att_route_points_fields">
+                        <t t-if="state.search.inputMode === 'address'">
+                            <div class="att_route_field">
+                                <label>Điểm đi</label>
+                                <input type="text" class="form-control form-control-sm"
+                                       t-att-value="state.search.originText"
+                                       t-on-input="(ev) => this.onAddressInput('origin', ev)"
+                                       placeholder="Nhập địa chỉ điểm đi..."/>
+                                <div t-if="state.search.originSuggestions.length" class="att_route_suggest">
+                                    <t t-foreach="state.search.originSuggestions" t-as="sug" t-key="sug_index">
+                                        <div t-on-click="() => this.selectSuggestion('origin', sug)"
+                                             t-esc="suggestionLabel(sug)"/>
+                                    </t>
+                                </div>
+                            </div>
+                            <div class="att_route_field">
+                                <label>Điểm đến</label>
+                                <input type="text" class="form-control form-control-sm"
+                                       t-att-value="state.search.destText"
+                                       t-on-input="(ev) => this.onAddressInput('dest', ev)"
+                                       placeholder="Nhập địa chỉ điểm đến..."/>
+                                <div t-if="state.search.destSuggestions.length" class="att_route_suggest">
+                                    <t t-foreach="state.search.destSuggestions" t-as="sug" t-key="sug_index">
+                                        <div t-on-click="() => this.selectSuggestion('dest', sug)"
+                                             t-esc="suggestionLabel(sug)"/>
+                                    </t>
+                                </div>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="att_route_field">
+                                <label>Điểm đi (toạ độ)</label>
+                                <input type="text" class="form-control form-control-sm"
+                                       t-model="state.search.originCoords"
+                                       placeholder="VD: 21.028511, 105.804817"/>
+                            </div>
+                            <div class="att_route_field">
+                                <label>Điểm đến (toạ độ)</label>
+                                <input type="text" class="form-control form-control-sm"
+                                       t-model="state.search.destCoords"
+                                       placeholder="VD: 20.865139, 106.688084"/>
+                            </div>
+                        </t>
                     </div>
-                    <div class="att_route_field">
-                        <label>Điểm đến</label>
-                        <input type="text" class="form-control form-control-sm"
-                               t-att-value="state.search.destText"
-                               t-on-input="(ev) => this.onAddressInput('dest', ev)"
-                               placeholder="Nhập địa chỉ điểm đến..."/>
-                        <div t-if="state.search.destSuggestions.length" class="att_route_suggest">
-                            <t t-foreach="state.search.destSuggestions" t-as="sug" t-key="sug_index">
-                                <div t-on-click="() => this.selectSuggestion('dest', sug)"
-                                     t-esc="suggestionLabel(sug)"/>
-                            </t>
+                    <button type="button" class="att_route_swap_btn" title="Đảo điểm đi/đến"
+                            t-on-click="swapPoints">⇅</button>
+                </div>
+
+                <t t-foreach="state.search.viaPoints" t-as="via" t-key="via_index">
+                    <div class="att_route_field att_route_via_field">
+                        <div class="att_route_via_header">
+                            <label>Điểm dừng <t t-esc="via_index + 1"/></label>
+                            <button type="button" class="att_route_via_remove"
+                                    t-on-click="() => this.removeViaPoint(via_index)">×</button>
                         </div>
+                        <t t-if="state.search.inputMode === 'address'">
+                            <input type="text" class="form-control form-control-sm"
+                                   t-att-value="via.text"
+                                   t-on-input="(ev) => this.onViaAddressInput(via_index, ev)"
+                                   placeholder="Nhập địa chỉ điểm dừng..."/>
+                            <div t-if="via.suggestions.length" class="att_route_suggest">
+                                <t t-foreach="via.suggestions" t-as="sug" t-key="sug_index">
+                                    <div t-on-click="() => this.selectViaSuggestion(via_index, sug)"
+                                         t-esc="suggestionLabel(sug)"/>
+                                </t>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <input type="text" class="form-control form-control-sm"
+                                   t-model="via.coords" placeholder="VD: 21.0,105.8"/>
+                        </t>
                     </div>
                 </t>
-                <t t-else="">
-                    <div class="att_route_field">
-                        <label>Điểm đi (toạ độ)</label>
-                        <input type="text" class="form-control form-control-sm"
-                               t-model="state.search.originCoords"
-                               placeholder="VD: 21.028511, 105.804817"/>
-                    </div>
-                    <div class="att_route_field">
-                        <label>Điểm đến (toạ độ)</label>
-                        <input type="text" class="form-control form-control-sm"
-                               t-model="state.search.destCoords"
-                               placeholder="VD: 20.865139, 106.688084"/>
-                    </div>
-                </t>
+                <button type="button" class="btn btn-outline-secondary btn-sm w-100 mb-2"
+                        t-on-click="addViaPoint">+ Thêm điểm dừng</button>
 
                 <button type="button" class="btn btn-primary w-100 mt-2"
                         t-att-disabled="state.search.searching"
@@ -149,7 +204,10 @@
                                 <div class="att_route_step att_congestion_row">
                                     <span class="att_vehicle_dot"
                                           t-attf-style="background-color: {{seg.color}};"/>
-                                    <span t-esc="seg.label"/>
+                                    <span>
+                                        <t t-esc="seg.label"/>
+                                        <t t-if="seg.streetName"> — <t t-esc="seg.streetName"/></t>
+                                    </span>
                                     <small class="ms-auto">
                                         <t t-esc="seg.distance_km"/> km
                                     </small>

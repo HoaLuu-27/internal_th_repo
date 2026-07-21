@@ -39,6 +39,8 @@
                     </group>
                     <notebook>
                         <page string="Request">
+                            <field name="full_url" widget="text" readonly="1"
+                                   placeholder="URL đầy đủ đã gửi (apikey đã che)"/>
                             <field name="request_body" widget="text" readonly="1"/>
                         </page>
                         <page string="Response">

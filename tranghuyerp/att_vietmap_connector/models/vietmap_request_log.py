@@ -12,6 +12,10 @@ class VietmapRequestLog(models.Model):
     name = fields.Char('Tên Log', required=True, default='VietMap Request')
     config_id = fields.Many2one('att.vietmap.config', 'Cấu hình', ondelete='set null')
     endpoint = fields.Char('Endpoint')
+    full_url = fields.Char(
+        'Full URL', help='URL đầy đủ ĐÃ gửi thật (kèm query string, apikey đã '
+        'che ***) — dán thẳng lại vào Postman/browser (tự điền lại apikey) '
+        'để tái hiện đúng y hệt request lỗi khi cần debug.')
     http_method = fields.Char('HTTP Method')
     query_text = fields.Char('Từ khoá tìm', index=True, help='Text user gõ (nếu là search_address).')
     ref_id = fields.Char('Ref ID', index=True, help='Ref ID VietMap (nếu là get_place_detail).')
